@@ -1,0 +1,10 @@
+{
+ "verifiedAt":"2026-10-06",
+ "use":"Hypothetical Standard short-context API token price scenario only; these experiments used ChatGPT subscription access, so this is not an invoice or subscription charge.",
+ "models":{
+  "gpt-6.1-sol":{"inputPerMillion":2,"cachedInputPerMillion":0.1,"cacheWritePerMillion":2.5,"outputPerMillion":10,"source":"https://developers.openai.com/api/docs/models/gpt-6.1-sol"},
+  "gpt-6-luna":{"inputPerMillion":0.1,"cachedInputPerMillion":0.01,"cacheWritePerMillion":0.125,"outputPerMillion":0.5,"source":"https://developers.openai.com/api/docs/models/gpt-6-luna"}
+ },
+ "scenario":"Lower estimate treats uncached input as ordinary input; upper estimate treats all uncached input as cache writes. Observed cached-input tokens use the cached rate. Output includes reasoning; never bill reasoning twice.",
+ "limits":["Subscription allocation unknown","Provider-resolved identity unreported for CLI","API routing, prompt envelope and cache behavior may differ","Assumes no Fast, regional, long-context, Batch or Flex adjustment","Excludes tool, browser, hosting, retries without usage, device and human costs","This does not measure cost per completed government application"]
+}

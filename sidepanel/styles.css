@@ -325,10 +325,7 @@ select {
 }
 
 .model-runtime-settings {
-  padding: 11px 12px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--canvas);
+  margin-bottom: 14px;
 }
 
 .model-runtime-settings summary {
@@ -355,6 +352,83 @@ select {
 
 .compact-form code {
   font-size: 11px;
+}
+
+.settings-disclosure,
+.help-disclosure {
+  margin-top: 12px;
+  border-top: 1px solid var(--soft-line);
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.settings-disclosure > summary,
+.help-disclosure > summary {
+  min-height: 44px;
+  padding: 12px 0;
+  cursor: pointer;
+  color: var(--plum-dark);
+  font-weight: 650;
+}
+
+summary:focus-visible {
+  outline: 3px solid rgba(177, 64, 146, 0.3);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.settings-disclosure > p,
+.help-disclosure > p {
+  margin: 0 0 12px;
+  line-height: 1.5;
+}
+
+.disclosure-meta {
+  float: right;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.runtime-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 10px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.runtime-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--muted);
+}
+
+.runtime-status.ready .runtime-dot {
+  background: var(--success);
+}
+
+.source-status {
+  margin: 10px 0 18px;
+}
+
+.source-picker {
+  display: flex;
+  width: 100%;
+  min-height: 44px;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 12px;
+  padding: 8px 0;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 12px;
+  text-align: left;
+  cursor: pointer;
 }
 
 .upload-zone {
@@ -1308,17 +1382,19 @@ button.connector-status:hover {
 }
 
 .recertification-entry {
-  display: grid;
+  display: flex;
   width: 100%;
-  margin-bottom: 14px;
-  padding: 16px;
-  grid-template-columns: 56px 1fr auto;
-  gap: 14px;
+  min-height: 44px;
+  margin: 16px 0 0;
+  padding: 12px 0;
+  justify-content: space-between;
   align-items: center;
-  border: 2px solid #d6b0d0;
-  border-radius: 14px;
-  background: #fff8fe;
-  color: var(--ink);
+  border: 0;
+  border-top: 1px solid var(--soft-line);
+  background: transparent;
+  color: var(--plum-dark);
+  font-size: 13px;
+  font-weight: 650;
   text-align: left;
   cursor: pointer;
 }

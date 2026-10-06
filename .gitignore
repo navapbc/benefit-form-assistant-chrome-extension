@@ -1,3 +1,12 @@
 node_modules/
+node_modules
+.env
+.env.*
+!.env.example
 work/
 .DS_Store
+
+# Fresh inference output and private evaluation artifacts
+evaluation/local-results/
+evaluation/benefit-site-evidence/
+.eve/

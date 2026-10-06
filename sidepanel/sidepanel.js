@@ -311,10 +311,9 @@
     const managed = managedConnector();
     const mapped = Object.keys(state.connector?.mappings || {}).length;
     return `
-      <button class="connector-status ${managed ? 'connected' : ''}" type="button" data-action="configure-connector">
-        <span class="connector-status-icon" aria-hidden="true">${managed ? '✓' : 'DB'}</span>
-        <span><strong>${managed ? escapeHtml(connectorTitle()) : 'Connect an organization database'}</strong><small>${managed ? `${escapeHtml(connectorProvider().name)} · ${mapped} mapped fields · read-only` : 'Browse Apricot, Salesforce, HMIS, and other catalog sources'}</small></span>
-        <span class="connector-status-action">${managed ? 'Manage' : 'Choose'} <span aria-hidden="true">›</span></span>
+      <button class="source-picker" type="button" data-action="configure-connector">
+        <span>${managed ? `Read-only source: ${escapeHtml(connectorTitle())} · ${mapped} fields` : 'Data source: fictional demo'}</span>
+        <span class="connector-status-action">${managed ? 'Manage' : 'Connect'} <span aria-hidden="true">›</span></span>
       </button>`;
   }
 
@@ -1166,7 +1165,7 @@
 
   function renderAgentRuntime() {
     if (previewMode) {
-      return '<div class="notice"><span aria-hidden="true">AI</span><span><strong>Fixture preview.</strong> Install the extension to run the on-device multi-agent planner.</span></div>';
+      return '<p class="runtime-status">Fixture preview · model calls are simulated</p>';
     }
     const ready = state.agentRuntime.status === 'ready';
     const unavailable = state.agentRuntime.status === 'unavailable';
@@ -1184,15 +1183,15 @@
           : 'This device cannot start Chrome built-in AI. Use Chrome 138 or newer on a supported desktop and enable built-in AI.'))
         : `${companion ? 'Connect the paired localhost companion' : 'Start Chrome’s on-device model'} before a live form run. Client values are never included in model prompts.`;
     return `
-      <div class="notice ${unavailable ? 'error' : ''}" style="margin-bottom:16px">
-        <span aria-hidden="true">AI</span>
-        <span><strong>${escapeHtml(title)}.</strong> ${escapeHtml(detail)}</span>
-      </div>
+      ${unavailable
+        ? `<div class="notice error" role="alert"><span aria-hidden="true">!</span><span><strong>${escapeHtml(title)}.</strong> ${escapeHtml(detail)}</span></div>`
+        : `<p class="runtime-status ${ready ? 'ready' : ''}" role="status"><span class="runtime-dot" aria-hidden="true"></span>${escapeHtml(title)}</p>`}
       ${ready ? '' : '<button class="secondary-button" style="margin-bottom:12px" type="button" data-action="enable-agent">Enable agentic AI</button>'}
-      <details class="model-runtime-settings" style="margin-bottom:16px">
+      <details class="model-runtime-settings settings-disclosure">
         <summary>Model runtime</summary>
+        ${unavailable ? '' : `<p class="field-hint">${escapeHtml(detail)}</p>`}
         <form id="model-provider-form" class="form-stack compact-form">
-          <label for="model-provider">Brain
+          <label for="model-provider">Model provider
             <select id="model-provider" name="modelProvider">
               <option value="chrome-local" ${selectedProvider === 'chrome-local' ? 'selected' : ''}>Chrome on-device Gemini Nano</option>
               <option value="codex" ${selectedProvider === 'codex' ? 'selected' : ''}>Codex subscription via local CLI</option>
@@ -1372,35 +1371,34 @@
         <div class="intro">
           <p class="eyebrow">Start a form</p>
           <h1>Let's find your client</h1>
-          <p class="lede">Choose how you want to bring the client's information into this browser session.</p>
+          <p class="lede">Start with a record, JSON, or a document.</p>
         </div>
         ${renderError()}
         ${renderAgentRuntime()}
-        <button class="recertification-entry" type="button" data-action="open-recertifications">
-          <span class="choice-icon" aria-hidden="true">↻</span>
-          <span class="choice-copy"><strong>Recertification status</strong><small>See upcoming renewals across the caseload, gather updates, and request client authorization.</small></span>
-          <span class="chevron" aria-hidden="true">›</span>
-        </button>
         ${renderConnectorStatus()}
         <div class="stack">
           <button class="choice-button" type="button" data-action="choose-id">
             <span class="choice-icon" aria-hidden="true">ID</span>
-            <span class="choice-copy"><strong>I have their client record ID</strong><small>Use the connected organization data source.</small></span>
+            <span class="choice-copy"><strong>Find by record ID</strong><small>Look up a connected client record.</small></span>
             <span class="chevron" aria-hidden="true">›</span>
           </button>
           <button class="choice-button" type="button" data-action="choose-json">
             <span class="choice-icon" aria-hidden="true">{ }</span>
-            <span class="choice-copy"><strong>I don't have their record ID</strong><small>Paste the client information as JSON.</small></span>
+            <span class="choice-copy"><strong>Paste client JSON</strong><small>Use a prepared client record.</small></span>
             <span class="chevron" aria-hidden="true">›</span>
           </button>
           <button class="choice-button" type="button" data-action="choose-document">
             <span class="choice-icon" aria-hidden="true">DOC</span>
-            <span class="choice-copy"><strong>Upload a client or business document</strong><small>Review labeled details from scans, images, PDF, Word, text, CSV, or JSON.</small></span>
+            <span class="choice-copy"><strong>Read a document</strong><small>Review extracted details before import.</small></span>
             <span class="chevron" aria-hidden="true">›</span>
           </button>
         </div>
-        <div class="notice" style="margin-top:16px"><span aria-hidden="true">i</span><span>${managedConnector() ? 'Record lookup uses the organization’s read-only connector. Credentials remain in the Nava connector service, never in Chrome.' : 'No production database is connected. All bundled records are fictional.'}</span></div>
+        <button class="recertification-entry" type="button" data-action="open-recertifications">
+          <span>Recertification status</span>
+          <span class="chevron" aria-hidden="true">›</span>
+        </button>
         ${renderPlannerSettings()}
+        <details class="help-disclosure"><summary>Data and review safeguards</summary><p>Client values are held in this browser session and excluded from model planning prompts. Managed record lookup uses the configured organization service; provider credentials stay server-side. Sending questions to a client uses the shared API. You review the results and submit the application yourself.</p></details>
       </section>`;
   }
 
@@ -1408,7 +1406,8 @@
     if (previewMode) return '';
     const configured = Boolean(state.plannerBase);
     return `
-      <form id="planner-form" class="stack" style="margin-top:16px">
+      <details class="settings-disclosure"><summary>Shared planner API <span class="disclosure-meta">${configured ? 'Configured' : 'Optional'}</span></summary>
+      <form id="planner-form" class="stack compact-form">
         <div class="field">
           <label for="nava-api-base">Shared planner API</label>
           <input id="nava-api-base" name="navaApiBase" type="url" inputmode="url" autocomplete="off" placeholder="https://api.example.com" value="${escapeHtml(state.plannerBase || '')}">
@@ -1419,7 +1418,7 @@
           <input id="nava-api-token" name="navaApiToken" type="password" autocomplete="off" placeholder="${configured ? 'Saved' : 'nava_…'}">
         </div>
         <button class="secondary-button" type="button" data-action="save-planner">Use the shared planner</button>
-      </form>`;
+      </form></details>`;
   }
 
   function renderProviderCatalog() {
@@ -1678,7 +1677,7 @@
             <span>PDF, PNG, JPEG, WebP, DOCX, TXT, CSV, TSV, or JSON · up to 15 MB</span>
             <input id="client-document" name="clientDocument" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp,.docx,.txt,.csv,.tsv,.json,application/pdf,image/png,image/jpeg,image/webp,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain,text/csv,application/json" required>
           </label>
-          <div class="notice"><span aria-hidden="true">⌁</span><span>The raw file stays on this device and is discarded after parsing. Image-only pages use the bundled English OCR model with strict page, pixel, attempt, and time limits.</span></div>
+          <details class="help-disclosure"><summary>How document reading works</summary><p>The raw file stays on this device and is discarded after parsing. Image-only pages use bundled English OCR with page, pixel, attempt, and time limits. Review every proposed value before importing it.</p></details>
           <div class="form-actions">
             <button class="primary-button" type="submit">Read document</button>
             ${state.participant ? '' : '<button class="secondary-button" type="button" data-action="choose-json">Paste JSON instead</button>'}
@@ -1793,7 +1792,7 @@
                 <span><strong>${escapeHtml(program.name)}</strong><small>${escapeHtml(program.provider)}${program.workflowId === 'benefitscal' ? ' · combined BenefitsCal application' : ''}</small></span>
               </label>`).join('')}
           </div>
-          <div class="notice" style="margin-top:14px"><span aria-hidden="true">i</span><span>CalFresh, Medi-Cal, and CalWORKs share one BenefitsCal application. Selecting more than one opens one tab and carries all selected program names in the same workflow.</span></div>
+          <p class="field-hint">CalFresh, Medi-Cal, and CalWORKs use one combined BenefitsCal application.</p>
           <div class="form-actions">
             <button class="primary-button" type="submit">Continue</button>
           </div>
@@ -1932,8 +1931,7 @@
         <p class="card-note"><strong>${escapeHtml(statusLabel(application))}.</strong> ${escapeHtml(note)}</p>
         ${application.owner ? `<p class="ownership-line"><span class="owner-chip ${application.owner.state}">${application.owner.state === 'pending' ? 'Assigned to' : 'Owned by'} ${escapeHtml(application.owner.assignedTo)}</span></p>` : ''}
         ${application.checkpoint ? `<p class="checkpoint-line"><strong>Checkpoint:</strong> ${escapeHtml(application.checkpoint.label)}</p>` : ''}
-        ${application.agentic ? `<p class="automation-badge">AI-reviewed plan · ${Number(application.agentic.approvedMappings || 0)} mapping${Number(application.agentic.approvedMappings || 0) === 1 ? '' : 's'} · ${application.agentic.provider === 'codex' ? 'Codex' : application.agentic.provider === 'claude' ? 'Claude' : 'Gemini Nano'} mapper + gap analyst + reviewer</p>` : ''}
-        ${application.agentic?.usage ? `<p class="card-note">${escapeHtml(agentUsageSummary(application.agentic))}</p>` : ''}
+        ${application.agentic ? `<details class="help-disclosure"><summary>AI plan details <span class="disclosure-meta">${Number(application.agentic.approvedMappings || 0)} mappings</span></summary><p>${application.agentic.provider === 'codex' ? 'Codex' : application.agentic.provider === 'claude' ? 'Claude' : 'Gemini Nano'} · mapper, gap analyst, and independent reviewer.</p>${application.agentic.usage ? `<p>${escapeHtml(agentUsageSummary(application.agentic))}</p>` : ''}</details>` : ''}
         ${completedPages ? `<p class="automation-badge">✓ ${completedPages} page${completedPages === 1 ? '' : 's'} completed automatically</p>` : ''}
         <div class="card-actions">${actions}</div>
       </article>`;

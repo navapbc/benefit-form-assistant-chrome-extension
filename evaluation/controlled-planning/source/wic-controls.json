@@ -1,0 +1,370 @@
+[
+  {
+    "id": "edit-name",
+    "label": "Name",
+    "name": "name",
+    "options": [],
+    "required": false,
+    "tag": "input",
+    "type": "text"
+  },
+  {
+    "id": "edit-date-of-birth",
+    "label": "Date of Birth",
+    "name": "date_of_birth",
+    "options": [],
+    "required": true,
+    "tag": "input",
+    "type": "text"
+  },
+  {
+    "id": "edit-home-address",
+    "label": "Home Address",
+    "name": "home_address",
+    "options": [],
+    "required": true,
+    "tag": "input",
+    "type": "text"
+  },
+  {
+    "id": "edit-mailing-address-if-different-from-home-address-",
+    "label": "Mailing address (if different from home address)",
+    "name": "mailing_address_if_different_from_home_address_",
+    "options": [],
+    "required": false,
+    "tag": "input",
+    "type": "text"
+  },
+  {
+    "id": "edit-mobile",
+    "label": "Mobile Number",
+    "name": "mobile",
+    "options": [],
+    "required": true,
+    "tag": "input",
+    "type": "tel"
+  },
+  {
+    "id": "edit-can-you-receive-text-messages-yes",
+    "label": "Yes",
+    "name": "can_you_receive_text_messages",
+    "optionValue": "Yes",
+    "options": [],
+    "required": true,
+    "tag": "input",
+    "type": "radio"
+  },
+  {
+    "id": "edit-can-you-receive-text-messages-no",
+    "label": "No",
+    "name": "can_you_receive_text_messages",
+    "optionValue": "No",
+    "options": [],
+    "required": true,
+    "tag": "input",
+    "type": "radio"
+  },
+  {
+    "id": "edit-email",
+    "label": "Email",
+    "name": "email",
+    "options": [],
+    "required": false,
+    "tag": "input",
+    "type": "email"
+  },
+  {
+    "id": "edit-what-is-your-preferred-language",
+    "label": "What is your preferred language",
+    "name": "what_is_your_preferred_language",
+    "options": [
+      {
+        "label": "- None -",
+        "value": ""
+      },
+      {
+        "label": "English",
+        "value": "English "
+      },
+      {
+        "label": "Spanish",
+        "value": "Spanish "
+      },
+      {
+        "label": "Other",
+        "value": "Other"
+      }
+    ],
+    "required": false,
+    "tag": "select",
+    "type": "select-one"
+  },
+  {
+    "id": "edit-do-you-have-medical-yes",
+    "label": "Yes",
+    "name": "do_you_have_medical",
+    "optionValue": "Yes",
+    "options": [],
+    "required": true,
+    "tag": "input",
+    "type": "radio"
+  },
+  {
+    "id": "edit-do-you-have-medical-no",
+    "label": "No",
+    "name": "do_you_have_medical",
+    "optionValue": "No",
+    "options": [],
+    "required": true,
+    "tag": "input",
+    "type": "radio"
+  },
+  {
+    "id": "edit-do-you-have-medical-in-progress",
+    "label": "In Progress",
+    "name": "do_you_have_medical",
+    "optionValue": "In Progress",
+    "options": [],
+    "required": true,
+    "tag": "input",
+    "type": "radio"
+  },
+  {
+    "id": "edit-if-yes",
+    "label": "If yes - MediCal Case #",
+    "name": "if_yes",
+    "options": [],
+    "required": false,
+    "tag": "input",
+    "type": "text"
+  },
+  {
+    "id": "edit-please-select-all-that-apply-pregnant",
+    "label": "Pregnant",
+    "name": "please_select_all_that_apply[Pregnant]",
+    "optionValue": "Pregnant",
+    "options": [],
+    "required": false,
+    "tag": "input",
+    "type": "checkbox"
+  },
+  {
+    "id": "edit-please-select-all-that-apply-post-partum",
+    "label": "Post-partum",
+    "name": "please_select_all_that_apply[Post-partum]",
+    "optionValue": "Post-partum",
+    "options": [],
+    "required": false,
+    "tag": "input",
+    "type": "checkbox"
+  },
+  {
+    "id": "edit-please-select-all-that-apply-infant-breastfeeding",
+    "label": "Infant-breastfeeding",
+    "name": "please_select_all_that_apply[Infant-breastfeeding]",
+    "optionValue": "Infant-breastfeeding",
+    "options": [],
+    "required": false,
+    "tag": "input",
+    "type": "checkbox"
+  },
+  {
+    "id": "edit-please-select-all-that-apply-infant-formula",
+    "label": "Infant-formula",
+    "name": "please_select_all_that_apply[Infant-formula]",
+    "optionValue": "Infant-formula",
+    "options": [],
+    "required": false,
+    "tag": "input",
+    "type": "checkbox"
+  },
+  {
+    "id": "edit-please-select-all-that-apply-childrentoddler-0-5",
+    "label": "Children/Toddler 0-5",
+    "name": "please_select_all_that_apply[Children/Toddler 0-5]",
+    "optionValue": "Children/Toddler 0-5",
+    "options": [],
+    "required": false,
+    "tag": "input",
+    "type": "checkbox"
+  },
+  {
+    "id": "edit-i-authorize-my-wic-appointments-select-all-that-apply-in-person",
+    "label": "In-Person",
+    "name": "i_authorize_my_wic_appointments_select_all_that_apply_[In-Person]",
+    "optionValue": "In-Person",
+    "options": [],
+    "required": false,
+    "tag": "input",
+    "type": "checkbox"
+  },
+  {
+    "id": "edit-i-authorize-my-wic-appointments-select-all-that-apply-virtual-phone",
+    "label": "Virtual (phone)",
+    "name": "i_authorize_my_wic_appointments_select_all_that_apply_[Virtual (phone)]",
+    "optionValue": "<redacted>",
+    "options": [],
+    "required": false,
+    "tag": "input",
+    "type": "checkbox"
+  },
+  {
+    "id": "edit-i-authorize-my-wic-appointments-select-all-that-apply-telehealth-video",
+    "label": "Telehealth (video)",
+    "name": "i_authorize_my_wic_appointments_select_all_that_apply_[Telehealth (video)]",
+    "optionValue": "Telehealth (video)",
+    "options": [],
+    "required": false,
+    "tag": "input",
+    "type": "checkbox"
+  },
+  {
+    "id": "edit-please-choose-the-wic-clinic-closest-to-you",
+    "label": "Please choose the WIC Clinic Closest to you",
+    "name": "please_choose_the_wic_clinic_closest_to_you",
+    "options": [
+      {
+        "label": "Arlanza Riverside WIC",
+        "value": ""
+      },
+      {
+        "label": "Arlanza Riverside WIC",
+        "value": "Arlanza Riverside WIC"
+      },
+      {
+        "label": "Banning WIC",
+        "value": "Banning WIC"
+      },
+      {
+        "label": "Blythe WIC",
+        "value": "Blythe WIC"
+      },
+      {
+        "label": "Cathedral City WIC",
+        "value": "Cathedral City WIC"
+      },
+      {
+        "label": "Corona WIC",
+        "value": "Corona WIC"
+      },
+      {
+        "label": "Desert Hot Springs WIC",
+        "value": "Desert Hot Springs WIC"
+      },
+      {
+        "label": "Hemet WIC",
+        "value": "Hemet WIC"
+      },
+      {
+        "label": "Indio WIC",
+        "value": "Indio WIC"
+      },
+      {
+        "label": "Jurupa WIC",
+        "value": "Jurupa WIC"
+      },
+      {
+        "label": "Lakeshore WIC",
+        "value": "Lakeshore WIC"
+      },
+      {
+        "label": "Mecca WIC",
+        "value": "Mecca WIC"
+      },
+      {
+        "label": "Moreno Valley WIC",
+        "value": "Moreno Valley WIC"
+      },
+      {
+        "label": "Riverside Neighborhood WIC",
+        "value": "Riverside Neighborhood WIC"
+      },
+      {
+        "label": "North Riverside WIC",
+        "value": "North Riverside WIC"
+      },
+      {
+        "label": "Palm Springs WIC",
+        "value": "Palm Springs WIC"
+      },
+      {
+        "label": "Perris WIC",
+        "value": "Perris WIC"
+      },
+      {
+        "label": "Rubidoux WIC",
+        "value": "Rubidoux WIC"
+      },
+      {
+        "label": "Temecula WIC",
+        "value": "Temecula WIC"
+      }
+    ],
+    "required": false,
+    "tag": "select",
+    "type": "select-one"
+  },
+  {
+    "id": "g-recaptcha-response",
+    "label": "",
+    "name": "g-recaptcha-response",
+    "options": [],
+    "required": false,
+    "tag": "textarea",
+    "type": "textarea"
+  },
+  {
+    "id": "edit-url",
+    "label": "Leave this field blank",
+    "name": "url",
+    "options": [],
+    "required": false,
+    "tag": "input",
+    "type": "text"
+  },
+  {
+    "id": "goog-gt-votingInputSrcLang",
+    "label": "",
+    "name": "sl",
+    "options": [],
+    "required": false,
+    "tag": "input",
+    "type": "text"
+  },
+  {
+    "id": "goog-gt-votingInputTrgLang",
+    "label": "",
+    "name": "tl",
+    "options": [],
+    "required": false,
+    "tag": "input",
+    "type": "text"
+  },
+  {
+    "id": "goog-gt-votingInputSrcText",
+    "label": "",
+    "name": "query",
+    "options": [],
+    "required": false,
+    "tag": "input",
+    "type": "text"
+  },
+  {
+    "id": "goog-gt-votingInputTrgText",
+    "label": "",
+    "name": "gtrans",
+    "options": [],
+    "required": false,
+    "tag": "input",
+    "type": "text"
+  },
+  {
+    "id": "goog-gt-votingInputVote",
+    "label": "",
+    "name": "vote",
+    "options": [],
+    "required": false,
+    "tag": "input",
+    "type": "text"
+  }
+]

@@ -1,0 +1,7 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {requestForJev,interpretJev,callJev} from './jev-adapter.mjs';
+const fields=[{fieldKey:'name',label:'Full name',required:true,type:'text',value:'Private value'},{fieldKey:'other-ssn',label:'Other person SSN',required:true,type:'text'},{fieldKey:'captcha',label:'CAPTCHA',type:'checkbox'}],sources=[{purpose:'fullName',label:'Full name',value:'Must never transmit'}];
+test('payload has no source or field values',()=>{const s=JSON.stringify(requestForJev({domain:'example.invalid',fields,sources}));assert(!s.includes('Private value'));assert(!s.includes('Must never transmit'));});
+test('non-finite and missing confidence always defer',()=>{for(const confidence of [undefined,null,'0.9',NaN,2,-1]){const p=interpretJev(fields,sources,{answers:{f0:{type:'choice',choice:'fullName',confidence}}});assert(p.deferred.includes('name'));}});
+test('threshold is applied; final controls never map',()=>{const p=interpretJev(fields,sources,{answers:{f0:{type:'choice',choice:'fullName',confidence:.81},f1:{type:'choice',choice:'ask',confidence:.9},f2:{type:'choice',choice:'fullName',confidence:1}}});assert.equal(p.purposeOverrides.name,'fullName');assert.equal(p.gaps[0].fieldKey,'other-ssn');assert(!('captcha' in p.purposeOverrides));});
+test('missing key is not a measured pass or a free model call',async()=>{const r=await callJev({}, {key:null});assert.equal(r.status,'not-run');assert.equal(r.score,null);assert.equal(r.costUsd,null);});

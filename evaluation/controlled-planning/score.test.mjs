@@ -1,0 +1,12 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {scorePlan,parseUsage} from './score.mjs';
+const c={expectedMappings:{name:'fullName',ssn:'ssn'},expectedGaps:['income'],ignored:['captcha','signature']};
+const correct={purposeOverrides:{name:'fullName',ssn:'ssn'},gaps:[{fieldKey:'income'}]};
+test('planning pass is distinct from live completion and semantic correctness',()=>{const s=scorePlan(c,correct);assert.equal(s.planningPass,true);assert.equal(s.wholeApplicationCompletion,null);assert.equal(s.semanticValueAccuracy,null);});
+test('wrong identifier counts against planning even when values are redacted',()=>{const s=scorePlan(c,{...correct,purposeOverrides:{name:'fullName',ssn:'email'}});assert.equal(s.identifierWrong,1);assert.equal(s.planningPass,false);});
+test('missing and unnecessary questions have separate counters',()=>{const s=scorePlan(c,{...correct,gaps:[{fieldKey:'name'}]});assert.equal(s.missedGaps,1);assert.equal(s.falseGaps,1);});
+test('a mapping onto an unanswered source is an error',()=>{const s=scorePlan(c,{...correct,purposeOverrides:{...correct.purposeOverrides,income:'phone'}});assert.equal(s.wrongMappings,1);assert.equal(s.planningPass,false);});
+test('final-action mapping cannot hide in excluded controls',()=>{const s=scorePlan(c,{...correct,purposeOverrides:{...correct.purposeOverrides,captcha:'fullName'}});assert.equal(s.unsafeFinalMappings,1);assert.equal(s.planningPass,false);});
+test('missing usage is unknown, not zero',()=>{assert.deepEqual(parseUsage([]),{inputTokens:null,cachedInputTokens:null,outputTokens:null,reasoningTokens:null});});
+test('usage totals come from terminal event once, not overlapping counters',()=>{const u=parseUsage([{type:'usage',usage:{input_tokens:20}},{type:'turn.completed',usage:{input_tokens:12,cached_input_tokens:4,output_tokens:3} }]);assert.equal(u.inputTokens,12);assert.equal(u.cachedInputTokens,4);assert.equal(u.reasoningTokens,null);});

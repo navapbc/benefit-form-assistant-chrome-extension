@@ -1,0 +1,71 @@
+{
+  "scope": "Six local frozen-control experiments, not live journeys or prompt-only A/B tests",
+  "attempts": [
+    {
+      "variant": "baseline",
+      "repeat": 1,
+      "wallMilliseconds": 69231.09999990463,
+      "modelCalls": 3,
+      "summedModelMilliseconds": 94692,
+      "matchedLocalSourceAnswers": 16,
+      "applicableLocalSourceAnswers": 17,
+      "contextUsageUnits": 7431,
+      "scoreStatus": "Source agreement scored after local DOM readback."
+    },
+    {
+      "variant": "baseline",
+      "repeat": 2,
+      "wallMilliseconds": 81171.09999990463,
+      "modelCalls": 3,
+      "summedModelMilliseconds": 113073,
+      "matchedLocalSourceAnswers": 16,
+      "applicableLocalSourceAnswers": 17,
+      "contextUsageUnits": 7735,
+      "scoreStatus": "Source agreement scored after local DOM readback."
+    },
+    {
+      "variant": "deterministic",
+      "repeat": 1,
+      "wallMilliseconds": 3.0999999046325684,
+      "modelCalls": 0,
+      "summedModelMilliseconds": 0,
+      "matchedLocalSourceAnswers": 17,
+      "applicableLocalSourceAnswers": 17,
+      "contextUsageUnits": null,
+      "scoreStatus": "Source agreement scored after local DOM readback."
+    },
+    {
+      "variant": "deterministic",
+      "repeat": 2,
+      "wallMilliseconds": 1.2000000476837158,
+      "modelCalls": 0,
+      "summedModelMilliseconds": 0,
+      "matchedLocalSourceAnswers": 17,
+      "applicableLocalSourceAnswers": 17,
+      "contextUsageUnits": null,
+      "scoreStatus": "Source agreement scored after local DOM readback."
+    },
+    {
+      "variant": "guided",
+      "repeat": 1,
+      "wallMilliseconds": 8709.200000047684,
+      "modelCalls": 1,
+      "summedModelMilliseconds": 8682.899999856949,
+      "matchedLocalSourceAnswers": 17,
+      "applicableLocalSourceAnswers": 17,
+      "contextUsageUnits": 1078,
+      "scoreStatus": "Source agreement scored after local DOM readback."
+    },
+    {
+      "variant": "guided",
+      "repeat": 2,
+      "wallMilliseconds": 16027.099999904633,
+      "modelCalls": 1,
+      "summedModelMilliseconds": null,
+      "matchedLocalSourceAnswers": null,
+      "applicableLocalSourceAnswers": 17,
+      "contextUsageUnits": null,
+      "scoreStatus": "Unscored: invalid model output; fill never started. Raw receipt zero is an initialization value, not a quality score."
+    }
+  ]
+}
