@@ -12,7 +12,7 @@ if(!key){console.log(JSON.stringify({status:'not-run',reason:'Missing TypeSafe t
 else{
  const planner=createRequire(import.meta.url)('./source/agentic-planner.cjs');
  const outIndex=process.argv.indexOf('--output-dir');
- const out=outIndex<0?new URL('../../outputs/benchmark-evidence/jev-controlled/',import.meta.url):pathToFileURL(resolve(process.argv[outIndex+1])+'/');
+ const out=outIndex<0?new URL('../local-results/jev-default/',import.meta.url):pathToFileURL(resolve(process.argv[outIndex+1])+'/');
  let exists=false;try{await access(new URL('results.json',out));exists=true;}catch{}if(exists)throw new Error('Results already exist; select a fresh --output-dir.');
  await mkdir(out,{recursive:true});const rows=[];
  for(let repeat=1;repeat<=2;repeat++)for(const c of cases){

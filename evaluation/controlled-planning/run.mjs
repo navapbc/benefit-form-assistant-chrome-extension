@@ -16,7 +16,7 @@ if(efforts.some(x=>!['low','medium','high','xhigh','max'].includes(x)))throw new
 const only=process.argv.includes('--smoke'),repeats=only?1:Number(option('--repeats')??2);
 if(!Number.isInteger(repeats)||repeats<1||repeats>100)throw new Error('Repeats must be an integer from 1 to 100.');
 const requestedOut=option('--output-dir');
-const out=requestedOut?pathToFileURL(resolve(requestedOut)+'/'):new URL(only?'../../outputs/benchmark-evidence/controlled-smoke/':'../../outputs/benchmark-evidence/controlled/',base);
+const out=requestedOut?pathToFileURL(resolve(requestedOut)+'/'):new URL(only?'../local-results/cli-smoke/':'../local-results/cli-default/',base);
 let exists=false;try{await access(new URL('results.json',out));exists=true;}catch{}if(exists)throw new Error('Results already exist. Use --output-dir with a fresh batch directory; measured attempts must not be overwritten.');
 await mkdir(out,{recursive:true});
 for(const c of cases){const keys=new Set(planner.groupedInventory(c.rawFields).map(f=>f.fieldKey));for(const k of [...Object.keys(c.expectedMappings),...c.expectedGaps])if(!keys.has(k))throw new Error(`Invalid golden field ${c.id}: ${k}`);}
