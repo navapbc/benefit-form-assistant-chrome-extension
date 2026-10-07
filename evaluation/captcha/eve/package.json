@@ -1,1 +1,11 @@
-{"name":"benefit-captcha-eve-benchmark","private":true,"type":"module","dependencies":{"eve":"0.71.2"}}
+{
+  "name": "benefit-captcha-eve-benchmark",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "eve": "0.71.2"
+  },
+  "devDependencies": {
+    "just-bash": "3.6.0"
+  }
+}

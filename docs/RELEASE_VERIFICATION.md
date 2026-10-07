@@ -3,7 +3,7 @@
 Updated October 7, 2026. Source history starts at `0a015b446a709095c9f0ebac9638f483cc67f8a1`. The original checkout's concurrent uncommitted model-performance edits were not copied into this release.
 
 - JavaScript/manifest checks: passed (`npm run check`).
-- Existing extension suite: 168 passed, zero failures (`npm test`, Node 24).
+- Existing extension suite: 170 passed, zero failures (`npm test`, Node 24).
 - Controlled evaluation scorer and Jev-policy checks: 11 passed, zero failures.
 - Release README, writeup, tester/access guides: local links resolve. Copied evaluation files were checked for common API-token patterns; no matches were found.
 - Interface preview: fictional JSON import, application selection, dashboard/review navigation, and keyboard expansion/collapse of safeguards checked at a 390 × 780 viewport. This mode simulates model and page operations.
@@ -21,3 +21,7 @@ Updated October 7, 2026. Source history starts at `0a015b446a709095c9f0ebac9638f
 **Jev extension integration:** v0.13 includes a selectable local-companion runtime and hidden-input launcher. Twelve additional authenticated requests exercised the actual extension planner: initial batch 4/6 passes, current prompt 3/6. Both batches are retained. Required deferrals now surface as questions; installed Chrome remains pending.
 
 **Home-page coverage:** Nano live scores before assistance, all six playbook experiments including invalid JSON, and the model/reasoning CAPTCHA matrix are now visible directly under Test results.
+
+**October 7 CAPTCHA batch:** 14 confirmed-scope WIC browser attempts: 12 accepted states, two inconclusive harness observations, two completed image sessions and one rejected image round before recovery. Frozen-image repeats and every Eve transport diagnostic are retained in public sanitized ledgers. The batch ran without repeated CAPTCHA permission questions. Native extension CAPTCHA execution is not implemented.
+
+**New visual report:** the authored report adds model/setting tables and an exact-tile comparison chart. Its verified prebuilt runtime compiled successfully. Final browser visual/source-menu checks were blocked when the Mac locked and the browser connection became unavailable; this is not a visual QA pass. Public SVG chart metrics and local links were checked from source.

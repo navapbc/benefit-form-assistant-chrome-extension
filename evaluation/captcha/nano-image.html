@@ -1,0 +1,17 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>Nano WIC image benchmark</title>
+<style>body{max-width:900px;margin:24px auto;padding:16px;font:17px/1.5 system-ui;background:#f5f8fa;color:#173d51}button{padding:12px;font:inherit}pre{white-space:pre-wrap;background:white;padding:16px}img{max-width:100%}</style>
+<h1>Nano WIC image benchmark</h1><p>Classifies a saved public challenge screenshot. Browser execution is separate. No applicant data or application submission.</p>
+<img id="image" src="local-evidence/challenge.png" alt="Saved WIC challenge screenshot">
+<button id="run">Classify one image</button><p id="status" role="status">Ready.</p><pre id="receipt">No result.</pre>
+<script type="module">
+import {imageSchema,imageInstructions} from './image-task.mjs';
+document.querySelector('#run').onclick=async()=>{
+ const button=document.querySelector('#run'),status=document.querySelector('#status');button.disabled=true;const startedAt=new Date().toISOString(),start=performance.now();let session=null,answer=null,error=null,modelMs=null,usage=null,calls=0;
+ try{const image=document.querySelector('#image');await image.decode();const settings={expectedInputs:[{type:'text',languages:['en']},{type:'image'}],expectedOutputs:[{type:'text',languages:['en']}]};
+ if(!window.LanguageModel||await LanguageModel.availability(settings)!=='available')throw new Error('Image-input Nano unavailable.');
+ status.textContent='Running Nano image classification…';session=await LanguageModel.create(settings);const t=performance.now(),before=session.contextUsage;calls=1;
+ answer=JSON.parse(await session.prompt([{role:'user',content:[{type:'text',value:imageInstructions},{type:'image',value:image}]}],{responseConstraint:imageSchema,signal:AbortSignal.timeout(90000)}));modelMs=performance.now()-t;usage={contextUsageUnits:session.contextUsage-before};
+ }catch(e){error=e.message;}finally{if(session)session.destroy();button.disabled=false;}
+ document.querySelector('#receipt').textContent=JSON.stringify({provider:'nano-prompt-api',requestedModel:'Gemini Nano (Chrome managed)',reportedModel:null,requestedReasoning:null,modelIdentityBasis:'Exact managed model and reasoning not exposed',startedAt,endedAt:new Date().toISOString(),durationMs:performance.now()-start,modelMs,usage,modelCalls:calls,answer,error,directApiKeyChargeUsd:0,billedCostUsd:null,scope:'Frozen public WIC screenshot classification; no browser actuation'},null,2);status.textContent=error?'Stopped: '+error:'Image answer captured.';
+};
+</script></html>

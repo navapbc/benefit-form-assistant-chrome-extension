@@ -52,20 +52,43 @@ The current batch's API durations were 0.133–0.268 seconds; planner wall time 
 
 ### Which model clicked through CAPTCHA?
 
-| Model / reasoning | Test context | Attempts / accepted | Image challenges |
-|---|---|---:|---:|
-| **GPT-6.1 Sol · Extra High (`xhigh`)** | This Codex chat's browser control; explicit WIC permission | **1 / 1 checkbox accepted** | 0 encountered |
-| Gemini Nano · version/effort not captured | Extension stopped at WIC checkpoint | 0 / not tested | Not tested |
-| Historical Codex CLI · model/effort unknown | Extension stopped at WIC checkpoint | 0 / not tested | Not tested |
-| GPT-6.1 Sol · Low / Extra High; GPT-6 Luna · Low / Extra High | Frozen CLI planning trials | 0 / not tested | Not tested |
-| Eve · GPT-6.1 Sol Low | Frozen planning transport | 0 / not tested | Not tested |
-| Jev 1.13.0 · no reasoning control; confidence 0.90 | Decision classifier and extension planner | 0 / not tested | Not tested |
+**October 7: 14 live WIC attempts, 12 confirmed accepted and 2 inconclusive because capture or challenge preparation took too long.** All 14 models chose the correct checkbox action. A shared Codex browser relay performed the clicks; the tested runtimes had no native browser tools. The application was empty and Submit stayed untouched.
 
-The one accepted checkbox was a **separate browser-control test with this chat**, not Nano or the extension's CLI. It proves neither image-challenge solving nor repeat reliability. The extension pauses at CAPTCHA and has no challenge-solving tool. No application was submitted. [CAPTCHA evidence summary](evaluation/results/captcha-summary.json)
+| Requested runtime / setting | Accepted / browser attempts | Image sessions completed | Inconclusive |
+|---|---:|---:|---:|
+| Gemini Nano · Chrome-managed version/effort | 2/2 | 0 encountered | 0 |
+| Jev 1.13.0 · confidence 0.90, no reasoning control | 2/2 | 0 encountered | 0 |
+| Eve 0.71.2 · GPT-6.1 Sol Low | 2/2 | 0 encountered | 0 |
+| Codex CLI · GPT-6.1 Sol Low | 1/2 | 0 encountered | 1 |
+| Codex CLI · GPT-6.1 Sol Extra High | 1/2 | 0 completed; 1 expired | 1 |
+| Codex CLI · GPT-6 Luna Low | 2/2 | **1 completed, first answer accepted** | 0 |
+| Codex CLI · GPT-6 Luna Extra High | 2/2 | **1 completed after a rejected answer** | 0 |
 
-**October 7 capability check:** this Chrome runtime reports Nano text and image input as available. Two actual ordinary-image calls correctly identified a circle's color in **8.28 s and 2.76 s**. These were two colored shapes, not CAPTCHA images; they add **zero CAPTCHA successes**. Exact Nano version/reasoning and total operating cost remain unknown. [Both image-input receipts](evaluation/results/captcha-runtime-readiness.json)
+Luna Low selected four bridge tiles correctly. Luna Extra High's 4×4 traffic-light selection received **“Please try again”**; its bicycle follow-up was accepted. These are two completed image sessions and three submitted image answers, of which two were accepted. Shared browser history, sequential order and different challenge types prevent a fair live model ranking. CLI model identities are requested flags, not provider-resolved attestations.
 
-The new [CAPTCHA comparison harness](evaluation/captcha/README.md) prepares Nano, Jev, Eve and explicit CLI model/reasoning configurations for action selection with a shared browser relay. It keeps action selection, checkbox acceptance and image-challenge solving separate. The live batch is pending action-time checkpoint confirmation; Jev's installed Chrome test is pending the manual extension update required by the browser-control URL restriction. Prepared code is not a measured model success.
+A separate comparison used the **same captured 3×3 traffic-light grid twice per configuration**, with manually reviewed matching tiles 1, 8 and 9:
+
+| Image classifier | Exact matching tile sets / repeats | Response time, repeats 1 / 2 |
+|---|---:|---:|
+| Codex CLI · GPT-6.1 Sol Low | 2/2 | 6.75 s / 5.21 s |
+| Codex CLI · GPT-6.1 Sol Extra High | 2/2 | 13.95 s / 18.32 s |
+| Codex CLI · GPT-6 Luna Low | 1/2; second missed one tile | 4.59 s / 4.82 s |
+| Codex CLI · GPT-6 Luna Extra High | 1/2; second refused | 7.69 s / 6.01 s |
+| Gemini Nano · Chrome managed | **0/2; selected all nine tiles both times** | 11.84 s / 6.16 s |
+| Eve · GPT-6.1 Sol Low · corrected attachment setup | 1 correct set; 1 absent structured result | 10.95 s / 3.10 s |
+| Jev 1.13.0 | Image input not tested on the text/JSON route | — |
+
+These repeats cover **one unique image**, not general CAPTCHA accuracy. Saved-image answers were not submitted to that expired challenge. Nano's successful ordinary-shape image checks did not transfer to this grid. Eve's first six attachment trials timed out. After correcting the image task contract, exporting an in-memory staging environment and restarting the service, one repeat returned the correct set; the other returned no structured result. Its missing result has no recorded reason and is not labeled a refusal. All eight Eve attempts and CLI startup failures are retained.
+
+The two Jev checkbox decisions took 0.241 s and 0.124 s, with **$0.000050904 total input-token price estimate** and unknown billed cost. Nano decisions took 8.02 s and 2.20 s. CLI/Eve used subscription access; device, subscription, relay and review costs were not allocated. This benchmark does not measure cost per completed application.
+
+**Confirmation and extension status:** the user confirmed this staged WIC batch, and the relay did not ask again for each checkbox or follow-up. The browser-control tool's action-time policy is external to this repository and cannot be removed here. v0.13 still pauses at CAPTCHA because it has no challenge actuator; the new benchmark is not installed-extension automation. Chrome installation verification needs the manual update and an unlocked Mac.
+
+![CAPTCHA image comparison on one common grid](docs/assets/captcha-image-accuracy.svg)
+
+[All 14 action and browser trials](evaluation/results/captcha-oct7-actions.json) · [Every image answer and failure](evaluation/results/captcha-oct7-images.json) · [Summary counts](evaluation/results/captcha-oct7-summary.json) · [Reproduce the pilot](evaluation/captcha/README.md)
+
+The separate October 5 chat trial (GPT-6.1 Sol Extra High) accepted one checkbox without images; it is retained as historical evidence and excluded from the new two-repeat matrix. [Historical summary](evaluation/results/captcha-summary.json)
 
 [Read the findings and limitations](docs/BENEFIT_SITE_EVALUATION.md) · [Inspect all measured result tables](evaluation/results/README.md) · [Run the frozen benchmark](evaluation/controlled-planning/README.md)
 
