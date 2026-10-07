@@ -3,7 +3,7 @@
 Updated October 7, 2026. Source history starts at `0a015b446a709095c9f0ebac9638f483cc67f8a1`. The original checkout's concurrent uncommitted model-performance edits were not copied into this release.
 
 - JavaScript/manifest checks: passed (`npm run check`).
-- Existing extension suite: 167 passed, zero failures (`npm test`, Node 24).
+- Existing extension suite: 168 passed, zero failures (`npm test`, Node 24).
 - Controlled evaluation scorer and Jev-policy checks: 11 passed, zero failures.
 - Release README, writeup, tester/access guides: local links resolve. Copied evaluation files were checked for common API-token patterns; no matches were found.
 - Interface preview: fictional JSON import, application selection, dashboard/review navigation, and keyboard expansion/collapse of safeguards checked at a 390 × 780 viewport. This mode simulates model and page operations.

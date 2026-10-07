@@ -35,6 +35,8 @@ export function validateRoleRequest(value = {}) {
 
 function subscriptionOnlyEnvironment(provider, source = process.env) {
   const env = { ...source };
+  delete env.TYPESAFE_API_KEY;
+  delete env.JEV_API_KEY;
   if (provider === 'codex') {
     delete env.OPENAI_API_KEY;
     delete env.AZURE_OPENAI_API_KEY;
@@ -254,16 +256,17 @@ export async function runRoleRequest(value, {
   }
 }
 
-export async function probeProvider(provider, { spawnImpl = spawn } = {}) {
+export async function probeProvider(provider, { spawnImpl = spawn, environment = process.env } = {}) {
   const command = provider === 'codex' ? 'codex' : 'claude';
+  const env = subscriptionOnlyEnvironment(provider, environment);
   try {
-    const result = await spawnCaptured(command, ['--version'], { timeoutMs: 5_000, spawnImpl });
+    const result = await spawnCaptured(command, ['--version'], { timeoutMs: 5_000, spawnImpl, env });
     const statusArgs = provider === 'codex' ? ['login', 'status'] : ['auth', 'status', '--json'];
     let authenticated = false;
     let subscription = false;
     let authMode = 'none';
     try {
-      const status = await spawnCaptured(command, statusArgs, { timeoutMs: 8_000, spawnImpl });
+      const status = await spawnCaptured(command, statusArgs, { timeoutMs: 8_000, spawnImpl, env });
       if (provider === 'codex') {
         const summary = `${status.stdout}\n${status.stderr}`;
         authenticated = /logged in/i.test(summary);

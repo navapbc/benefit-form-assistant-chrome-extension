@@ -87,7 +87,7 @@ test('Claude runner strips API-key billing variables and parses structured usage
 
   const result = await bridge.runRoleRequest(VALID_REQUEST, {
     spawnImpl: fakeSpawn,
-    environment: { PATH: process.env.PATH, ANTHROPIC_API_KEY: 'must-not-be-used' },
+    environment: { PATH: process.env.PATH, ANTHROPIC_API_KEY: 'must-not-be-used', TYPESAFE_API_KEY: 'must-stay-in-companion', JEV_API_KEY: 'must-stay-in-companion' },
   });
 
   assert.equal(result.text, '{"mappings":[]}');
@@ -95,5 +95,23 @@ test('Claude runner strips API-key billing variables and parses structured usage
   assert.equal(result.usage.outputTokens, 4);
   assert.equal(captured.options.shell, false);
   assert.equal(captured.options.env.ANTHROPIC_API_KEY, undefined);
+  assert.equal(captured.options.env.TYPESAFE_API_KEY, undefined);
+  assert.equal(captured.options.env.JEV_API_KEY, undefined);
   assert.equal(captured.input, VALID_REQUEST.prompt);
+});
+
+test('CLI health probes never inherit the Jev provider credential', async () => {
+  const bridge = await import('../model-bridge/core.mjs');
+  let calls = 0;
+  const fakeSpawn = (_command, args, options) => {
+    calls++;
+    assert.equal(options.env.TYPESAFE_API_KEY, undefined);
+    assert.equal(options.env.JEV_API_KEY, undefined);
+    const child = new EventEmitter();
+    child.stdout = new PassThrough(); child.stderr = new PassThrough(); child.stdin = new PassThrough(); child.kill = () => {};
+    child.stdin.on('finish', () => { child.stdout.end(args[0] === '--version' ? 'test-version' : JSON.stringify({ loggedIn: true, authMethod: 'claude', subscriptionType: 'pro' })); child.stderr.end(); setImmediate(() => child.emit('close', 0)); });
+    return child;
+  };
+  await bridge.probeProvider('claude', { spawnImpl: fakeSpawn, environment: { TYPESAFE_API_KEY: 'must-stay-in-companion', JEV_API_KEY: 'must-stay-in-companion' } });
+  assert.equal(calls, 2);
 });
