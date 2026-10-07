@@ -1,9 +1,11 @@
 # Reviewed evaluation results
 
-These tables support the October 6 writeup without publishing applicant values or raw live-site artifacts.
+These tables support the October 7 writeup without publishing applicant values or raw live-site artifacts.
 
 - [Controlled attempt ledger](controlled-attempts.json): all 30 plans, requested model/effort/transport, latency, score, usage, and hypothetical API prices. Provider-resolved identity stays unknown. No operator repairs.
 - [Controlled aggregates](controlled-summary.json): two repeats per case/configuration, min/median/max latency and quality counts. Planning passes are not complete applications.
+- [Jev attempt ledger](jev-attempts.json): all six actual October 7 requests, provider-reported identity, latency, token usage, price estimates and three confidence-threshold replays per response. Four scored planning passes; two IHSS incomplete plans.
+- [Jev aggregates and pricing](jev-summary.json): two repeats per case, latency ranges, exact cost calculation and unknown billed/operating cost. No Eve fallback or browser execution.
 - [Live metrics](live-summary.json): eight October 5 attempts and three earlier observations, with assistance and score denominators. No attempt reached unassisted final review.
 - [Nano playbook experiment](nano-playbook-summary.json): six local attempts. One guided result failed to parse; do not omit it or count it as a correctness pass.
 - [Pricing snapshot](../controlled-planning/pricing.json): assumptions for scenarios, not invoices.

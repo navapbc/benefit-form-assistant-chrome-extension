@@ -1,6 +1,6 @@
 # Release verification · 0.12.0
 
-October 6, 2026. Source history starts at `0a015b446a709095c9f0ebac9638f483cc67f8a1`. The original checkout's concurrent uncommitted model-performance edits were not copied into this release.
+Updated October 7, 2026. Source history starts at `0a015b446a709095c9f0ebac9638f483cc67f8a1`. The original checkout's concurrent uncommitted model-performance edits were not copied into this release.
 
 - JavaScript/manifest checks: passed (`npm run check`).
 - Existing extension suite: 161 passed, zero failures (`npm test`, Node 24).
@@ -12,6 +12,8 @@ October 6, 2026. Source history starts at `0a015b446a709095c9f0ebac9638f483cc67f
 
 **Installed Chrome verification remains pending.** The opened Chrome side panel still displayed the older interface and footer, so the Nava release has not yet been verified as loaded. Browser control cannot open `chrome://extensions` in this session. Preview success and automated tests do not prove installed extension operation, Nano availability, or live government-site completion. Load the Nava package using the README and record an installed run.
 
-**Jev verification remains pending.** The TypeSafe organization dashboard now shows an active test key, but its secret is not available to the benchmark process. The user must provision it through an approved protected local mechanism. Missing-key behavior is tested; no Jev performance score or cost has been recorded.
+**Jev API verification completed October 7.** Six authenticated requests returned `jev-1.13.0`, four scored planning passes, no HTTP failures and no operator repairs. Both IHSS plans missed a required question after low-confidence deferral. All confidence-threshold replays are retained; billed charges and browser execution remain unmeasured. Public ledgers contain an explicit metric whitelist, and no credential or raw provider response. The API pilot does not verify an installed Jev extension backbone.
+
+**Repository home page:** the renamed public repository now presents the measured quality/speed/cost scorecard, Jev bars, expandable WIC/IHSS charts, and direct links to detailed findings and complete attempt tables.
 
 ![Cleaned home screen · simulated preview](assets/nava-extension-clean-home.jpg)

@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="490" viewBox="0 0 920 490" role="img" aria-labelledby="title desc">
+<title id="title">Jev decision-stage results: 4 of 6 scored plans passed</title>
+<desc id="desc">Two repeats per frozen case. WIC 2 of 2, IHSS 0 of 2, CalFresh 2 of 2. Median response seconds: WIC 0.343, IHSS 0.149, CalFresh 0.154. These are planning tests, not filled applications.</desc>
+<rect width="920" height="490" rx="16" fill="#f7f8fa"/>
+<g font-family="Arial,sans-serif" fill="#183246">
+<text x="32" y="40" font-size="24" font-weight="700">Jev · six real requests, four scored plans passed</text>
+<text x="32" y="68" font-size="14">jev-1.13.0 · October 7, 2026 · Two repeats per case · No operator repairs</text>
+<text x="165" y="112" font-size="16" font-weight="700">Planning passes / 2 attempts</text>
+<text x="545" y="112" font-size="16" font-weight="700">Median API response time (seconds)</text>
+<text x="32" y="171" font-size="16">WIC</text>
+<rect x="165" y="150" width="260" height="28" rx="4" fill="#ead3b9"/>
+<rect x="165" y="150" width="260.0" height="28" rx="4" fill="#356f91"/>
+<text x="440" y="171" font-size="16" font-weight="700">2/2</text>
+<rect x="545" y="150" width="231.79" height="28" rx="4" fill="#356f91"/>
+<text x="785.79" y="171" font-size="16" font-weight="700">0.343 s</text>
+<text x="32" y="247" font-size="16">IHSS subset</text>
+<rect x="165" y="226" width="260" height="28" rx="4" fill="#ead3b9"/>
+<text x="440" y="247" font-size="16" font-weight="700">0/2</text>
+<rect x="545" y="226" width="100.53" height="28" rx="4" fill="#356f91"/>
+<text x="654.53" y="247" font-size="16" font-weight="700">0.149 s</text>
+<text x="32" y="323" font-size="16">CalFresh subset</text>
+<rect x="165" y="302" width="260" height="28" rx="4" fill="#ead3b9"/>
+<rect x="165" y="302" width="260.0" height="28" rx="4" fill="#356f91"/>
+<text x="440" y="323" font-size="16" font-weight="700">2/2</text>
+<rect x="545" y="302" width="104.13" height="28" rx="4" fill="#356f91"/>
+<text x="658.13" y="323" font-size="16" font-weight="700">0.154 s</text>
+<text x="165" y="362" text-anchor="middle" font-size="12">0</text>
+<text x="295" y="362" text-anchor="middle" font-size="12">1</text>
+<text x="425" y="362" text-anchor="middle" font-size="12">2</text>
+<text x="545.0" y="362" text-anchor="middle" font-size="12">0.0</text>
+<text x="612.5" y="362" text-anchor="middle" font-size="12">0.1</text>
+<text x="680.0" y="362" text-anchor="middle" font-size="12">0.2</text>
+<text x="747.5" y="362" text-anchor="middle" font-size="12">0.3</text>
+<text x="815.0" y="362" text-anchor="middle" font-size="12">0.4</text>
+<rect x="32" y="390" width="12" height="12" fill="#356f91"/><text x="52" y="401" font-size="13">Passed</text><rect x="128" y="390" width="12" height="12" fill="#ead3b9"/><text x="148" y="401" font-size="13">Incomplete plan</text>
+<text x="32" y="435" font-size="14">IHSS: one low-confidence identifier decision deferred; a required question was missed in both repeats.</text>
+<text x="32" y="461" font-size="13">Same scores at 0.80, 0.90 and 0.95. Threshold replays add no API calls. Browser completion untested.</text>
+</g></svg>

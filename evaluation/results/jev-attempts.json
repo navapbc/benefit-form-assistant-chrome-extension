@@ -1,0 +1,488 @@
+[
+  {
+    "id": "jev-jev-1.13.0-wic-known-r1",
+    "repeat": 1,
+    "caseId": "wic-known",
+    "site": "WIC",
+    "fixtureKind": "Frozen live control inventory; planning only",
+    "backbone": "Jev decision stage; no Eve fallback or browser execution",
+    "requestedModel": "jev-1.13.0",
+    "reportedModel": "jev-1.13.0",
+    "startedAt": "2026-10-07T15:53:22.893Z",
+    "endedAt": "2026-10-07T15:53:23.305Z",
+    "status": "scored",
+    "modelCalls": 1,
+    "assistanceCount": 0,
+    "requestSha256": "714a96eaa0a08ce6b9623d875c3af34c23304831dfb1d53c90488b357d4e4bec",
+    "usage": {
+      "inputTokens": 14460,
+      "outputTokens": 6267
+    },
+    "billedCostUsd": null,
+    "totalOperatingCostUsd": null,
+    "wallSeconds": 0.4127491250000021,
+    "estimatedListPriceUsd": 0.0006073200000000001,
+    "thresholdReplays": [
+      {
+        "threshold": 0.8,
+        "deferredControls": 1,
+        "score": {
+          "mappingCorrect": 17,
+          "mappingExpected": 17,
+          "gapFound": 0,
+          "gapExpected": 0,
+          "wrongMappings": 0,
+          "identifierWrong": 0,
+          "falseGaps": 0,
+          "missedGaps": 0,
+          "unsafeFinalMappings": 0,
+          "planningPass": true,
+          "wholeApplicationCompletion": null,
+          "semanticValueAccuracy": null
+        }
+      },
+      {
+        "threshold": 0.9,
+        "deferredControls": 1,
+        "score": {
+          "mappingCorrect": 17,
+          "mappingExpected": 17,
+          "gapFound": 0,
+          "gapExpected": 0,
+          "wrongMappings": 0,
+          "identifierWrong": 0,
+          "falseGaps": 0,
+          "missedGaps": 0,
+          "unsafeFinalMappings": 0,
+          "planningPass": true,
+          "wholeApplicationCompletion": null,
+          "semanticValueAccuracy": null
+        }
+      },
+      {
+        "threshold": 0.95,
+        "deferredControls": 1,
+        "score": {
+          "mappingCorrect": 17,
+          "mappingExpected": 17,
+          "gapFound": 0,
+          "gapExpected": 0,
+          "wrongMappings": 0,
+          "identifierWrong": 0,
+          "falseGaps": 0,
+          "missedGaps": 0,
+          "unsafeFinalMappings": 0,
+          "planningPass": true,
+          "wholeApplicationCompletion": null,
+          "semanticValueAccuracy": null
+        }
+      }
+    ],
+    "reviewedOutcome": "All scored mappings/gaps match; optional mailing control deferred and optional If Yes question unscored."
+  },
+  {
+    "id": "jev-jev-1.13.0-ihss-missing-decisions-r1",
+    "repeat": 1,
+    "caseId": "ihss-missing-decisions",
+    "site": "IHSS",
+    "fixtureKind": "Authored diagnostic subset; not the complete live form",
+    "backbone": "Jev decision stage; no Eve fallback or browser execution",
+    "requestedModel": "jev-1.13.0",
+    "reportedModel": "jev-1.13.0",
+    "startedAt": "2026-10-07T15:53:23.314Z",
+    "endedAt": "2026-10-07T15:53:23.457Z",
+    "status": "scored",
+    "modelCalls": 1,
+    "assistanceCount": 0,
+    "requestSha256": "9aa4df438961b452743c62501aee8fdc2dbff3457389e57e3e3c390ee411170b",
+    "usage": {
+      "inputTokens": 3322,
+      "outputTokens": 832
+    },
+    "billedCostUsd": null,
+    "totalOperatingCostUsd": null,
+    "wallSeconds": 0.1438935829999973,
+    "estimatedListPriceUsd": 0.000139524,
+    "thresholdReplays": [
+      {
+        "threshold": 0.8,
+        "deferredControls": 1,
+        "score": {
+          "mappingCorrect": 4,
+          "mappingExpected": 4,
+          "gapFound": 4,
+          "gapExpected": 5,
+          "wrongMappings": 0,
+          "identifierWrong": 0,
+          "falseGaps": 0,
+          "missedGaps": 1,
+          "unsafeFinalMappings": 0,
+          "planningPass": false,
+          "wholeApplicationCompletion": null,
+          "semanticValueAccuracy": null
+        }
+      },
+      {
+        "threshold": 0.9,
+        "deferredControls": 1,
+        "score": {
+          "mappingCorrect": 4,
+          "mappingExpected": 4,
+          "gapFound": 4,
+          "gapExpected": 5,
+          "wrongMappings": 0,
+          "identifierWrong": 0,
+          "falseGaps": 0,
+          "missedGaps": 1,
+          "unsafeFinalMappings": 0,
+          "planningPass": false,
+          "wholeApplicationCompletion": null,
+          "semanticValueAccuracy": null
+        }
+      },
+      {
+        "threshold": 0.95,
+        "deferredControls": 1,
+        "score": {
+          "mappingCorrect": 4,
+          "mappingExpected": 4,
+          "gapFound": 4,
+          "gapExpected": 5,
+          "wrongMappings": 0,
+          "identifierWrong": 0,
+          "falseGaps": 0,
+          "missedGaps": 1,
+          "unsafeFinalMappings": 0,
+          "planningPass": false,
+          "wholeApplicationCompletion": null,
+          "semanticValueAccuracy": null
+        }
+      }
+    ],
+    "reviewedOutcome": "Other household member identifier deferred rather than surfaced as a missing-answer question; no wrong identifier mapping."
+  },
+  {
+    "id": "jev-jev-1.13.0-calfresh-housing-r1",
+    "repeat": 1,
+    "caseId": "calfresh-housing",
+    "site": "BenefitsCal / CalFresh",
+    "fixtureKind": "Authored address-page diagnostic; not a live journey",
+    "backbone": "Jev decision stage; no Eve fallback or browser execution",
+    "requestedModel": "jev-1.13.0",
+    "reportedModel": "jev-1.13.0",
+    "startedAt": "2026-10-07T15:53:23.459Z",
+    "endedAt": "2026-10-07T15:53:23.605Z",
+    "status": "scored",
+    "modelCalls": 1,
+    "assistanceCount": 0,
+    "requestSha256": "ac29e4545c9f1e265063d5faaea7d5eb60ae80b8c022f04bca5dbf3e353f1463",
+    "usage": {
+      "inputTokens": 7571,
+      "outputTokens": 3110
+    },
+    "billedCostUsd": null,
+    "totalOperatingCostUsd": null,
+    "wallSeconds": 0.14640774999998393,
+    "estimatedListPriceUsd": 0.000317982,
+    "thresholdReplays": [
+      {
+        "threshold": 0.8,
+        "deferredControls": 0,
+        "score": {
+          "mappingCorrect": 7,
+          "mappingExpected": 7,
+          "gapFound": 1,
+          "gapExpected": 1,
+          "wrongMappings": 0,
+          "identifierWrong": 0,
+          "falseGaps": 0,
+          "missedGaps": 0,
+          "unsafeFinalMappings": 0,
+          "planningPass": true,
+          "wholeApplicationCompletion": null,
+          "semanticValueAccuracy": null
+        }
+      },
+      {
+        "threshold": 0.9,
+        "deferredControls": 0,
+        "score": {
+          "mappingCorrect": 7,
+          "mappingExpected": 7,
+          "gapFound": 1,
+          "gapExpected": 1,
+          "wrongMappings": 0,
+          "identifierWrong": 0,
+          "falseGaps": 0,
+          "missedGaps": 0,
+          "unsafeFinalMappings": 0,
+          "planningPass": true,
+          "wholeApplicationCompletion": null,
+          "semanticValueAccuracy": null
+        }
+      },
+      {
+        "threshold": 0.95,
+        "deferredControls": 0,
+        "score": {
+          "mappingCorrect": 7,
+          "mappingExpected": 7,
+          "gapFound": 1,
+          "gapExpected": 1,
+          "wrongMappings": 0,
+          "identifierWrong": 0,
+          "falseGaps": 0,
+          "missedGaps": 0,
+          "unsafeFinalMappings": 0,
+          "planningPass": true,
+          "wholeApplicationCompletion": null,
+          "semanticValueAccuracy": null
+        }
+      }
+    ],
+    "reviewedOutcome": "All scored mappings/gaps match; local CAPTCHA policy enforced."
+  },
+  {
+    "id": "jev-jev-1.13.0-wic-known-r2",
+    "repeat": 2,
+    "caseId": "wic-known",
+    "site": "WIC",
+    "fixtureKind": "Frozen live control inventory; planning only",
+    "backbone": "Jev decision stage; no Eve fallback or browser execution",
+    "requestedModel": "jev-1.13.0",
+    "reportedModel": "jev-1.13.0",
+    "startedAt": "2026-10-07T15:53:23.607Z",
+    "endedAt": "2026-10-07T15:53:23.881Z",
+    "status": "scored",
+    "modelCalls": 1,
+    "assistanceCount": 0,
+    "requestSha256": "714a96eaa0a08ce6b9623d875c3af34c23304831dfb1d53c90488b357d4e4bec",
+    "usage": {
+      "inputTokens": 14460,
+      "outputTokens": 6267
+    },
+    "billedCostUsd": null,
+    "totalOperatingCostUsd": null,
+    "wallSeconds": 0.27402879199999736,
+    "estimatedListPriceUsd": 0.0006073200000000001,
+    "thresholdReplays": [
+      {
+        "threshold": 0.8,
+        "deferredControls": 1,
+        "score": {
+          "mappingCorrect": 17,
+          "mappingExpected": 17,
+          "gapFound": 0,
+          "gapExpected": 0,
+          "wrongMappings": 0,
+          "identifierWrong": 0,
+          "falseGaps": 0,
+          "missedGaps": 0,
+          "unsafeFinalMappings": 0,
+          "planningPass": true,
+          "wholeApplicationCompletion": null,
+          "semanticValueAccuracy": null
+        }
+      },
+      {
+        "threshold": 0.9,
+        "deferredControls": 1,
+        "score": {
+          "mappingCorrect": 17,
+          "mappingExpected": 17,
+          "gapFound": 0,
+          "gapExpected": 0,
+          "wrongMappings": 0,
+          "identifierWrong": 0,
+          "falseGaps": 0,
+          "missedGaps": 0,
+          "unsafeFinalMappings": 0,
+          "planningPass": true,
+          "wholeApplicationCompletion": null,
+          "semanticValueAccuracy": null
+        }
+      },
+      {
+        "threshold": 0.95,
+        "deferredControls": 1,
+        "score": {
+          "mappingCorrect": 17,
+          "mappingExpected": 17,
+          "gapFound": 0,
+          "gapExpected": 0,
+          "wrongMappings": 0,
+          "identifierWrong": 0,
+          "falseGaps": 0,
+          "missedGaps": 0,
+          "unsafeFinalMappings": 0,
+          "planningPass": true,
+          "wholeApplicationCompletion": null,
+          "semanticValueAccuracy": null
+        }
+      }
+    ],
+    "reviewedOutcome": "All scored mappings/gaps match; optional mailing control deferred and optional If Yes question unscored."
+  },
+  {
+    "id": "jev-jev-1.13.0-ihss-missing-decisions-r2",
+    "repeat": 2,
+    "caseId": "ihss-missing-decisions",
+    "site": "IHSS",
+    "fixtureKind": "Authored diagnostic subset; not the complete live form",
+    "backbone": "Jev decision stage; no Eve fallback or browser execution",
+    "requestedModel": "jev-1.13.0",
+    "reportedModel": "jev-1.13.0",
+    "startedAt": "2026-10-07T15:53:23.882Z",
+    "endedAt": "2026-10-07T15:53:24.036Z",
+    "status": "scored",
+    "modelCalls": 1,
+    "assistanceCount": 0,
+    "requestSha256": "9aa4df438961b452743c62501aee8fdc2dbff3457389e57e3e3c390ee411170b",
+    "usage": {
+      "inputTokens": 3322,
+      "outputTokens": 832
+    },
+    "billedCostUsd": null,
+    "totalOperatingCostUsd": null,
+    "wallSeconds": 0.1539714999999851,
+    "estimatedListPriceUsd": 0.000139524,
+    "thresholdReplays": [
+      {
+        "threshold": 0.8,
+        "deferredControls": 1,
+        "score": {
+          "mappingCorrect": 4,
+          "mappingExpected": 4,
+          "gapFound": 4,
+          "gapExpected": 5,
+          "wrongMappings": 0,
+          "identifierWrong": 0,
+          "falseGaps": 0,
+          "missedGaps": 1,
+          "unsafeFinalMappings": 0,
+          "planningPass": false,
+          "wholeApplicationCompletion": null,
+          "semanticValueAccuracy": null
+        }
+      },
+      {
+        "threshold": 0.9,
+        "deferredControls": 1,
+        "score": {
+          "mappingCorrect": 4,
+          "mappingExpected": 4,
+          "gapFound": 4,
+          "gapExpected": 5,
+          "wrongMappings": 0,
+          "identifierWrong": 0,
+          "falseGaps": 0,
+          "missedGaps": 1,
+          "unsafeFinalMappings": 0,
+          "planningPass": false,
+          "wholeApplicationCompletion": null,
+          "semanticValueAccuracy": null
+        }
+      },
+      {
+        "threshold": 0.95,
+        "deferredControls": 1,
+        "score": {
+          "mappingCorrect": 4,
+          "mappingExpected": 4,
+          "gapFound": 4,
+          "gapExpected": 5,
+          "wrongMappings": 0,
+          "identifierWrong": 0,
+          "falseGaps": 0,
+          "missedGaps": 1,
+          "unsafeFinalMappings": 0,
+          "planningPass": false,
+          "wholeApplicationCompletion": null,
+          "semanticValueAccuracy": null
+        }
+      }
+    ],
+    "reviewedOutcome": "Other household member identifier deferred rather than surfaced as a missing-answer question; no wrong identifier mapping."
+  },
+  {
+    "id": "jev-jev-1.13.0-calfresh-housing-r2",
+    "repeat": 2,
+    "caseId": "calfresh-housing",
+    "site": "BenefitsCal / CalFresh",
+    "fixtureKind": "Authored address-page diagnostic; not a live journey",
+    "backbone": "Jev decision stage; no Eve fallback or browser execution",
+    "requestedModel": "jev-1.13.0",
+    "reportedModel": "jev-1.13.0",
+    "startedAt": "2026-10-07T15:53:24.038Z",
+    "endedAt": "2026-10-07T15:53:24.200Z",
+    "status": "scored",
+    "modelCalls": 1,
+    "assistanceCount": 0,
+    "requestSha256": "ac29e4545c9f1e265063d5faaea7d5eb60ae80b8c022f04bca5dbf3e353f1463",
+    "usage": {
+      "inputTokens": 7571,
+      "outputTokens": 3110
+    },
+    "billedCostUsd": null,
+    "totalOperatingCostUsd": null,
+    "wallSeconds": 0.16211120800001663,
+    "estimatedListPriceUsd": 0.000317982,
+    "thresholdReplays": [
+      {
+        "threshold": 0.8,
+        "deferredControls": 0,
+        "score": {
+          "mappingCorrect": 7,
+          "mappingExpected": 7,
+          "gapFound": 1,
+          "gapExpected": 1,
+          "wrongMappings": 0,
+          "identifierWrong": 0,
+          "falseGaps": 0,
+          "missedGaps": 0,
+          "unsafeFinalMappings": 0,
+          "planningPass": true,
+          "wholeApplicationCompletion": null,
+          "semanticValueAccuracy": null
+        }
+      },
+      {
+        "threshold": 0.9,
+        "deferredControls": 0,
+        "score": {
+          "mappingCorrect": 7,
+          "mappingExpected": 7,
+          "gapFound": 1,
+          "gapExpected": 1,
+          "wrongMappings": 0,
+          "identifierWrong": 0,
+          "falseGaps": 0,
+          "missedGaps": 0,
+          "unsafeFinalMappings": 0,
+          "planningPass": true,
+          "wholeApplicationCompletion": null,
+          "semanticValueAccuracy": null
+        }
+      },
+      {
+        "threshold": 0.95,
+        "deferredControls": 0,
+        "score": {
+          "mappingCorrect": 7,
+          "mappingExpected": 7,
+          "gapFound": 1,
+          "gapExpected": 1,
+          "wrongMappings": 0,
+          "identifierWrong": 0,
+          "falseGaps": 0,
+          "missedGaps": 0,
+          "unsafeFinalMappings": 0,
+          "planningPass": true,
+          "wholeApplicationCompletion": null,
+          "semanticValueAccuracy": null
+        }
+      }
+    ],
+    "reviewedOutcome": "All scored mappings/gaps match; local CAPTCHA policy enforced."
+  }
+]

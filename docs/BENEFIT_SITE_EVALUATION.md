@@ -1,8 +1,8 @@
 # Benefit form filling: promising planning results, unfinished live quality
 
-Nava Labs · Updated October 6, 2026 · [Reviewed result tables](../evaluation/results/README.md)
+Nava Labs · Updated October 7, 2026 · [Reviewed result tables](../evaluation/results/README.md)
 
-The extension fills much of a short intake form, but our saved live tests still require help and have not reached unassisted final review. A new controlled pilot separates requested models, reasoning settings, and planning transports: **30 attempts, 90 actual role calls, 25 planning passes, no operator repairs**. These results support further testing; they do not establish application completion or production accuracy.
+The extension fills much of a short intake form, but our saved live tests still require help and have not reached unassisted final review. A new controlled pilot separates requested models, reasoning settings, and planning transports: **30 attempts, 90 actual role calls, 25 planning passes, no operator repairs**. An October 7 Jev decision-stage pilot added **six real requests and four scored planning passes**, with 0.14–0.41-second responses. These results support further testing; they do not establish application completion or production accuracy.
 
 ## The latest controlled results
 
@@ -52,13 +52,33 @@ These variants change prompts, call count, output shape, and address composition
 
 ## Cost claims need the right denominator
 
-The table's dollar ranges are hypothetical API-price scenarios from recorded token counts and the preserved pricing snapshot. They are not invoices. Actual CLI and Eve trials used subscription access, with zero direct API-key charges; subscription allocation is unknown. Nano has no direct API charge, but device compute, energy, download/storage, and caseworker time are unmeasured. Nano context units cannot be equated to API tokens.
+The CLI/Eve table's dollar ranges are hypothetical API-price scenarios from recorded token counts and the preserved pricing snapshot. They are not invoices. Actual CLI and Eve trials used subscription access, with zero direct API-key charges; subscription allocation is unknown. Nano has no direct API charge, but device compute, energy, download/storage, and caseworker time are unmeasured. Nano context units cannot be equated to API tokens.
 
 We cannot estimate cost per successful application because no saved live workflow achieved unassisted completion. Count failed attempts and interventions, and separate model-call time from elapsed journey time.
 
-## Jev and the next evaluation
+## Jev: fast decisions, incomplete missing-answer routing
 
-Jev has **zero measured attempts**. The real endpoint adapter, frozen cases, scorer, and confidence-threshold handling are ready; a protected TypeSafe credential or approved authenticated endpoint is still required. [Access and test instructions](JEV_TEST_ACCESS.md) explain the boundary. Team-reported Eve + Jev savings concern a different system and are not our extension results.
+On October 7, authenticated requests to TypeSafe returned the pinned and provider-reported **jev-1.13.0**. All six scheduled attempts ran, with two sequential repeats per frozen case and no operator repairs. Each attempt used one decision-stage request; confidence thresholds 0.8, 0.9 and 0.95 replay the same response, not 18 separate calls.
+
+| Frozen case | Scored planning passes | Correct mappings per repeat | Required gaps found per repeat | Median API response | Estimated list price per request |
+|---|---:|---:|---:|---:|---:|
+| WIC | 2/2 | 17/17 | 0/0 expected | 0.343 s | $0.000607 |
+| IHSS subset | 0/2 | 4/4 | 4/5 | 0.149 s | $0.000140 |
+| CalFresh subset | 2/2 | 7/7 | 1/1 | 0.154 s | $0.000318 |
+
+![Jev planning passes and response latency](assets/jev-planning-results.svg)
+
+Both IHSS responses had low confidence (0.44 and 0.45) for the unavailable other household member identifier. The adapter deferred that decision rather than mapping the applicant's identifier, but did not surface it as the expected missing-answer question. All scored source mappings matched and there were no wrong identifier mappings. This is a gap-routing failure in the combined model/adapter path. Deferrals must explicitly route to human input or a validated fallback before filling continues. The fallback was not implemented or tested in this batch.
+
+WIC deferred the optional mailing-address control and asked an optional conditional “If Yes” question. Both are excluded by this case's scoring contract; a 17/17 mapping score does not establish that every visible control was handled usefully. Its known street-only address defect also remains. CalFresh tests purpose classification, not transformation of Stable housing into the rendered No choice. Local policy always leaves signature/CAPTCHA controls alone; this is not evidence of an autonomous model safety decision or CAPTCHA capability.
+
+All three thresholds produced the same four passes and two incomplete plans. Across six responses: **50,706 input tokens, 20,418 output tokens, median latency 0.158 seconds**. [TypeSafe's model documentation](https://docs.typesafe.ai/models), checked October 7, prices input at $0.042 per million tokens and output free. The calculation is `50,706 × 0.042 / 1,000,000 = $0.002129652`. This is a list-price estimate, not a verified billed charge; account allocation, infrastructure, review time and total operating cost remain unknown.
+
+The API received field metadata and available purpose labels only, with no participant values. Credentials stayed in process memory; public ledgers publish whitelisted numeric results, not raw requests or responses. [Attempt ledger](../evaluation/results/jev-attempts.json), [aggregates and pricing](../evaluation/results/jev-summary.json), and [protected rerun instructions](JEV_TEST_ACCESS.md) make the pilot inspectable.
+
+Jev performed a smaller choice-classification task than the CLI/Eve three-role planner. Prompt envelopes, call counts, network/provider routes and run order differ. No cold/warm or randomized latency comparison was performed. Subsecond classification is promising for a known-site decision stage, but these tests do not establish faster complete applications, reliable complex-site handling, or Eve + Jev cost savings. Eve and Jev are not installed extension backbones in this release.
+
+## The next evaluation
 
 The larger protocol calls for repeated trials across sites, record variants, requested model/reasoning settings, cold/warm starts, and planning/execution/full-journey layers. Keep exact requested/reported identities, timestamps, failures, field-level outcomes, assistance, usage, and billing evidence. See [the protocol](../evaluation/controlled-planning/protocol.json), [runner](../evaluation/controlled-planning/README.md), and [reviewed result tables](../evaluation/results/README.md). Planned trials are not presented as executed.
 

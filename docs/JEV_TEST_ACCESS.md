@@ -1,18 +1,18 @@
 # Protected Jev test access
 
-**Status: no authenticated Jev inference has run in this evaluation.** The adapter and confidence-policy checks pass locally; they do not establish Jev quality, speed, or cost.
+**Status: six authenticated decision-stage requests completed October 7, 2026.** The provider returned `jev-1.13.0`. WIC and CalFresh passed both scored plans; IHSS missed one required question in both repeats. Median API response was 0.158 seconds. See [results and cost assumptions](../evaluation/results/jev-summary.json) and [the writeup](BENEFIT_SITE_EVALUATION.md). Integrated extension execution remains untested.
 
 TypeSafe's [official quick start](https://docs.typesafe.ai/introduction/quickstart) documents a dashboard-issued API key and `POST https://api.typesafe.ai/v1/systemone` using Bearer authentication. Our prepared runner pins `jev-1.13.0` rather than the changing `jev-latest` alias.
 
 ## Provisioning route
 
-The TypeSafe organization dashboard is now accessible and shows an active key for browser-extension testing. Its secret has not been supplied to the benchmark process. Organization access was requested for Nava Labs agentic form-filling testing. No credential has been posted in Slack or copied into this repository. The team messages describe Eve + Jev results, but do not identify how that earlier test credential was provisioned.
+An authorized test credential was supplied for Nava Labs agentic form-filling testing. It was injected through echo-disabled standard input into a short-lived local Node process, held in its environment during the batch, and removed afterward. It was not written to files, command arguments, public ledgers or Git. Access for this pilot does not establish a formal organization provisioning policy.
 
-Preferred: an administrator provisions a test-only key with the narrowest available scope, a small agreed usage limit, and an expiry/rotation plan, then puts it in the approved secret manager. These are requested controls; the TypeSafe dashboard's available controls have not been verified. The benchmark process reads it as `TYPESAFE_API_KEY` or `JEV_API_KEY` from its environment. Do not paste it into chat, Chrome, a tracked file, or a command that prints it.
+Preferred: an administrator provisions a test-only key with the narrowest available scope, a small agreed usage limit, and an expiry/rotation plan, then puts it in the approved secret manager. These are requested controls; the TypeSafe dashboard's available controls have not been verified. The benchmark process reads it as `TYPESAFE_API_KEY` or `JEV_API_KEY` from its environment. Keep the credential out of Chrome, tracked files, command arguments and logs.
 
 Alternative: an approved server keeps the TypeSafe provider key and exposes an authenticated, restricted test endpoint for the frozen synthetic cases. The maintainer must supply the endpoint contract and its approved test-token mechanism; an arbitrary unauthenticated proxy is not an equivalent credential. The current runner calls TypeSafe directly and would need a reviewed endpoint adapter for this alternative. Do not point Chrome at the TypeSafe key.
 
-## Run after access is available
+## Rerun with authorized access
 
 With the credential injected into a protected process environment, use Node 24:
 

@@ -1,0 +1,92 @@
+{
+  "measuredAt": "2026-10-07",
+  "requestedModel": "jev-1.13.0",
+  "reportedModel": "jev-1.13.0",
+  "scope": "Decision-stage classification of frozen controls, one request per attempt; no Eve fallback, operator repairs, DOM execution or full application journey.",
+  "actualRequests": 6,
+  "thresholds": [
+    0.8,
+    0.9,
+    0.95
+  ],
+  "thresholdReplaysAreAdditionalRequests": false,
+  "planningPassesAtEachThreshold": 4,
+  "inputTokens": 50706,
+  "outputTokens": 20418,
+  "medianSeconds": 0.15804135400000086,
+  "minSeconds": 0.1438935829999973,
+  "maxSeconds": 0.4127491250000021,
+  "estimatedListPriceUsd": 0.002129652,
+  "billedCostUsd": null,
+  "totalOperatingCostUsd": null,
+  "pricing": {
+    "source": "https://docs.typesafe.ai/models",
+    "checkedAt": "2026-10-07",
+    "inputUsdPerMillionTokens": 0.042,
+    "outputUsdPerMillionTokens": 0,
+    "calculation": "reported inputTokens * 0.042 / 1000000; output free; estimate, not an invoice"
+  },
+  "sourceLedgerSha256": "018232a6c730675a1aaae6d91eec20fec4c83fd0f2f2e4b9144ad3796be494b4",
+  "cases": [
+    {
+      "caseId": "wic-known",
+      "site": "WIC",
+      "attempts": 2,
+      "planningPasses": 2,
+      "medianSeconds": 0.34338895849999973,
+      "minSeconds": 0.27402879199999736,
+      "maxSeconds": 0.4127491250000021,
+      "medianInputTokens": 14460.0,
+      "medianOutputTokens": 6267.0,
+      "medianEstimatedListPriceUsd": 0.0006073200000000001,
+      "deferredControlsPerAttempt": [
+        1,
+        1
+      ],
+      "mappingCorrect": 34,
+      "mappingExpected": 34,
+      "gapFound": 0,
+      "gapExpected": 0
+    },
+    {
+      "caseId": "ihss-missing-decisions",
+      "site": "IHSS",
+      "attempts": 2,
+      "planningPasses": 0,
+      "medianSeconds": 0.1489325414999912,
+      "minSeconds": 0.1438935829999973,
+      "maxSeconds": 0.1539714999999851,
+      "medianInputTokens": 3322.0,
+      "medianOutputTokens": 832.0,
+      "medianEstimatedListPriceUsd": 0.000139524,
+      "deferredControlsPerAttempt": [
+        1,
+        1
+      ],
+      "mappingCorrect": 8,
+      "mappingExpected": 8,
+      "gapFound": 8,
+      "gapExpected": 10
+    },
+    {
+      "caseId": "calfresh-housing",
+      "site": "BenefitsCal / CalFresh",
+      "attempts": 2,
+      "planningPasses": 2,
+      "medianSeconds": 0.15425947900000028,
+      "minSeconds": 0.14640774999998393,
+      "maxSeconds": 0.16211120800001663,
+      "medianInputTokens": 7571.0,
+      "medianOutputTokens": 3110.0,
+      "medianEstimatedListPriceUsd": 0.000317982,
+      "deferredControlsPerAttempt": [
+        0,
+        0
+      ],
+      "mappingCorrect": 14,
+      "mappingExpected": 14,
+      "gapFound": 2,
+      "gapExpected": 2
+    }
+  ]
+}

@@ -19,7 +19,7 @@ Optional live tests: repeat Riverside WIC, then IHSS or BenefitsCal with approve
 - Nano can be very slow and can return malformed or truncated JSON. Runtime details and model settings are expandable.
 - BenefitsCal address validation, route changes, and resume behavior need more complete testing.
 - IHSS required decisions have been silently omitted in earlier live runs.
-- The 30-attempt controlled pilot tests field planning, not full website journeys. Eve is not installed as the extension backbone; Jev is pending authenticated access.
+- The 30-attempt controlled pilot tests field planning, not full website journeys. Eve and Jev are not installed extension backbones. The separate six-request Jev API pilot passed four scored plans and missed a required IHSS question twice.
 - Other database names in the catalog require server adapters. They are not working production integrations.
 
 ## Record each attempt
