@@ -9,7 +9,7 @@ export async function codexCall(request,config){
  const dir=await mkdtemp(join(tmpdir(),'benefit-eval-')),schema=join(dir,'schema.json'),output=join(dir,'output.json');
  await writeFile(schema,JSON.stringify(request.responseSchema));
  const args=['exec','--ephemeral','--skip-git-repo-check','--sandbox','read-only','--ignore-user-config','--ignore-rules','--model',config.model,'--config',`model_reasoning_effort="${config.reasoning}"`,'--json','--output-schema',schema,'--output-last-message',output,'--color','never','--cd',dir,'-'];
- const env={...process.env};delete env.OPENAI_API_KEY;delete env.AZURE_OPENAI_API_KEY;
+ const env={...process.env};delete env.OPENAI_API_KEY;delete env.AZURE_OPENAI_API_KEY;delete env.TYPESAFE_API_KEY;delete env.JEV_API_KEY;
  const startedAt=new Date().toISOString(),start=performance.now();let stdout='',stderr='',timeout=false;
  try{
   const code=await new Promise((resolve,reject)=>{const child=spawn('codex',args,{shell:false,env,cwd:dir,stdio:['pipe','pipe','pipe']});const timer=setTimeout(()=>{timeout=true;child.kill('SIGKILL');},config.timeoutMs??120000);child.stdout.on('data',x=>stdout+=x);child.stderr.on('data',x=>stderr+=x);child.once('error',reject);child.once('close',code=>{clearTimeout(timer);resolve(code);});child.stdin.end(request.systemPrompt+'\n\nDo not use tools, inspect files, or browse. Return only the requested structured classification.\n\n'+request.prompt);});

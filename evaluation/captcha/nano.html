@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Nano CAPTCHA action benchmark</title>
+<style>body{max-width:900px;margin:40px auto;padding:0 24px;font:17px/1.5 system-ui;color:#183745;background:#f5f8fa}button{padding:12px 18px;background:#17445b;color:white;border:0;border-radius:8px;font:inherit}button:disabled{opacity:.5}textarea{box-sizing:border-box;width:100%;height:250px;font:14px/1.4 monospace}pre{white-space:pre-wrap;background:white;padding:18px;border:1px solid #ccd6dd;border-radius:8px}label{display:block;margin:18px 0}</style>
+<h1>Nano CAPTCHA action benchmark</h1>
+<p>This experimental page asks Chrome’s local model to choose a browser action from a minimized observation. It cannot click a website. A separately authorized browser relay records whether WIC accepts the action. This is separate from the extension’s form planner.</p>
+<button id="availability">Check local runtime</button><pre id="capabilities">Local runtime not checked.</pre>
+<details><summary>Image-input sanity check (ordinary shapes, not CAPTCHA)</summary><p>This checks that Nano actually accepts image pixels. It does not measure CAPTCHA solving.</p><canvas id="visual" width="400" height="150" aria-label="Ordinary image-input fixture"></canvas><br><button id="vision">Run one image-input check</button><pre id="vision-receipt">No image-input check run.</pre></details>
+<label>Confirmed WIC observation JSON<textarea id="observation" spellcheck="false"></textarea></label>
+<button id="run">Run one Nano decision</button>
+<p id="status" role="status">Ready. No model has run.</p>
+<h2>Latest receipt</h2><pre id="receipt">No result.</pre>
+<script type="module">
+import {schema,instructions,validateObservation,scoreDecision} from './decision.mjs';
+const canvas=document.querySelector('#visual'),ctx=canvas.getContext('2d');ctx.fillStyle='white';ctx.fillRect(0,0,400,150);ctx.fillStyle='#e02020';ctx.beginPath();ctx.arc(90,75,45,0,Math.PI*2);ctx.fill();ctx.fillStyle='#1455c5';ctx.fillRect(210,30,90,90);
+document.querySelector('#vision').onclick=async()=>{
+  const button=document.querySelector('#vision');button.disabled=true;const startedAt=new Date().toISOString(),start=performance.now();let session=null,answer=null,error=null,calls=0,modelMs=null;
+  try{
+    const options={expectedInputs:[{type:'text',languages:['en']},{type:'image'}],expectedOutputs:[{type:'text',languages:['en']}]};
+    if(!window.LanguageModel||await LanguageModel.availability(options)!=='available')throw new Error('Nano image-input runtime is unavailable.');
+    session=await LanguageModel.create(options);calls=1;const t=performance.now();
+    answer=JSON.parse(await session.prompt([{role:'user',content:[{type:'text',value:'What color is the circle in this ordinary image? Return only JSON with color red, blue or green.'},{type:'image',value:canvas}]}],{signal:AbortSignal.timeout(90000),responseConstraint:{type:'object',properties:{color:{type:'string',enum:['red','blue','green']}},required:['color'],additionalProperties:false}}));modelMs=performance.now()-t;
+  }catch(e){error=e.message;}finally{if(session)session.destroy();button.disabled=false;}
+  document.querySelector('#vision-receipt').textContent=JSON.stringify({kind:'ordinary-image-input-sanity-check',startedAt,endedAt:new Date().toISOString(),wallMs:performance.now()-start,modelMs,modelCalls:calls,answer,correct:answer?answer.color==='red':null,error,limits:['Two colored shapes; not a CAPTCHA challenge.','No external website, browser action or application submission.','Exact managed Nano model and reasoning are not exposed.'],directApiKeyChargeUsd:0,operatingCostUsd:null},null,2);
+};
+document.querySelector('#availability').onclick=async()=>{
+  const result={checkedAt:new Date().toISOString(),chromeUserAgent:navigator.userAgent,apiPresent:Boolean(window.LanguageModel),text:null,image:null,errors:[]};
+  if(window.LanguageModel)for(const modality of ['text','image'])try{result[modality]=await LanguageModel.availability({expectedInputs:modality==='text'?[{type:'text',languages:['en']}]:[{type:'text',languages:['en']},{type:'image'}],expectedOutputs:[{type:'text',languages:['en']}]});}catch(e){result.errors.push({modality,error:e.message});}
+  document.querySelector('#capabilities').textContent=JSON.stringify(result,null,2);
+};
+document.querySelector('#run').onclick=async()=>{
+  const button=document.querySelector('#run'),status=document.querySelector('#status'); button.disabled=true;
+  const startedAt=new Date().toISOString(),start=performance.now();let session=null,decision=null,error=null,availability=null,usage=null,modelCalls=0,observation=null,modelMs=null;
+  try {
+    observation=validateObservation(JSON.parse(document.querySelector('#observation').value));
+    if(!window.LanguageModel)throw new Error('Chrome LanguageModel API is unavailable on this origin.');
+    const settings={expectedInputs:[{type:'text',languages:['en']}],expectedOutputs:[{type:'text',languages:['en']}]};
+    availability=await LanguageModel.availability(settings);
+    if(availability!=='available')throw new Error('Local model availability: '+availability+'; no download started.');
+    status.textContent='Running the local Nano model… Keep this tab in the foreground.';
+    session=await LanguageModel.create({...settings,initialPrompts:[{role:'system',content:instructions}]});
+    const before=session.contextUsage,t=performance.now();modelCalls=1;
+    const result=await session.prompt(JSON.stringify(observation),{responseConstraint:schema,signal:AbortSignal.timeout(90000)});
+    modelMs=performance.now()-t; usage={contextUsageUnits:session.contextUsage-before};
+    decision=JSON.parse(result);
+  }catch(e){error=String(e.message||e);}finally{if(session)session.destroy();button.disabled=false;}
+  const receipt={provider:'nano-prompt-api',requestedModel:'Gemini Nano (Chrome managed)',reportedModel:null,requestedReasoning:null,modelIdentityBasis:'Chrome Prompt API; exact model version and reasoning are not exposed',startedAt,endedAt:new Date().toISOString(),durationMs:performance.now()-start,modelMs,availability,usage,modelCalls,decision,error,score:decision?scoreDecision(observation,decision):null,browserExecution:{status:'not_attempted',executor:'Codex chat browser relay',applicationSubmitted:false},assistanceCount:0,directApiKeyChargeUsd:0,billedCostUsd:null,scope:'Text observation-to-action selector; no website actuation or image input'};
+  document.querySelector('#receipt').textContent=JSON.stringify(receipt,null,2);status.textContent=error?'Stopped: '+error:'Decision complete; browser execution is separate.';
+};
+</script></html>

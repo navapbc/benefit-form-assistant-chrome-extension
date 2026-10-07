@@ -63,6 +63,10 @@ The current batch's API durations were 0.133–0.268 seconds; planner wall time 
 
 The one accepted checkbox was a **separate browser-control test with this chat**, not Nano or the extension's CLI. It proves neither image-challenge solving nor repeat reliability. The extension pauses at CAPTCHA and has no challenge-solving tool. No application was submitted. [CAPTCHA evidence summary](evaluation/results/captcha-summary.json)
 
+**October 7 capability check:** this Chrome runtime reports Nano text and image input as available. Two actual ordinary-image calls correctly identified a circle's color in **8.28 s and 2.76 s**. These were two colored shapes, not CAPTCHA images; they add **zero CAPTCHA successes**. Exact Nano version/reasoning and total operating cost remain unknown. [Both image-input receipts](evaluation/results/captcha-runtime-readiness.json)
+
+The new [CAPTCHA comparison harness](evaluation/captcha/README.md) prepares Nano, Jev, Eve and explicit CLI model/reasoning configurations for action selection with a shared browser relay. It keeps action selection, checkbox acceptance and image-challenge solving separate. The live batch is pending action-time checkpoint confirmation; Jev's installed Chrome test is pending the manual extension update required by the browser-control URL restriction. Prepared code is not a measured model success.
+
 [Read the findings and limitations](docs/BENEFIT_SITE_EVALUATION.md) · [Inspect all measured result tables](evaluation/results/README.md) · [Run the frozen benchmark](evaluation/controlled-planning/README.md)
 
 <details>

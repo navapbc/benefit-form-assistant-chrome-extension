@@ -1,0 +1,61 @@
+{
+  "recordedAt": "2026-10-07",
+  "scope": "Nano modality availability and ordinary-image inference sanity checks; no CAPTCHA attempt",
+  "availability": {
+    "checkedAt": "2026-10-07T20:07:21.762Z",
+    "browserUserAgentVersion": "Chrome/148.0.0.0",
+    "apiPresent": true,
+    "text": "available",
+    "image": "available",
+    "errors": []
+  },
+  "imageInputAttempts": [
+    {
+      "id": "nano-image-input-r1",
+      "repeat": 1,
+      "model": "Gemini Nano (Chrome managed)",
+      "exactModelVersion": null,
+      "reasoning": null,
+      "kind": "ordinary-image-input-sanity-check",
+      "startedAt": "2026-10-07T20:10:11.988Z",
+      "endedAt": "2026-10-07T20:10:20.270Z",
+      "wallSeconds": 8.283599999904633,
+      "modelSeconds": 8.268,
+      "modelCalls": 1,
+      "correct": true,
+      "error": null,
+      "directApiKeyChargeUsd": 0,
+      "operatingCostUsd": null,
+      "captchaAttempts": 0
+    },
+    {
+      "id": "nano-image-input-r2",
+      "repeat": 2,
+      "model": "Gemini Nano (Chrome managed)",
+      "exactModelVersion": null,
+      "reasoning": null,
+      "kind": "ordinary-image-input-sanity-check",
+      "startedAt": "2026-10-07T20:10:51.052Z",
+      "endedAt": "2026-10-07T20:10:53.809Z",
+      "wallSeconds": 2.756899999856949,
+      "modelSeconds": 2.7539000000953675,
+      "modelCalls": 1,
+      "correct": true,
+      "error": null,
+      "directApiKeyChargeUsd": 0,
+      "operatingCostUsd": null,
+      "captchaAttempts": 0
+    }
+  ],
+  "captchaBatchStatus": "Prepared; action-time checkpoint confirmation pending",
+  "installedJevChromeStatus": "Pending manual installation because browser-control URL policy blocks extension management",
+  "limits": [
+    "Two colored shapes are not CAPTCHA images.",
+    "Exact Chrome-managed model version and reasoning are not exposed.",
+    "Two repeats share one warm browser/device environment; latency is not a cold/warm controlled experiment.",
+    "No live CAPTCHA checkbox was clicked in this new batch.",
+    "Other runtimes have a prepared action-selection harness; readiness is not a measured CAPTCHA success.",
+    "No application was submitted."
+  ],
+  "reproducer": "evaluation/captcha/README.md"
+}
