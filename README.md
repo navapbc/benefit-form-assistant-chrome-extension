@@ -52,7 +52,7 @@ The current batch's API durations were 0.133–0.268 seconds; planner wall time 
 
 ### Which model clicked through CAPTCHA?
 
-**October 7: 14 live WIC attempts, 12 confirmed accepted and 2 inconclusive because capture or challenge preparation took too long.** All 14 models chose the correct checkbox action. A shared Codex browser relay performed the clicks; the tested runtimes had no native browser tools. The application was empty and Submit stayed untouched.
+**October 7: 14 live WIC attempts, 12 confirmed accepted and 2 inconclusive because capture or challenge preparation took too long.** All 14 model decisions chose the correct checkbox action. A shared Codex browser relay performed the clicks; the tested runtimes had no native browser tools. The application was empty and Submit stayed untouched.
 
 | Requested runtime / setting | Accepted / browser attempts | Image sessions completed | Inconclusive |
 |---|---:|---:|---:|
