@@ -1,6 +1,7 @@
 import { createHash, randomBytes, timingSafeEqual } from 'node:crypto';
 import { createServer } from 'node:http';
 import { probeProvider, runRoleRequest } from './core.mjs';
+import { JEV_MODEL, runDecisionRequest } from './jev.mjs';
 
 const host = '127.0.0.1';
 const port = Number(process.env.NAVA_MODEL_BRIDGE_PORT || 4174);
@@ -76,10 +77,11 @@ const server = createServer(async (request, response) => {
   }
   if (request.method === 'GET' && request.url === '/health') {
     const [codex, claude] = await Promise.all([probeProvider('codex'), probeProvider('claude')]);
-    reply(request, response, 200, { ok: true, providers: { codex, claude }, activeRequests, maxConcurrent });
+    const jev = { configured: Boolean(process.env.TYPESAFE_API_KEY || process.env.JEV_API_KEY), model: JEV_MODEL };
+    reply(request, response, 200, { ok: true, providers: { codex, claude, jev }, activeRequests, maxConcurrent });
     return;
   }
-  if (request.method !== 'POST' || request.url !== '/v1/role') {
+  if (request.method !== 'POST' || !['/v1/role', '/v1/decision-plan'].includes(request.url)) {
     reply(request, response, 404, { ok: false, error: 'Not found.' });
     return;
   }
@@ -89,7 +91,8 @@ const server = createServer(async (request, response) => {
   }
   activeRequests += 1;
   try {
-    const result = await runRoleRequest(await readJson(request));
+    const input = await readJson(request);
+    const result = request.url === '/v1/decision-plan' ? await runDecisionRequest(input) : await runRoleRequest(input);
     reply(request, response, 200, { ok: true, ...result });
   } catch (error) {
     reply(request, response, 400, { ok: false, error: String(error?.message || 'The local model call failed.').slice(0, 800) });
@@ -99,7 +102,7 @@ const server = createServer(async (request, response) => {
 });
 
 server.listen(port, host, () => {
-  process.stdout.write(`Nava subscription model companion\n`);
+  process.stdout.write(`Nava local model companion (subscription CLIs / Jev API)\n`);
   process.stdout.write(`Listening: http://${host}:${port}\n`);
   process.stdout.write(`Pairing token: ${token}\n`);
   process.stdout.write('The token is kept only in Chrome session storage. Stop with Ctrl-C.\n');
@@ -108,4 +111,3 @@ server.listen(port, host, () => {
 for (const signal of ['SIGINT', 'SIGTERM']) {
   process.on(signal, () => server.close(() => process.exit(0)));
 }
-

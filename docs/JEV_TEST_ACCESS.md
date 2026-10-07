@@ -1,6 +1,6 @@
 # Protected Jev test access
 
-**Status: six authenticated decision-stage requests completed October 7, 2026.** The provider returned `jev-1.13.0`. WIC and CalFresh passed both scored plans; IHSS missed one required question in both repeats. Median API response was 0.158 seconds. See [results and cost assumptions](../evaluation/results/jev-summary.json) and [the writeup](BENEFIT_SITE_EVALUATION.md). Integrated extension execution remains untested.
+**Status: six authenticated decision-stage requests completed October 7, 2026.** The provider returned `jev-1.13.0`. WIC and CalFresh passed both scored plans; IHSS missed one required question in both repeats. Median API response was 0.158 seconds. See [results and cost assumptions](../evaluation/results/jev-summary.json) and [the writeup](BENEFIT_SITE_EVALUATION.md). Version 0.13 now includes a selectable Jev runtime with a protected companion. Twelve additional actual extension-planner requests ran in two batches; the current batch passed 3/6. Installed Chrome DOM execution remains pending. See [companion instructions](../model-bridge/README.md#jev-in-the-chrome-extension--v013) and [current attempts](../evaluation/results/jev-extension-planning.json).
 
 TypeSafe's [official quick start](https://docs.typesafe.ai/introduction/quickstart) documents a dashboard-issued API key and `POST https://api.typesafe.ai/v1/systemone` using Bearer authentication. Our prepared runner pins `jev-1.13.0` rather than the changing `jev-latest` alias.
 

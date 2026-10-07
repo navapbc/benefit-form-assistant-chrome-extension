@@ -1,4 +1,4 @@
-# Tester guide · v0.12.0
+# Tester guide · v0.13.0
 
 Use fictional records. The goal is to find confusing interactions, incorrect or incomplete answers, and recovery failures. A fast fill or green verification mark alone is not a quality pass.
 
@@ -43,3 +43,5 @@ Product feedback: what was confusing or useful?
 ```
 
 Keep failed attempts. Do not replace them with a later successful retry. Readback success means a write persisted; correctness requires checking its meaning and completeness.
+
+For Jev, follow [the protected companion setup](../model-bridge/README.md#jev-in-the-chrome-extension--v013). Record `jev-1.13.0`, reasoning **not configurable**, and confidence **0.90**. Keep missing billed cost unknown. A low-confidence question counts as a quality limitation even when it safely prevents a wrong fill.

@@ -54,3 +54,13 @@ Runner hardening after the pilot added overwrite protection, configurable repeat
 ## Recorded October 7 Jev pilot
 
 Six real `jev-1.13.0` requests returned the same provider-reported version. At every replay threshold (0.8, 0.9, 0.95), WIC passed 2/2, IHSS 0/2 and CalFresh 2/2. One other-person identifier decision was deferred in both IHSS repeats instead of becoming the required gap question. No fallback or browser execution ran. Median API latency was 0.158 seconds; recorded usage yields $0.002129652 at the published list price, not a verified invoice. Inspect [all attempts](../results/jev-attempts.json) and [aggregates/pricing](../results/jev-summary.json). This one-request classifier differs from the three-role CLI/Eve planner, so its latency is not an isolated harness comparison.
+
+## Current extension planner with Jev
+
+Start the v0.13 [protected companion](../../model-bridge/README.md#jev-in-the-chrome-extension--v013). In a second terminal, supply its local pairing token as `NAVA_MODEL_BRIDGE_TOKEN` through the process environment; this is **not** the TypeSafe key. Then run:
+
+```sh
+node run-jev-extension.mjs --output-dir ../local-results/jev-extension-new-batch
+```
+
+Use `NAVA_MODEL_BRIDGE_URL` if the companion uses a different loopback port. This runner calls the current `shared/agentic-planner.js`, not the frozen three-role planner or older classifier adapter. Six actual requests cover the same three fictional cases twice, at confidence 0.90. It preserves failures and cannot overwrite an existing batch. It measures transport and planning; it does not open Chrome, fill the DOM or click CAPTCHA. Local checks convert required deferrals into caseworker questions.

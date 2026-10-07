@@ -1,0 +1,20 @@
+{
+  "scope": "Historical authorized WIC CAPTCHA subtest; summaries only, no applicant values",
+  "site": "Riverside WIC",
+  "recordedAt": "2026-10-05",
+  "runtime": "Codex browser control in this chat; separate from the extension",
+  "model": "gpt-6.1-sol",
+  "reasoningEffort": "xhigh",
+  "permission": "Specific user confirmation before checkbox test",
+  "checkboxAttempts": 1,
+  "checkboxAccepted": 1,
+  "imageChallengesEncountered": 0,
+  "imageChallengeSolvingTested": false,
+  "applicationSubmitted": false,
+  "modelCostUsd": null,
+  "limits": [
+    "Single checkbox in existing Chrome profile",
+    "No extension runtime CAPTCHA capability established",
+    "Nano, historical CLI, later CLI/Eve planning and Jev did not attempt CAPTCHA"
+  ]
+}

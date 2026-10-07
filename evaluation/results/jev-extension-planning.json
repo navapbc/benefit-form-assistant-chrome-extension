@@ -1,0 +1,475 @@
+{
+  "scope": "Real API via v0.13 extension planner and authenticated loopback companion; frozen inventories, no browser DOM execution",
+  "updatedAt": "2026-10-07T17:19:16.521Z",
+  "model": "jev-1.13.0",
+  "reasoningEffort": null,
+  "confidenceThreshold": 0.9,
+  "assistanceCount": 0,
+  "attempts": [
+    {
+      "caseId": "wic-known",
+      "site": "WIC",
+      "repeat": 1,
+      "status": "completed",
+      "startedAt": "2026-10-07T17:19:14.222Z",
+      "wallSeconds": 1.3297947079999994,
+      "score": {
+        "mappingCorrect": 17,
+        "mappingExpected": 17,
+        "gapFound": 0,
+        "gapExpected": 0,
+        "wrongMappings": 0,
+        "identifierWrong": 0,
+        "falseGaps": 0,
+        "missedGaps": 0,
+        "unsafeFinalMappings": 0,
+        "planningPass": true,
+        "wholeApplicationCompletion": null,
+        "semanticValueAccuracy": null
+      },
+      "metadata": {
+        "runtime": "jev-typesafe-local-companion",
+        "provider": "jev",
+        "mode": "cloud-decision-with-local-validation",
+        "requestedModel": "jev-1.13.0",
+        "reportedModel": "jev-1.13.0",
+        "reasoningEffort": null,
+        "confidenceThreshold": 0.9,
+        "agents": [
+          "decision_classifier"
+        ],
+        "independentModelReview": false,
+        "proposedMappings": 19,
+        "approvedMappings": 17,
+        "rejectedMappings": 2,
+        "deferredControls": 2,
+        "trustedHintMappings": 0,
+        "billing": "typesafe-api-estimate-billed-unknown",
+        "usage": {
+          "prompts": 1,
+          "inputTokens": 15521,
+          "outputTokens": 6266,
+          "contextUsageUnits": null,
+          "durationMs": 267.78958299999977,
+          "apiCostUsd": null,
+          "providerReportedCostUsd": null,
+          "estimatedApiCostUsd": 0.0006518820000000001
+        },
+        "pricing": {
+          "source": "https://docs.typesafe.ai/models",
+          "checkedAt": "2026-10-07",
+          "inputUsdPerMillion": 0.042,
+          "outputUsdPerMillion": 0
+        },
+        "reviewedAt": "2026-10-07T17:19:15.551Z",
+        "summary": "Jev classified purposes; local policies checked them. Uncertain decisions require caseworker confirmation. No independent model reviewer."
+      },
+      "falseGapKeys": [],
+      "missedGapKeys": [],
+      "rejected": [
+        {
+          "fieldKey": "edit-mailing-address-if-different-from-home-address-",
+          "reason": "Uncertain or locally unsupported classification.",
+          "confidence": 0.62
+        },
+        {
+          "fieldKey": "edit-if-yes",
+          "reason": "Uncertain or locally unsupported classification.",
+          "confidence": 0.66
+        }
+      ],
+      "assistanceCount": 0,
+      "browserDomExecution": false,
+      "captchaAttempts": 0
+    },
+    {
+      "caseId": "wic-known",
+      "site": "WIC",
+      "repeat": 2,
+      "status": "completed",
+      "startedAt": "2026-10-07T17:19:15.552Z",
+      "wallSeconds": 0.23875716699999974,
+      "score": {
+        "mappingCorrect": 14,
+        "mappingExpected": 17,
+        "gapFound": 0,
+        "gapExpected": 0,
+        "wrongMappings": 0,
+        "identifierWrong": 0,
+        "falseGaps": 3,
+        "missedGaps": 0,
+        "unsafeFinalMappings": 0,
+        "planningPass": false,
+        "wholeApplicationCompletion": null,
+        "semanticValueAccuracy": null
+      },
+      "metadata": {
+        "runtime": "jev-typesafe-local-companion",
+        "provider": "jev",
+        "mode": "cloud-decision-with-local-validation",
+        "requestedModel": "jev-1.13.0",
+        "reportedModel": "jev-1.13.0",
+        "reasoningEffort": null,
+        "confidenceThreshold": 0.9,
+        "agents": [
+          "decision_classifier"
+        ],
+        "independentModelReview": false,
+        "proposedMappings": 19,
+        "approvedMappings": 14,
+        "rejectedMappings": 5,
+        "deferredControls": 5,
+        "trustedHintMappings": 0,
+        "billing": "typesafe-api-estimate-billed-unknown",
+        "usage": {
+          "prompts": 1,
+          "inputTokens": 15521,
+          "outputTokens": 6266,
+          "contextUsageUnits": null,
+          "durationMs": 234.8334160000013,
+          "apiCostUsd": null,
+          "providerReportedCostUsd": null,
+          "estimatedApiCostUsd": 0.0006518820000000001
+        },
+        "pricing": {
+          "source": "https://docs.typesafe.ai/models",
+          "checkedAt": "2026-10-07",
+          "inputUsdPerMillion": 0.042,
+          "outputUsdPerMillion": 0
+        },
+        "reviewedAt": "2026-10-07T17:19:15.790Z",
+        "summary": "Jev classified purposes; local policies checked them. Uncertain decisions require caseworker confirmation. No independent model reviewer."
+      },
+      "falseGapKeys": [
+        "edit-please-choose-the-wic-clinic-closest-to-you",
+        "wic:receive-texts",
+        "wic:medical"
+      ],
+      "missedGapKeys": [],
+      "rejected": [
+        {
+          "fieldKey": "edit-mailing-address-if-different-from-home-address-",
+          "reason": "Uncertain or locally unsupported classification.",
+          "confidence": 0.58
+        },
+        {
+          "fieldKey": "edit-if-yes",
+          "reason": "Uncertain or locally unsupported classification.",
+          "confidence": 0.69
+        },
+        {
+          "fieldKey": "edit-please-choose-the-wic-clinic-closest-to-you",
+          "reason": "Uncertain or locally unsupported classification.",
+          "confidence": 0.89
+        },
+        {
+          "fieldKey": "wic:receive-texts",
+          "reason": "Uncertain or locally unsupported classification.",
+          "confidence": 0.89
+        },
+        {
+          "fieldKey": "wic:medical",
+          "reason": "Uncertain or locally unsupported classification.",
+          "confidence": 0.86
+        }
+      ],
+      "assistanceCount": 0,
+      "browserDomExecution": false,
+      "captchaAttempts": 0
+    },
+    {
+      "caseId": "ihss-missing-decisions",
+      "site": "IHSS",
+      "repeat": 1,
+      "status": "completed",
+      "startedAt": "2026-10-07T17:19:15.791Z",
+      "wallSeconds": 0.18888604099999975,
+      "score": {
+        "mappingCorrect": 4,
+        "mappingExpected": 4,
+        "gapFound": 5,
+        "gapExpected": 5,
+        "wrongMappings": 0,
+        "identifierWrong": 0,
+        "falseGaps": 0,
+        "missedGaps": 0,
+        "unsafeFinalMappings": 0,
+        "planningPass": true,
+        "wholeApplicationCompletion": null,
+        "semanticValueAccuracy": null
+      },
+      "metadata": {
+        "runtime": "jev-typesafe-local-companion",
+        "provider": "jev",
+        "mode": "cloud-decision-with-local-validation",
+        "requestedModel": "jev-1.13.0",
+        "reportedModel": "jev-1.13.0",
+        "reasoningEffort": null,
+        "confidenceThreshold": 0.9,
+        "agents": [
+          "decision_classifier"
+        ],
+        "independentModelReview": false,
+        "proposedMappings": 5,
+        "approvedMappings": 4,
+        "rejectedMappings": 1,
+        "deferredControls": 1,
+        "trustedHintMappings": 0,
+        "billing": "typesafe-api-estimate-billed-unknown",
+        "usage": {
+          "prompts": 1,
+          "inputTokens": 3696,
+          "outputTokens": 831,
+          "contextUsageUnits": null,
+          "durationMs": 185.61770799999977,
+          "apiCostUsd": null,
+          "providerReportedCostUsd": null,
+          "estimatedApiCostUsd": 0.000155232
+        },
+        "pricing": {
+          "source": "https://docs.typesafe.ai/models",
+          "checkedAt": "2026-10-07",
+          "inputUsdPerMillion": 0.042,
+          "outputUsdPerMillion": 0
+        },
+        "reviewedAt": "2026-10-07T17:19:15.979Z",
+        "summary": "Jev classified purposes; local policies checked them. Uncertain decisions require caseworker confirmation. No independent model reviewer."
+      },
+      "falseGapKeys": [],
+      "missedGapKeys": [],
+      "rejected": [
+        {
+          "fieldKey": "other-ssn",
+          "reason": "Uncertain or locally unsupported classification.",
+          "confidence": 0.89
+        }
+      ],
+      "assistanceCount": 0,
+      "browserDomExecution": false,
+      "captchaAttempts": 0
+    },
+    {
+      "caseId": "ihss-missing-decisions",
+      "site": "IHSS",
+      "repeat": 2,
+      "status": "completed",
+      "startedAt": "2026-10-07T17:19:15.980Z",
+      "wallSeconds": 0.13558729200000016,
+      "score": {
+        "mappingCorrect": 4,
+        "mappingExpected": 4,
+        "gapFound": 5,
+        "gapExpected": 5,
+        "wrongMappings": 0,
+        "identifierWrong": 0,
+        "falseGaps": 0,
+        "missedGaps": 0,
+        "unsafeFinalMappings": 0,
+        "planningPass": true,
+        "wholeApplicationCompletion": null,
+        "semanticValueAccuracy": null
+      },
+      "metadata": {
+        "runtime": "jev-typesafe-local-companion",
+        "provider": "jev",
+        "mode": "cloud-decision-with-local-validation",
+        "requestedModel": "jev-1.13.0",
+        "reportedModel": "jev-1.13.0",
+        "reasoningEffort": null,
+        "confidenceThreshold": 0.9,
+        "agents": [
+          "decision_classifier"
+        ],
+        "independentModelReview": false,
+        "proposedMappings": 5,
+        "approvedMappings": 4,
+        "rejectedMappings": 1,
+        "deferredControls": 1,
+        "trustedHintMappings": 0,
+        "billing": "typesafe-api-estimate-billed-unknown",
+        "usage": {
+          "prompts": 1,
+          "inputTokens": 3696,
+          "outputTokens": 831,
+          "contextUsageUnits": null,
+          "durationMs": 132.71620799999982,
+          "apiCostUsd": null,
+          "providerReportedCostUsd": null,
+          "estimatedApiCostUsd": 0.000155232
+        },
+        "pricing": {
+          "source": "https://docs.typesafe.ai/models",
+          "checkedAt": "2026-10-07",
+          "inputUsdPerMillion": 0.042,
+          "outputUsdPerMillion": 0
+        },
+        "reviewedAt": "2026-10-07T17:19:16.115Z",
+        "summary": "Jev classified purposes; local policies checked them. Uncertain decisions require caseworker confirmation. No independent model reviewer."
+      },
+      "falseGapKeys": [],
+      "missedGapKeys": [],
+      "rejected": [
+        {
+          "fieldKey": "other-ssn",
+          "reason": "Uncertain or locally unsupported classification.",
+          "confidence": 0.87
+        }
+      ],
+      "assistanceCount": 0,
+      "browserDomExecution": false,
+      "captchaAttempts": 0
+    },
+    {
+      "caseId": "calfresh-housing",
+      "site": "BenefitsCal / CalFresh",
+      "repeat": 1,
+      "status": "completed",
+      "startedAt": "2026-10-07T17:19:16.116Z",
+      "wallSeconds": 0.18271437499999957,
+      "score": {
+        "mappingCorrect": 6,
+        "mappingExpected": 7,
+        "gapFound": 1,
+        "gapExpected": 1,
+        "wrongMappings": 0,
+        "identifierWrong": 0,
+        "falseGaps": 1,
+        "missedGaps": 0,
+        "unsafeFinalMappings": 0,
+        "planningPass": false,
+        "wholeApplicationCompletion": null,
+        "semanticValueAccuracy": null
+      },
+      "metadata": {
+        "runtime": "jev-typesafe-local-companion",
+        "provider": "jev",
+        "mode": "cloud-decision-with-local-validation",
+        "requestedModel": "jev-1.13.0",
+        "reportedModel": "jev-1.13.0",
+        "reasoningEffort": null,
+        "confidenceThreshold": 0.9,
+        "agents": [
+          "decision_classifier"
+        ],
+        "independentModelReview": false,
+        "proposedMappings": 7,
+        "approvedMappings": 6,
+        "rejectedMappings": 1,
+        "deferredControls": 1,
+        "trustedHintMappings": 0,
+        "billing": "typesafe-api-estimate-billed-unknown",
+        "usage": {
+          "prompts": 1,
+          "inputTokens": 7869,
+          "outputTokens": 3110,
+          "contextUsageUnits": null,
+          "durationMs": 180.61679100000038,
+          "apiCostUsd": null,
+          "providerReportedCostUsd": null,
+          "estimatedApiCostUsd": 0.00033049800000000003
+        },
+        "pricing": {
+          "source": "https://docs.typesafe.ai/models",
+          "checkedAt": "2026-10-07",
+          "inputUsdPerMillion": 0.042,
+          "outputUsdPerMillion": 0
+        },
+        "reviewedAt": "2026-10-07T17:19:16.298Z",
+        "summary": "Jev classified purposes; local policies checked them. Uncertain decisions require caseworker confirmation. No independent model reviewer."
+      },
+      "falseGapKeys": [
+        "homeless"
+      ],
+      "missedGapKeys": [],
+      "rejected": [
+        {
+          "fieldKey": "homeless",
+          "reason": "Uncertain or locally unsupported classification.",
+          "confidence": 0.84
+        }
+      ],
+      "assistanceCount": 0,
+      "browserDomExecution": false,
+      "captchaAttempts": 0
+    },
+    {
+      "caseId": "calfresh-housing",
+      "site": "BenefitsCal / CalFresh",
+      "repeat": 2,
+      "status": "completed",
+      "startedAt": "2026-10-07T17:19:16.298Z",
+      "wallSeconds": 0.22222850000000108,
+      "score": {
+        "mappingCorrect": 5,
+        "mappingExpected": 7,
+        "gapFound": 1,
+        "gapExpected": 1,
+        "wrongMappings": 0,
+        "identifierWrong": 0,
+        "falseGaps": 2,
+        "missedGaps": 0,
+        "unsafeFinalMappings": 0,
+        "planningPass": false,
+        "wholeApplicationCompletion": null,
+        "semanticValueAccuracy": null
+      },
+      "metadata": {
+        "runtime": "jev-typesafe-local-companion",
+        "provider": "jev",
+        "mode": "cloud-decision-with-local-validation",
+        "requestedModel": "jev-1.13.0",
+        "reportedModel": "jev-1.13.0",
+        "reasoningEffort": null,
+        "confidenceThreshold": 0.9,
+        "agents": [
+          "decision_classifier"
+        ],
+        "independentModelReview": false,
+        "proposedMappings": 7,
+        "approvedMappings": 5,
+        "rejectedMappings": 2,
+        "deferredControls": 2,
+        "trustedHintMappings": 0,
+        "billing": "typesafe-api-estimate-billed-unknown",
+        "usage": {
+          "prompts": 1,
+          "inputTokens": 7869,
+          "outputTokens": 3110,
+          "contextUsageUnits": null,
+          "durationMs": 219.6532499999994,
+          "apiCostUsd": null,
+          "providerReportedCostUsd": null,
+          "estimatedApiCostUsd": 0.00033049800000000003
+        },
+        "pricing": {
+          "source": "https://docs.typesafe.ai/models",
+          "checkedAt": "2026-10-07",
+          "inputUsdPerMillion": 0.042,
+          "outputUsdPerMillion": 0
+        },
+        "reviewedAt": "2026-10-07T17:19:16.520Z",
+        "summary": "Jev classified purposes; local policies checked them. Uncertain decisions require caseworker confirmation. No independent model reviewer."
+      },
+      "falseGapKeys": [
+        "homeless",
+        "county"
+      ],
+      "missedGapKeys": [],
+      "rejected": [
+        {
+          "fieldKey": "homeless",
+          "reason": "Uncertain or locally unsupported classification.",
+          "confidence": 0.82
+        },
+        {
+          "fieldKey": "county",
+          "reason": "Uncertain or locally unsupported classification.",
+          "confidence": 0.88
+        }
+      ],
+      "assistanceCount": 0,
+      "browserDomExecution": false,
+      "captchaAttempts": 0
+    }
+  ]
+}

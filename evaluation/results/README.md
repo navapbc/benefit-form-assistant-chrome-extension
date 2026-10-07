@@ -6,6 +6,9 @@ These tables support the October 7 writeup without publishing applicant values o
 - [Controlled aggregates](controlled-summary.json): two repeats per case/configuration, min/median/max latency and quality counts. Planning passes are not complete applications.
 - [Jev attempt ledger](jev-attempts.json): all six actual October 7 requests, provider-reported identity, latency, token usage, price estimates and three confidence-threshold replays per response. Four scored planning passes; two IHSS incomplete plans.
 - [Jev aggregates and pricing](jev-summary.json): two repeats per case, latency ranges, exact cost calculation and unknown billed/operating cost. No Eve fallback or browser execution.
+- [Jev first extension integration batch](jev-extension-planning-initial.json): six real calls, four planning passes; WIC missed Medi-Cal in both repeats. No installed Chrome DOM execution.
+- [Jev current extension integration batch](jev-extension-planning.json): all six real calls, three planning passes at confidence 0.90, including the failed WIC/CalFresh plans. No DOM execution or operator repairs.
+- [CAPTCHA summary](captcha-summary.json): GPT-6.1 Sol Extra High in this chat accepted one authorized WIC checkbox; zero image challenges and no extension CAPTCHA attempts.
 - [Live metrics](live-summary.json): eight October 5 attempts and three earlier observations, with assistance and score denominators. No attempt reached unassisted final review.
 - [Nano playbook experiment](nano-playbook-summary.json): six local attempts. One guided result failed to parse; do not omit it or count it as a correctness pass.
 - [Pricing snapshot](../controlled-planning/pricing.json): assumptions for scenarios, not invoices.

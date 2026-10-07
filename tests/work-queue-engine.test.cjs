@@ -165,6 +165,18 @@ test('audit export allowlists event details and contains no participant payload'
   assert.doesNotMatch(serialized, /Maria|123-45-6789|secret-field-value|record=/);
 });
 
+test('Jev audit preserves the confidence setting and estimate without inventing billed cost', () => {
+  const event = queue.auditEvent('page_verified', sample, { modelRuntime: 'jev-typesafe-local-companion', modelName: 'jev-1.13.0', modelReasoning: 'not-configurable', modelConfidencePercent: 90, modelEstimatedApiCostMicros: 607 });
+  const exported = queue.exportAudit(queue.buildQueue([sample], [event]));
+  const detail = exported.events[0].details;
+  assert.equal(detail.modelRuntime, 'jev-typesafe-local-companion');
+  assert.equal(detail.modelName, 'jev-1.13.0');
+  assert.equal(detail.modelReasoning, 'not-configurable');
+  assert.equal(detail.modelConfidencePercent, 90);
+  assert.equal(detail.modelEstimatedApiCostMicros, 607);
+  assert.equal(Object.hasOwn(detail, 'modelApiCostMicros'), false);
+});
+
 test('completed human checkpoints produce a PII-free audit event', () => {
   const event = queue.auditEvent('checkpoint_completed', sample, {
     checkpointKind: 'captcha',

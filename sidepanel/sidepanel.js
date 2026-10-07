@@ -1082,6 +1082,10 @@
         : '';
       return `Downloading Chrome's on-device language model${percent}…`;
     }
+    if (state.agentProvider.provider === 'jev') {
+      if (update.phase === 'planning') return 'Jev is classifying this page; uncertain answers will pause for confirmation…';
+      if (update.phase === 'starting') return 'Connecting to Jev through the local companion…';
+    }
     if (update.phase === 'starting') {
       if (state.agentProvider.kind === 'local-cli') {
         return `Connecting three planner roles to ${state.agentProvider.provider === 'codex' ? 'Codex CLI' : 'Claude Code'}…`;
@@ -1096,7 +1100,7 @@
   async function prepareAgentRuntime({ application = null } = {}) {
     if (previewMode) return { status: 'preview', agents: [] };
     if (!agentPlanner?.prepare) throw new Error('The agentic planner did not load. Reload the extension and try again.');
-    if (agentPlanner.gatewayConfig) {
+    if (state.agentProvider.provider !== 'jev' && agentPlanner.gatewayConfig) {
       const gateway = await agentPlanner.gatewayConfig();
       if (gateway) {
         state.agentRuntime = {
@@ -1119,7 +1123,7 @@
           else setBusy(message);
         },
       });
-      state.agentRuntime = { status: 'ready', message: `${providerTitle} is ready for three planner roles.` };
+      state.agentRuntime = { status: 'ready', message: state.agentProvider.provider === 'jev' ? `${providerTitle} is ready for purpose classification and local validation.` : `${providerTitle} is ready for three planner roles.` };
       return prepared;
     } catch (error) {
       state.agentRuntime = { status: 'unavailable', message: error.message };
@@ -1152,13 +1156,13 @@
         provider: selected,
         endpoint: String(data.get('modelEndpoint') || '').trim(),
         token: String(data.get('modelToken') || '').trim(),
-        model: selected === 'claude' ? 'sonnet' : '',
+        model: selected === 'jev' ? 'jev-1.13.0' : selected === 'claude' ? 'sonnet' : '',
       };
     agentPlanner.configure(config);
     state.agentProvider = config;
     state.agentRuntime = { status: 'checking', message: '' };
     await chrome.storage.session.set({ [AGENT_PROVIDER_STORAGE_KEY]: config });
-    setBusy(`Connecting ${selected === 'chrome-local' ? 'Chrome on-device AI' : `${selected === 'codex' ? 'Codex CLI' : 'Claude Code'} subscription`}…`);
+    setBusy(`Connecting ${selected === 'jev' ? 'Jev decision model' : selected === 'chrome-local' ? 'Chrome on-device AI' : `${selected === 'codex' ? 'Codex CLI' : 'Claude Code'} subscription`}…`);
     await prepareAgentRuntime();
     assertUiGeneration(uiToken);
   }
@@ -1176,7 +1180,7 @@
     const detail = ready
       ? (state.agentRuntime.shared
         ? 'Field mapping and missing-field decisions run on the shared Nava API. Jev handles the confident ones when the API has a TypeSafe key. Filling still happens in this tab, and client values stay out of the planning prompt.'
-        : `${info.detail} The field mapper, gap analyst, and independent reviewer remain separate model calls.`)
+        : `${info.detail}${info.provider === 'jev' ? ' Confidence threshold: 0.90. No independent model reviewer.' : ' The field mapper, gap analyst, and independent reviewer remain separate model calls.'}`)
       : unavailable
         ? (state.agentRuntime.message || (companion
           ? 'Start the localhost companion and sign the selected CLI in with its subscription account.'
@@ -1196,6 +1200,7 @@
               <option value="chrome-local" ${selectedProvider === 'chrome-local' ? 'selected' : ''}>Chrome on-device Gemini Nano</option>
               <option value="codex" ${selectedProvider === 'codex' ? 'selected' : ''}>Codex subscription via local CLI</option>
               <option value="claude" ${selectedProvider === 'claude' ? 'selected' : ''}>Claude subscription via local CLI</option>
+              <option value="jev" ${selectedProvider === 'jev' ? 'selected' : ''}>Jev via local companion · experimental</option>
             </select>
           </label>
           <div id="model-companion-fields" class="form-stack compact-form" ${companion ? '' : 'hidden'}>
@@ -1205,7 +1210,7 @@
             <label for="model-token">Pairing token
               <input id="model-token" name="modelToken" type="password" value="${escapeHtml(state.agentProvider.token || '')}" autocomplete="off">
             </label>
-            <p class="field-hint">Run <code>npm run model:bridge</code> in this repository, then paste its token. Provider credentials never enter Chrome.</p>
+            <p class="field-hint">Run <code>npm run model:jev</code> for Jev, or <code>npm run model:bridge</code> for a CLI. Paste the local pairing token here. Provider credentials stay in the companion.</p>
           </div>
           <button class="small-button secondary" type="submit">Use this model runtime</button>
         </form>
@@ -1846,7 +1851,8 @@
         outputTokens: before.outputTokens === null || before.outputTokens === undefined || after.outputTokens === null || after.outputTokens === undefined
           ? null
           : Number(before.outputTokens || 0) + Number(after.outputTokens || 0),
-        apiCostUsd: Number(before.apiCostUsd || 0) + Number(after.apiCostUsd || 0),
+        apiCostUsd: Number.isFinite(before.apiCostUsd) && Number.isFinite(after.apiCostUsd) ? before.apiCostUsd + after.apiCostUsd : null,
+        estimatedApiCostUsd: Number.isFinite(before.estimatedApiCostUsd) && Number.isFinite(after.estimatedApiCostUsd) ? before.estimatedApiCostUsd + after.estimatedApiCostUsd : null,
         providerReportedCostUsd: before.providerReportedCostUsd === null || before.providerReportedCostUsd === undefined || after.providerReportedCostUsd === null || after.providerReportedCostUsd === undefined
           ? null
           : Number(before.providerReportedCostUsd || 0) + Number(after.providerReportedCostUsd || 0),
@@ -1859,7 +1865,8 @@
     if (!usage) return '';
     const prompts = Number(usage.prompts || 0);
     const seconds = Number(usage.durationMs || 0) / 1000;
-    const cost = Number(usage.apiCostUsd || 0);
+    const cost = Number.isFinite(usage.apiCostUsd) ? `$${usage.apiCostUsd.toFixed(2)} direct API-key cost` : 'billed API cost unknown';
+    const estimate = Number.isFinite(usage.estimatedApiCostUsd) ? ` · $${usage.estimatedApiCostUsd.toFixed(6)} estimated model price` : '';
     const context = usage.contextUsageUnits === null || usage.contextUsageUnits === undefined
       ? ''
       : ` · ${Number(usage.contextUsageUnits).toLocaleString()} context units`;
@@ -1867,7 +1874,7 @@
       ? ''
       : ` · ${Number(usage.inputTokens).toLocaleString()} in / ${Number(usage.outputTokens || 0).toLocaleString()} out tokens`;
     const subscription = agentic?.billing === 'subscription-allowance-no-direct-api-key';
-    return `${prompts} model prompt${prompts === 1 ? '' : 's'}${context}${tokens} · ${seconds.toFixed(1)}s model time · $${cost.toFixed(2)} direct API-key cost${subscription ? ' · subscription allowance used' : ''}`;
+    return `${prompts} model prompt${prompts === 1 ? '' : 's'}${context}${tokens} · ${seconds.toFixed(1)}s model time · ${cost}${estimate}${subscription ? ' · subscription allowance used' : ''}`;
   }
 
   function applicationCard(application) {
@@ -1931,7 +1938,7 @@
         <p class="card-note"><strong>${escapeHtml(statusLabel(application))}.</strong> ${escapeHtml(note)}</p>
         ${application.owner ? `<p class="ownership-line"><span class="owner-chip ${application.owner.state}">${application.owner.state === 'pending' ? 'Assigned to' : 'Owned by'} ${escapeHtml(application.owner.assignedTo)}</span></p>` : ''}
         ${application.checkpoint ? `<p class="checkpoint-line"><strong>Checkpoint:</strong> ${escapeHtml(application.checkpoint.label)}</p>` : ''}
-        ${application.agentic ? `<details class="help-disclosure"><summary>AI plan details <span class="disclosure-meta">${Number(application.agentic.approvedMappings || 0)} mappings</span></summary><p>${application.agentic.provider === 'codex' ? 'Codex' : application.agentic.provider === 'claude' ? 'Claude' : 'Gemini Nano'} · mapper, gap analyst, and independent reviewer.</p>${application.agentic.usage ? `<p>${escapeHtml(agentUsageSummary(application.agentic))}</p>` : ''}</details>` : ''}
+        ${application.agentic ? `<details class="help-disclosure"><summary>AI plan details <span class="disclosure-meta">${Number(application.agentic.approvedMappings || 0)} mappings</span></summary><p>${application.agentic.provider === 'jev' ? 'Jev 1.13.0 · purpose classification with local validation; no independent model reviewer.' : `${application.agentic.provider === 'codex' ? 'Codex' : application.agentic.provider === 'claude' ? 'Claude' : 'Gemini Nano'} · mapper, gap analyst, and independent reviewer.`}</p>${application.agentic.usage ? `<p>${escapeHtml(agentUsageSummary(application.agentic))}</p>` : ''}</details>` : ''}
         ${completedPages ? `<p class="automation-badge">✓ ${completedPages} page${completedPages === 1 ? '' : 's'} completed automatically</p>` : ''}
         <div class="card-actions">${actions}</div>
       </article>`;
@@ -2567,7 +2574,9 @@
       ...(Number.isFinite(latestAgentUsage?.contextUsageUnits) ? { modelContextUsageUnits: latestAgentUsage.contextUsageUnits } : {}),
       ...(Number.isFinite(latestAgentUsage?.inputTokens) ? { modelInputTokens: latestAgentUsage.inputTokens } : {}),
       ...(Number.isFinite(latestAgentUsage?.outputTokens) ? { modelOutputTokens: latestAgentUsage.outputTokens } : {}),
-      modelApiCostMicros: Math.round(Number(latestAgentUsage?.apiCostUsd || 0) * 1_000_000),
+      ...(Number.isFinite(latestAgentUsage?.apiCostUsd) ? { modelApiCostMicros: Math.round(latestAgentUsage.apiCostUsd * 1_000_000) } : {}),
+      ...(Number.isFinite(latestAgentUsage?.estimatedApiCostUsd) ? { modelEstimatedApiCostMicros: Math.round(latestAgentUsage.estimatedApiCostUsd * 1_000_000) } : {}),
+      ...(agentic?.provider === 'jev' ? { modelName: 'jev-1.13.0', modelReasoning: 'not-configurable', modelConfidencePercent: 90 } : {}),
       ...(Number.isFinite(latestAgentUsage?.providerReportedCostUsd)
         ? { modelProviderReportedCostMicros: Math.round(Number(latestAgentUsage.providerReportedCostUsd) * 1_000_000) }
         : {}),

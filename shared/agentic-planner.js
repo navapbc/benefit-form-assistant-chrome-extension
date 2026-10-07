@@ -140,7 +140,7 @@ schema-constrained data.`,
     if (kind === 'chrome-local') return { kind };
     if (kind !== 'local-cli') throw new Error('Choose a supported model runtime.');
     const provider = String(input.provider || '');
-    if (!['codex', 'claude'].includes(provider)) throw new Error('Choose Codex or Claude for the local companion.');
+    if (!['codex', 'claude', 'jev'].includes(provider)) throw new Error('Choose Codex, Claude or Jev for the local companion.');
     const token = String(input.token || '').trim();
     if (token.length < 24 || token.length > 512) throw new Error('Paste the pairing token printed by the local model companion.');
     return {
@@ -148,7 +148,7 @@ schema-constrained data.`,
       provider,
       endpoint: normalizeBridgeEndpoint(input.endpoint),
       token,
-      model: provider === 'claude' ? compactText(input.model || 'sonnet', 80) : compactText(input.model || '', 120),
+      model: provider === 'jev' ? 'jev-1.13.0' : provider === 'claude' ? compactText(input.model || 'sonnet', 80) : compactText(input.model || '', 120),
     };
   }
 
@@ -162,6 +162,10 @@ schema-constrained data.`,
 
   function runtimeInfo() {
     if (providerConfig.kind === 'local-cli') {
+      if (providerConfig.provider === 'jev') return {
+        kind: 'local-cli', provider: 'jev', model: 'jev-1.13.0', endpoint: providerConfig.endpoint,
+        title: 'Jev decision model', detail: 'Jev classifies field purposes through the local companion. Uncertain answers pause for confirmation. The provider key stays outside Chrome.',
+      };
       const providerName = providerConfig.provider === 'codex' ? 'Codex CLI' : 'Claude Code';
       return {
         kind: providerConfig.kind,
@@ -228,7 +232,7 @@ schema-constrained data.`,
       try {
         const result = await bridgeRequest('/health');
         const provider = result.providers?.[providerConfig.provider];
-        return provider?.installed && provider?.subscription ? 'available' : 'unavailable';
+        return providerConfig.provider === 'jev' ? (provider?.configured ? 'available' : 'unavailable') : (provider?.installed && provider?.subscription ? 'available' : 'unavailable');
       } catch {
         return 'unavailable';
       }
@@ -256,12 +260,13 @@ schema-constrained data.`,
   }
 
   async function prepare({ onProgress } = {}) {
-    if (sessions) return { status: 'ready', agents: ROLE_NAMES };
+    if (sessions) return { status: 'ready', agents: providerConfig.provider === 'jev' ? ['decision_classifier'] : ROLE_NAMES };
     if (!preparingPromise) {
       preparingPromise = (async () => {
         const status = await availability();
         if (status === 'unavailable') {
           if (providerConfig.kind === 'local-cli') {
+            if (providerConfig.provider === 'jev') throw new Error('Jev is unavailable. Start the paired local companion with a TypeSafe test credential and reconnect.');
             throw new Error(`The paired ${providerConfig.provider === 'codex' ? 'Codex CLI' : 'Claude Code'} companion is unavailable. Start \`npm run model:bridge\`, confirm the CLI is signed in with the intended subscription, and reconnect.`);
           }
           throw new Error('The on-device language model is unavailable. Use Chrome 138 or newer on a supported desktop and enable Chrome built-in AI before starting an agentic run.');
@@ -278,7 +283,7 @@ schema-constrained data.`,
           sessions = Object.fromEntries(created);
         }
         onProgress?.({ phase: 'ready', progress: 1 });
-        return { status: 'ready', agents: ROLE_NAMES };
+        return { status: 'ready', agents: providerConfig.provider === 'jev' ? ['decision_classifier'] : ROLE_NAMES };
       })().finally(() => {
         preparingPromise = null;
       });
@@ -597,6 +602,32 @@ schema-constrained data.`,
 
   async function plan({ engine, page, rawFields, participant, onProgress } = {}) {
     if (!engine?.canonicalizeParticipant || !engine?.buildAnalysis) throw new Error('The form engine is unavailable.');
+    if (providerConfig.kind === 'local-cli' && providerConfig.provider === 'jev') {
+      await prepare({ onProgress });
+      const fields = redactSourceValues(engine, participant, groupedInventory(rawFields));
+      const sources = sourceInventory(engine, participant);
+      onProgress?.({ phase: 'planning', agents: ['decision_classifier'], runtime: 'jev' });
+      const result = await bridgeRequest('/v1/decision-plan', { method: 'POST', body: JSON.stringify({ domain: compactText(page?.domain, 160), fields, sources, threshold: 0.9 }) });
+      if (!result.plan || result.plan.metadata?.reportedModel !== 'jev-1.13.0') throw new Error('The companion did not return the pinned Jev plan. No form values were changed.');
+      const available = new Set(sources.map((s) => s.purpose));
+      const safe = { ...result.plan, purposeOverrides: {}, approved: [], gaps: [], rejected: [...(result.plan.rejected || [])] };
+      fields.forEach((f) => {
+        if (/captcha|signature|submit|certif|affirm|one.time.code|password|login|payment/i.test(`${f.fieldKey} ${f.label} ${f.question}`)) return;
+        const purpose = result.plan.purposeOverrides?.[f.fieldKey];
+        const approval = result.plan.approved?.find((a) => a.fieldKey === f.fieldKey && a.purpose === purpose);
+        const scopedIdentifier = purpose === 'ssn' && /other|another|household member|spouse|child|employer/i.test(`${f.label} ${f.question}`);
+        if (available.has(purpose) && approval && typeof approval.confidence === 'number' && Number.isFinite(approval.confidence) && approval.confidence >= 0.9 && approval.confidence <= 1 && !scopedIdentifier && (!f.purposeHint || purpose === f.purposeHint)) {
+          safe.purposeOverrides[f.fieldKey] = purpose;
+          safe.approved.push(approval);
+        } else {
+          const gap = result.plan.gaps?.find((g) => g.fieldKey === f.fieldKey);
+          if (f.required || f.purposeHint || ['checkbox','radio','select-one'].includes(f.type) || gap) safe.gaps.push({ fieldKey: f.fieldKey, question: f.question || f.label || 'What answer belongs here?', reason: 'Confirm the uncertain or missing answer before filling.' });
+          if (purpose) safe.rejected.push({ fieldKey: f.fieldKey, reason: 'The extension rejected an unsupported or low-confidence mapping.' });
+        }
+      });
+      safe.metadata = { ...result.plan.metadata, approvedMappings: safe.approved.length, rejectedMappings: safe.rejected.length };
+      return safe;
+    }
     const gateway = await gatewayConfig();
     if (gateway) return planThroughGateway({ engine, page, rawFields, participant, onProgress }, gateway);
     await prepare({ onProgress });

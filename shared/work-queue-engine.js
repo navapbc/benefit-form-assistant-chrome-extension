@@ -55,7 +55,9 @@
     resumeOutcome: new Set(['verified', 'source_expired', 'source_stale', 'tab_closed', 'location_changed', 'page_changed', 'handoff_pending']),
     fromStatus: STATUS_VALUES,
     toStatus: STATUS_VALUES,
-    modelRuntime: new Set(['chrome-gemini-nano', 'codex-cli-subscription', 'claude-cli-subscription', 'managed-cloud']),
+    modelName: new Set(['jev-1.13.0']),
+    modelReasoning: new Set(['not-configurable']),
+    modelRuntime: new Set(['chrome-gemini-nano', 'codex-cli-subscription', 'claude-cli-subscription', 'managed-cloud', 'jev-typesafe-local-companion']),
   };
   const COUNT_KEYS = new Set([
     'fieldCount',
@@ -71,6 +73,8 @@
     'modelInputTokens',
     'modelOutputTokens',
     'modelApiCostMicros',
+    'modelEstimatedApiCostMicros',
+    'modelConfidencePercent',
     'modelProviderReportedCostMicros',
   ]);
   const COUNT_MAXIMUMS = {
@@ -82,6 +86,8 @@
     modelInputTokens: 5_000_000,
     modelOutputTokens: 5_000_000,
     modelApiCostMicros: 100_000_000,
+    modelEstimatedApiCostMicros: 100_000_000,
+    modelConfidencePercent: 100,
     modelProviderReportedCostMicros: 100_000_000,
   };
 
