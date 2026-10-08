@@ -41,6 +41,7 @@
     currentRecertificationId: '',
     recertificationSource: '',
   };
+  const captchaAuthorizations = new Set(); // This window/run only; never a persisted blanket grant.
 
   const MAX_AUTOMATED_PAGES = 60;
   const DEFAULT_AUTOMATED_PAGES = 12;
@@ -550,6 +551,8 @@
   }
 
   function cancelApplicationRun(application) {
+    captchaAuthorizations.delete(application.id);
+    activeRunTokens.get(application.id)?.captchaAbort?.abort();
     const token = activeRunTokens.get(application.id);
     if (token) token.cancelled = true;
     if (!previewMode && application.tabId && application.lease?.holder === state.workerId) {
@@ -558,6 +561,7 @@
   }
 
   function cancelAllRuns() {
+    captchaAuthorizations.clear();
     sessionGeneration += 1;
     state.apps.forEach(cancelApplicationRun);
     leaseRetryTimers.forEach((timer) => clearTimeout(timer));
@@ -568,6 +572,7 @@
   }
 
   async function cancelUiBoundRuns() {
+    captchaAuthorizations.clear();
     const applications = [];
     [...activeRunTokens.entries()].forEach(([applicationId, token]) => {
       if (!token.uiBound) return;
@@ -1159,6 +1164,16 @@
         model: selected === 'jev' ? 'jev-1.13.0' : selected === 'claude' ? 'sonnet' : '',
       };
     agentPlanner.configure(config);
+    config.captcha = {
+      provider: ['same', 'nano', 'codex', 'eve'].includes(data.get('captchaProvider')) ? data.get('captchaProvider') : 'same',
+      model: String(data.get('captchaModel') || 'gpt-6.1-sol').trim(),
+      reasoning: data.get('captchaReasoning') === 'xhigh' ? 'xhigh' : 'low',
+    };
+    // A Nano form planner can use a separately paired image companion.
+    if (selected === 'chrome-local') {
+      config.endpoint = String(data.get('modelEndpoint') || '').trim();
+      config.token = String(data.get('modelToken') || '').trim();
+    }
     state.agentProvider = config;
     state.agentRuntime = { status: 'checking', message: '' };
     await chrome.storage.session.set({ [AGENT_PROVIDER_STORAGE_KEY]: config });
@@ -1203,7 +1218,7 @@
               <option value="jev" ${selectedProvider === 'jev' ? 'selected' : ''}>Jev via local companion · experimental</option>
             </select>
           </label>
-          <div id="model-companion-fields" class="form-stack compact-form" ${companion ? '' : 'hidden'}>
+          <div id="model-companion-fields" class="form-stack compact-form" ${companion || ['codex', 'eve'].includes(state.agentProvider.captcha?.provider) ? '' : 'hidden'}>
             <label for="model-endpoint">Local companion
               <input id="model-endpoint" name="modelEndpoint" type="text" value="${escapeHtml(state.agentProvider.endpoint || 'http://127.0.0.1:4174')}" autocomplete="off" spellcheck="false">
             </label>
@@ -1212,6 +1227,16 @@
             </label>
             <p class="field-hint">Run <code>npm run model:jev</code> for Jev, or <code>npm run model:bridge</code> for a CLI. Paste the local pairing token here. Provider credentials stay in the companion.</p>
           </div>
+          <details class="settings-disclosure"><summary>CAPTCHA images · experimental</summary>
+            <label for="captcha-provider">Image model
+              <select id="captcha-provider" name="captchaProvider">
+                ${[['same', 'Use form runtime'], ['nano', 'Gemini Nano · on-device'], ['codex', 'Codex CLI companion'], ['eve', 'Eve companion · Sol Low']].map(([value, label]) => `<option value="${value}" ${value === (state.agentProvider.captcha?.provider || 'same') ? 'selected' : ''}>${label}</option>`).join('')}
+              </select>
+            </label>
+            <label>Codex image model <input name="captchaModel" value="${escapeHtml(state.agentProvider.captcha?.model || 'gpt-6.1-sol')}" spellcheck="false"></label>
+            <label>Image reasoning <select name="captchaReasoning"><option value="low">Low</option><option value="xhigh" ${state.agentProvider.captcha?.reasoning === 'xhigh' ? 'selected' : ''}>Extra High</option></select></label>
+            <p class="field-hint">All runtimes share checkbox clicking. Jev and Claude have no image adapter here. Codex/Eve receive only the challenge crop; Eve uses Sol Low. Authorization happens once per attempt in the application card.</p>
+          </details>
           <button class="small-button secondary" type="submit">Use this model runtime</button>
         </form>
       </details>`;
@@ -1902,6 +1927,7 @@
     } else if (['captcha', 'otp'].includes(application.checkpoint?.kind) && application.tabId) {
       const challenge = application.checkpoint.kind === 'captcha' ? 'CAPTCHA' : 'one-time code';
       actions = `<button class="small-button" type="button" data-action="resume-human-checkpoint" data-app="${encoded(application.id)}">I completed the ${challenge} — resume</button>`;
+      if (application.checkpoint.kind === 'captcha') actions += `<details class="settings-disclosure"><summary>Try CAPTCHA automatically · experimental</summary><p class="field-hint">Authorize this attempt, including up to three static image rounds, for this application page. The chosen image runtime receives only the challenge crop. Pause cancels the attempt. The assistant never submits.</p><button class="small-button" type="button" data-action="try-captcha" data-app="${encoded(application.id)}">Authorize and try CAPTCHA</button></details>`;
     } else if (application.status === 'paused') {
       actions = `<button class="small-button" type="button" data-action="${application.tabId ? 'resume' : 'resume-current'}" data-app="${encoded(application.id)}">${application.tabId ? 'Verify and resume' : 'Reconnect current tab'}</button>`;
     } else if (application.status === 'not_started' && application.autoRun) {
@@ -1925,6 +1951,7 @@
       actions += `<button class="small-button secondary" type="button" data-action="open-handoff" data-app="${encoded(application.id)}">Pause or hand off</button>`;
     }
     if (application.tabId) actions += `<button class="small-button secondary" type="button" data-action="go-tab" data-app="${encoded(application.id)}">Go to application</button>`;
+    if (!running && application.tabId && application.checkpoint?.kind !== 'captcha' && !review) actions += `<details class="settings-disclosure"><summary>CAPTCHA automation · experimental</summary><label class="field-hint"><input type="checkbox" data-captcha-app="${encoded(application.id)}" ${captchaAuthorizations.has(application.id) ? 'checked' : ''}> Allow one CAPTCHA attempt during this run</label><p class="field-hint">Includes the checkbox and up to three static image rounds without a new prompt. Only the challenge crop goes to the selected image runtime. Pause or leaving this assistant cancels authorization.</p></details>`;
 
     return `
       <article class="application-card ${attention ? 'attention' : ''} ${review ? 'review' : ''}">
@@ -3004,6 +3031,10 @@
         if (!background) state.view = finalCheckpoint ? 'review' : 'dashboard';
         assertApplicationRun(current, runToken);
         await persist({ applicationIds: [current.id] });
+        if (kind === 'captcha' && captchaAuthorizations.has(current.id)) {
+          captchaAuthorizations.delete(current.id);
+          await tryCaptcha(current, { runToken });
+        }
         return;
       }
 
@@ -3161,6 +3192,81 @@
     state.view = 'dashboard';
     await persist({ applicationIds: [resumed.id] });
     return resumed;
+  }
+
+  async function tryCaptcha(application, { runToken } = {}) {
+    if (previewMode) throw new Error('CAPTCHA actuation requires the installed extension; preview results are simulated.');
+    assertApplicationRun(application, runToken);
+    await goToApplication(application);
+    const tab = await chrome.tabs.get(application.tabId);
+    assertApprovedApplicationLocation(application, tab.url);
+    assertSameDocumentLocation(application.page?.url || application.url, tab.url);
+    const probe = await probeTabDocument(tab.id);
+    const abort = new AbortController();
+    runToken.captchaAbort = abort;
+    const signal = AbortSignal.any([abort.signal, AbortSignal.timeout(150_000)]);
+    let authorization = null;
+    let result = null;
+    const started = performance.now();
+    const keepAlive = setInterval(() => {
+      try { assertApplicationRun(application, runToken); }
+      catch { abort.abort(); return; }
+      // MV3 must stay awake while a slow image classifier is running.
+      void assertCoordinatorAuthorization(application, { requireLease: true }).catch(() => abort.abort());
+    }, 15_000);
+    const command = async (verb, extras = {}) => {
+      assertApplicationRun(application, runToken);
+      signal.throwIfAborted();
+      const response = await sendRuntime({ type: 'NAVA_CAPTCHA_COMMAND', verb, ...extras, token: authorization?.token,
+        applicationId: application.id, tabId: application.tabId, documentId: probe.documentId,
+        sessionEpoch: state.sessionEpoch, participantSessionId: state.participantSessionId,
+        applicationGeneration: Number(application.controlGeneration || 0), applicationRevision: Number(application.controlRevision || 0), holder: state.workerId });
+      if (!response?.ok) throw new Error(response?.error || 'The CAPTCHA command failed.');
+      return response;
+    };
+    state.view = 'dashboard';
+    setApplicationProgress(application, 'Trying CAPTCHA with the extension. Keep the application tab active; Pause cancels.');
+    try {
+      authorization = await command('begin');
+      result = await globalThis.NavaCaptchaEngine.run({
+        assertActive: async () => { assertApplicationRun(application, runToken); signal.throwIfAborted(); await assertCoordinatorAuthorization(application, { requireLease: true }); },
+        observe: () => command('observe'), checkbox: () => command('checkbox'),
+        capture: (view) => command('capture', { challengeId: view.challengeId }),
+        classify: (captured) => globalThis.NavaCaptchaModel.classify(captured, state.agentProvider, { signal }),
+        tiles: (view) => command('tiles', { challengeId: view.challengeId, decision: view.decision }),
+        wait: (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
+      });
+    } catch (error) {
+      assertApplicationRun(application, runToken);
+      result = { status: 'handoff', reason: 'attempt_stopped', rounds: 0, decisions: [] };
+      application.error = error.message;
+    } finally {
+      clearInterval(keepAlive);
+      if (authorization) await sendRuntime({ type: 'NAVA_CAPTCHA_COMMAND', verb: 'end', token: authorization.token }).catch(() => {});
+      runToken.captchaAbort = null;
+    }
+    assertApplicationRun(application, runToken);
+    application.captchaResult = { ...result, durationMs: performance.now() - started, actuator: 'extension-dom-v0.14', billedCostUsd: null };
+    const summedMetric = (key) => result.decisions.every((decision) => Number.isFinite(decision[key]))
+      ? result.decisions.reduce((sum, decision) => sum + decision[key], 0) : null;
+    const imageRuntime = globalThis.NavaCaptchaModel.configFor(state.agentProvider).provider;
+    recordAudit('captcha_attempt', application, {
+      checkpointKind: 'captcha', captchaOutcome: result.status, captchaRounds: result.rounds,
+      captchaDurationMs: Math.round(application.captchaResult.durationMs), captchaModelCalls: summedMetric('inferenceCalls'),
+      modelDurationMs: Math.round(result.decisions.reduce((sum, decision) => sum + (decision.durationMs || 0), 0)),
+      captchaImageRuntime: imageRuntime,
+      captchaUsageStatus: !result.decisions.length ? 'not_applicable' : summedMetric('inputTokens') === null ? 'partial' : 'complete',
+      captchaBilledCost: 'unknown', modelInputTokens: summedMetric('inputTokens'), modelOutputTokens: summedMetric('outputTokens'),
+      modelContextUsageUnits: summedMetric('contextUsageUnits'),
+      modelApiCostMicros: summedMetric('directApiKeyChargeUsd') === null ? null : Math.round(summedMetric('directApiKeyChargeUsd') * 1e6),
+    });
+    await persist({ applicationIds: [application.id] });
+    if (result.status === 'accepted') return resumeHumanCheckpoint(application, { runToken });
+    application.autoRun = false;
+    application.runStopReason = `CAPTCHA needs help (${result.reason.replaceAll('_', ' ')}). No completion was recorded.`;
+    setCheckpoint(application, 'captcha', 'CAPTCHA still requires help', 'needs_attention');
+    await persist({ applicationIds: [application.id] });
+    return application;
   }
 
   async function resumeHumanCheckpoint(application, { runToken = null } = {}) {
@@ -3503,7 +3609,7 @@
       state.view = 'choice';
       await clearAssistantState();
     }
-    if (['answer', 'answer-run', 'fill', 'run', 'review', 'rescan', 'go-tab', 'scan-application', 'resume', 'resume-current', 'resume-human-checkpoint', 'open-handoff', 'pause', 'accept-handoff'].includes(action)) {
+    if (['answer', 'answer-run', 'fill', 'run', 'review', 'rescan', 'go-tab', 'scan-application', 'resume', 'resume-current', 'resume-human-checkpoint', 'try-captcha', 'open-handoff', 'pause', 'accept-handoff'].includes(action)) {
       const id = decoded(button.dataset.app);
       const application = state.apps.find((item) => item.id === id);
       if (!application) throw new Error('That application is no longer available.');
@@ -3564,6 +3670,10 @@
           ),
           { uiBound: true },
         );
+      }
+      if (action === 'try-captcha') {
+        if (application.checkpoint?.kind !== 'captcha') throw new Error('This application is no longer at the CAPTCHA checkpoint.');
+        await withNewApplicationRun(application, (runToken) => withApplicationLease(application, () => tryCaptcha(application, { runToken })), { uiBound: true });
       }
       if (action === 'open-handoff') {
         await revokeApplicationRun(application);
@@ -4131,9 +4241,17 @@
   });
 
   appRoot.addEventListener('change', (event) => {
-    if (event.target.id === 'model-provider') {
+    if (event.target.dataset?.captchaApp) {
+      const id = decoded(event.target.dataset.captchaApp);
+      if (!state.apps.some((item) => item.id === id) || activeRunTokens.has(id)) return;
+      if (event.target.checked) captchaAuthorizations.add(id);
+      else captchaAuthorizations.delete(id);
+      return;
+    }
+    if (['model-provider', 'captcha-provider'].includes(event.target.id)) {
       const fields = document.getElementById('model-companion-fields');
-      if (fields) fields.hidden = event.target.value === 'chrome-local';
+      if (fields) fields.hidden = document.getElementById('model-provider')?.value === 'chrome-local'
+        && !['codex', 'eve'].includes(document.getElementById('captcha-provider')?.value);
       return;
     }
     if (event.target.id === 'connector-provider') {

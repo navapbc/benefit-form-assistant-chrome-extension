@@ -1,10 +1,10 @@
 {
   "name": "nava-form-filling-assistant-chrome-extension",
-  "version": "0.13.0",
+  "version": "0.14.0",
   "private": true,
   "description": "Local-first Chrome side-panel prototype for Nava's form-completion protocol.",
   "scripts": {
-    "check": "node --check background.js && node --check shared/form-engine.js && node --check shared/agentic-planner.js && node --check shared/connector-engine.js && node --check shared/work-queue-engine.js && node --check shared/program-catalog.js && node --check shared/recertification-engine.js && node --check shared/site-adapters.js && node --check content/form-agent.js && node --check sidepanel/ocr-engine.js && node --check sidepanel/document-parser.js && node --check sidepanel/sidepanel.js && node --check demo/extensive-application.js && node --check connector-service/mock-server.mjs && node --check model-bridge/core.mjs && node --check model-bridge/server.mjs && node --check model-bridge/jev.mjs && node --check model-bridge/start-jev.mjs && node --check scripts/smoke-subscription-planner.mjs && node --check scripts/vendor-ocr-assets.mjs && node --check scripts/generate-ocr-fixtures.mjs && node --check scripts/run-extraction-eval.mjs && node -e \"JSON.parse(require('node:fs').readFileSync('manifest.json','utf8'))\"",
+    "check": "node --check background.js && node --check shared/form-engine.js && node --check shared/agentic-planner.js && node --check shared/connector-engine.js && node --check shared/work-queue-engine.js && node --check shared/program-catalog.js && node --check shared/recertification-engine.js && node --check shared/site-adapters.js && node --check content/form-agent.js && node --check sidepanel/ocr-engine.js && node --check sidepanel/document-parser.js && node --check sidepanel/sidepanel.js && node --check demo/extensive-application.js && node --check connector-service/mock-server.mjs && node --check model-bridge/core.mjs && node --check model-bridge/server.mjs && node --check model-bridge/jev.mjs && node --check model-bridge/start-jev.mjs && node --check scripts/smoke-subscription-planner.mjs && node --check scripts/vendor-ocr-assets.mjs && node --check scripts/generate-ocr-fixtures.mjs && node --check scripts/run-extraction-eval.mjs && node -e \"JSON.parse(require('node:fs').readFileSync('manifest.json','utf8'))\" && node --check shared/captcha-engine.js && node --check content/captcha-agent.js && node --check background/captcha-service.mjs && node --check sidepanel/captcha-model.js && node --check model-bridge/captcha.mjs && node --check model-bridge/eve/client.mjs && node --check demo/captcha-fixture.js && node --check demo/captcha-fixture-frame.js && node --check scripts/summarize-captcha-metrics.mjs && node --check evaluation/captcha/run-native-image-adapters.mjs && node --check scripts/smoke-captcha-transport.mjs",
     "connector:mock": "node connector-service/mock-server.mjs",
     "model:bridge": "node model-bridge/server.mjs",
     "model:jev": "node model-bridge/start-jev.mjs",
@@ -13,7 +13,9 @@
     "ocr:assets": "node scripts/vendor-ocr-assets.mjs",
     "eval:extraction": "node scripts/run-extraction-eval.mjs",
     "eval:models": "node scripts/summarize-model-evaluation.mjs",
-    "test": "node --test tests/*.test.cjs"
+    "test": "node --test tests/*.test.cjs",
+    "model:eve": "npm --prefix model-bridge/eve run dev",
+    "eval:captcha": "node scripts/summarize-captcha-metrics.mjs"
   },
   "devDependencies": {
     "@napi-rs/canvas": "^1.0.9",

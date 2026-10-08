@@ -1,0 +1,8 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Native actuator fixture · Nava Labs</title>
+<style>body{max-width:850px;margin:32px auto;padding:20px;font:16px/1.6 system-ui;color:#163b4b;background:#f4f8fa}button,select{padding:10px;font:inherit}iframe{display:block;border:0;width:320px;margin:20px 0}#checkbox{height:80px}#grid{height:380px}pre{background:white;padding:20px;white-space:pre-wrap}.label{color:#526d7c}</style>
+<h1>Native CAPTCHA actuator fixture</h1><p class="label">A deterministic simulation, without an anti-bot service or applicant data. It tests the actual extension frame adapter; it measures no model accuracy.</p>
+<button id="test">Run native adapter self-test</button> <button id="reset">Reset fixture</button><p id="status" role="status">Ready</p>
+<iframe id="checkbox" name="fixture-checkbox" src="captcha-fixture-frame.html?kind=checkbox" title="Simulated checkbox"></iframe>
+<iframe id="grid" name="fixture-grid" src="captcha-fixture-frame.html?kind=image" title="Simulated static image grid"></iframe>
+<button id="submit" disabled>Submit application · never operated</button><pre id="receipt">No results yet.</pre>
+<script src="../shared/captcha-engine.js"></script><script src="captcha-fixture.js"></script></html>

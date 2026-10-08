@@ -1,0 +1,38 @@
+{
+  "recordedAt": "2026-10-08",
+  "runtime": "Chrome; connected local development browser",
+  "scope": "Actual content/captcha-agent.js adapter; no real anti-bot service, installed-extension screenshot transport or model inference",
+  "checks": {
+    "checkboxVisibleAcceptance": true,
+    "staticTilesAndVerify": true,
+    "revocationBlocksAction": true,
+    "applicationSubmitUntouched": true
+  },
+  "passed": 4,
+  "attempts": 2,
+  "durationMs": 6.4,
+  "modelCalls": 0,
+  "directApiKeyChargeUsd": 0,
+  "billedCostUsd": null,
+  "totalOperatingCostUsd": null,
+  "liveCaptchaAcceptanceMeasured": false,
+  "installedExtensionVerified": false,
+  "trials": [
+    {
+      "id": "native-adapter-fixture-oct8-r1",
+      "durationMs": 5.4,
+      "passed": 4,
+      "modelCalls": 0,
+      "directApiKeyChargeUsd": 0,
+      "finalCodeRevisionVerified": false
+    },
+    {
+      "id": "native-adapter-fixture-oct8-r2",
+      "durationMs": 6.4,
+      "passed": 4,
+      "modelCalls": 0,
+      "directApiKeyChargeUsd": 0,
+      "finalCodeRevisionVerified": true
+    }
+  ]
+}

@@ -1,0 +1,151 @@
+{
+  "trials": [
+    {
+      "id": "v014-codex-gpt-6.1-sol-low-r1",
+      "provider": "codex-cli",
+      "repeat": 1,
+      "requestedModel": "gpt-6.1-sol",
+      "requestedReasoning": "low",
+      "reportedModel": null,
+      "modelIdentityBasis": "CLI request flags; provider-resolved identity unavailable",
+      "startedAt": "2026-10-08T18:50:26.587Z",
+      "endedAt": "2026-10-08T18:50:36.847Z",
+      "durationMs": 10259.734417,
+      "usage": {
+        "inputTokens": 19206,
+        "outputTokens": 104,
+        "cachedInputTokens": 0,
+        "providerReportedCostUsd": null,
+        "durationMs": 10256
+      },
+      "modelCalls": 1,
+      "answer": {
+        "action": "select",
+        "tiles": [
+          1,
+          8,
+          9
+        ]
+      },
+      "error": null,
+      "exactSetCorrect": true,
+      "imageSha256": "ce3ac8f2ad149b7208606fa502fb340ce12e69895536e1bb5df951f84b599dc2",
+      "directApiKeyChargeUsd": 0,
+      "billedCostUsd": null,
+      "scope": "v0.14 product image adapter classification on the previously adjudicated frozen grid; no installed extension, browser actuation or live verification",
+      "siteAccepted": null
+    },
+    {
+      "id": "v014-codex-gpt-6.1-sol-low-r2",
+      "provider": "codex-cli",
+      "repeat": 2,
+      "requestedModel": "gpt-6.1-sol",
+      "requestedReasoning": "low",
+      "reportedModel": null,
+      "modelIdentityBasis": "CLI request flags; provider-resolved identity unavailable",
+      "startedAt": "2026-10-08T18:50:36.849Z",
+      "endedAt": "2026-10-08T18:50:43.726Z",
+      "durationMs": 6877.033749999999,
+      "usage": {
+        "inputTokens": 15700,
+        "outputTokens": 53,
+        "cachedInputTokens": 0,
+        "providerReportedCostUsd": null,
+        "durationMs": 6875
+      },
+      "modelCalls": 1,
+      "answer": {
+        "action": "select",
+        "tiles": [
+          1,
+          8,
+          9
+        ]
+      },
+      "error": null,
+      "exactSetCorrect": true,
+      "imageSha256": "ce3ac8f2ad149b7208606fa502fb340ce12e69895536e1bb5df951f84b599dc2",
+      "directApiKeyChargeUsd": 0,
+      "billedCostUsd": null,
+      "scope": "v0.14 product image adapter classification on the previously adjudicated frozen grid; no installed extension, browser actuation or live verification",
+      "siteAccepted": null
+    },
+    {
+      "id": "v014-eve-gpt-6.1-sol-low-r1",
+      "provider": "eve-0.71.2",
+      "repeat": 1,
+      "requestedModel": "gpt-6.1-sol",
+      "requestedReasoning": "low",
+      "reportedModel": null,
+      "modelIdentityBasis": "Bundled agent configuration; provider-resolved identity unavailable",
+      "startedAt": "2026-10-08T18:50:43.726Z",
+      "endedAt": "2026-10-08T18:50:48.886Z",
+      "durationMs": 5159.833457999997,
+      "usage": {
+        "inputTokens": 2907,
+        "outputTokens": 26,
+        "providerReportedCostUsd": null,
+        "durationMs": 5159
+      },
+      "modelCalls": 1,
+      "answer": {
+        "action": "select",
+        "tiles": [
+          1,
+          8,
+          9
+        ]
+      },
+      "error": null,
+      "exactSetCorrect": true,
+      "imageSha256": "ce3ac8f2ad149b7208606fa502fb340ce12e69895536e1bb5df951f84b599dc2",
+      "directApiKeyChargeUsd": 0,
+      "billedCostUsd": null,
+      "scope": "v0.14 product image adapter classification on the previously adjudicated frozen grid; no installed extension, browser actuation or live verification",
+      "siteAccepted": null
+    },
+    {
+      "id": "v014-eve-gpt-6.1-sol-low-r2",
+      "provider": "eve-0.71.2",
+      "repeat": 2,
+      "requestedModel": "gpt-6.1-sol",
+      "requestedReasoning": "low",
+      "reportedModel": null,
+      "modelIdentityBasis": "Bundled agent configuration; provider-resolved identity unavailable",
+      "startedAt": "2026-10-08T18:50:48.887Z",
+      "endedAt": "2026-10-08T18:50:52.192Z",
+      "durationMs": 3304.9076669999995,
+      "usage": {
+        "inputTokens": 2907,
+        "outputTokens": 26,
+        "providerReportedCostUsd": null,
+        "durationMs": 3305
+      },
+      "modelCalls": 1,
+      "answer": {
+        "action": "select",
+        "tiles": [
+          1,
+          8,
+          9
+        ]
+      },
+      "error": null,
+      "exactSetCorrect": true,
+      "imageSha256": "ce3ac8f2ad149b7208606fa502fb340ce12e69895536e1bb5df951f84b599dc2",
+      "directApiKeyChargeUsd": 0,
+      "billedCostUsd": null,
+      "scope": "v0.14 product image adapter classification on the previously adjudicated frozen grid; no installed extension, browser actuation or live verification",
+      "siteAccepted": null
+    }
+  ],
+  "recordedAt": "2026-10-08",
+  "groundTruthBasis": "Previously manually adjudicated frozen public traffic-light grid; exact tile set [1,8,9]. One unique image.",
+  "limits": [
+    "Classification through actual product adapters, not installed-extension browser execution or live acceptance.",
+    "Sequential repeat order and different framework envelopes confound a causal latency comparison.",
+    "No provider-resolved model identity; requested Sol Low.",
+    "Direct API-key charges are zero; billed, subscription allocation and operating cost unknown.",
+    "Initial MIME-validation failures are preserved separately."
+  ]
+}

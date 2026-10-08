@@ -49,8 +49,13 @@
     'source_reloaded',
     'session_ended',
     'audit_exported',
+    'captcha_attempt',
   ]);
   const DETAIL_ENUMS = {
+    captchaOutcome: new Set(['accepted', 'handoff']),
+    captchaImageRuntime: new Set(['nano', 'codex', 'eve', 'jev', 'claude', 'unknown']),
+    captchaUsageStatus: new Set(['complete', 'partial', 'not_applicable']),
+    captchaBilledCost: new Set(['unknown']),
     checkpointKind: CHECKPOINT_VALUES,
     resumeOutcome: new Set(['verified', 'source_expired', 'source_stale', 'tab_closed', 'location_changed', 'page_changed', 'handoff_pending']),
     fromStatus: STATUS_VALUES,
@@ -60,6 +65,9 @@
     modelRuntime: new Set(['chrome-gemini-nano', 'codex-cli-subscription', 'claude-cli-subscription', 'managed-cloud', 'jev-typesafe-local-companion']),
   };
   const COUNT_KEYS = new Set([
+    'captchaRounds',
+    'captchaDurationMs',
+    'captchaModelCalls',
     'fieldCount',
     'gapCount',
     'verifiedCount',
@@ -78,6 +86,9 @@
     'modelProviderReportedCostMicros',
   ]);
   const COUNT_MAXIMUMS = {
+    captchaRounds: 3,
+    captchaDurationMs: 180_000,
+    captchaModelCalls: 3,
     modelPromptCount: 1_000,
     modelDurationMs: 600_000,
     modelInputCharacters: 50_000_000,
@@ -257,7 +268,7 @@
   function sanitizeDetails(details) {
     const output = {};
     Object.entries(details || {}).forEach(([key, value]) => {
-      if (COUNT_KEYS.has(key)) output[key] = boundedCount(value, COUNT_MAXIMUMS[key] || 10_000);
+      if (COUNT_KEYS.has(key) && value !== null && value !== undefined) output[key] = boundedCount(value, COUNT_MAXIMUMS[key] || 10_000);
       else if (DETAIL_ENUMS[key]?.has(value)) output[key] = value;
       else if (key === 'actor') output.actor = cleanText(value, 80);
     });

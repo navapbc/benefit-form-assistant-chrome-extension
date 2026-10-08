@@ -163,7 +163,7 @@ Version 0.11.0 retains the privacy boundary between short-lived client values an
 - `chrome.storage.local` retains only sanitized queue metadata: workflow/program IDs, application label, approved origin and catalog route prefixes, status, progress counts, checkpoint, owner/handoff state, tab ID, timestamps, and opaque checksums of the saved location and page signature.
 - Closing a tab creates a recoverable checkpoint. Restarting Chrome preserves the queue, but the assistant requires the caseworker to reload the authorized source record before resuming because participant values were intentionally not retained.
 - Resume always performs a read-only live scan first. A changed location, changed page signature, stale source, expired source, unaccepted handoff, or missing tab blocks writes.
-- CAPTCHA, one-time codes, direct-entry fields, certification, signature, and final review are named checkpoints rather than background automation steps. CAPTCHA and one-time-code checkpoints expose an explicit human-complete-and-resume action; the extension never attempts to solve or bypass the challenge.
+- CAPTCHA, one-time codes, direct-entry fields, certification, signature, and final review are named checkpoints rather than background automation steps. Both checkpoints expose a human-complete-and-resume action. In v0.14 CAPTCHA additionally offers a separate opt-in native static-grid executor; one-time codes remain human-only.
 
 The current handoff is a same-Chrome-profile workflow and ownership prototype. It does not transmit client data or synchronize queues between caseworkers. A production cross-device handoff requires an authenticated organization service with authorization, encrypted storage, retention controls, and concurrency enforcement. See [work-queue security and recovery](docs/WORK_QUEUE_SECURITY_AND_RECOVERY.md).
 
@@ -182,11 +182,11 @@ The browser extension also cannot produce genuinely trusted hardware keystrokes.
 ## Current limits
 
 - Automatic continuation is deliberately allowlisted. Unknown sites and ambiguous controls pause for the caseworker instead of navigating.
-- Human checkpoints—including CAPTCHA, one-time codes, certifications, signatures, and the final submission—always pause the run.
+- One-time codes, certifications, signatures and final submission always pause the run. CAPTCHA pauses by default; a memory-only opt-in can invoke one bounded native attempt.
 - It scans the top document, not cross-origin frames or closed shadow roots.
 - Playbook signals identify known sites and known freshness fields; the live DOM scan remains authoritative for every write.
 - Known applications start automatically after their tabs open, with up to three tab-bound runs in parallel. The side panel must stay open during an active run; moving runner execution into a durable service-worker or authenticated server job is still required for close-the-panel-and-return-later operation.
-- A run fills every known value before pausing for unanswered required fields. Repeated person or income fields fail closed unless an exact adapter proves their entity scope; strict scalar confirmation pairs such as email/confirm-email remain supported. The bundled fictional record now contains explicit synthetic IHSS and WIC decisions for adapter testing; CAPTCHA, unsupported conditional entities, affirmation, certification, and final submission still require a person. Installed-extension validation on those live flows remains required before claiming production compatibility.
+- A run fills every known value before pausing for unanswered required fields. Repeated person or income fields fail closed unless an exact adapter proves their entity scope; strict scalar confirmation pairs such as email/confirm-email remain supported. The bundled fictional record now contains explicit synthetic IHSS and WIC decisions for adapter testing; Unsupported CAPTCHA/conditional entities, affirmation, certification, and final submission still require a person. Installed-extension validation on those live flows remains required before claiming production compatibility.
 - Live validation in this repository is limited to route and public-page compatibility. There has been no sanctioned, end-to-end production application run and no real applicant data should be entered for testing.
 - Handoff metadata is local to one Chrome profile. It demonstrates the ownership and acceptance flow but is not an authenticated cross-device assignment system.
 - The included connector server is a fictional loopback fixture. A real organization still needs the Nava-controlled service, provider partnership/access, authentication, security review, and data-processing controls.
@@ -203,3 +203,5 @@ The browser extension also cannot produce genuinely trusted hardware keystrokes.
 See [`docs/IMPLEMENTATION_NOTES.md`](docs/IMPLEMENTATION_NOTES.md) for the exact mapping from the six-phase skill to the extension architecture.
 
 See [`docs/TEST_REPORT.md`](docs/TEST_REPORT.md) for the connector walkthrough, controlled multi-page results, and read-only BenefitsCal compatibility check. The updated next product investment is in [`docs/ROADMAP.md`](docs/ROADMAP.md).
+
+Native CAPTCHA code, authorization, supported layouts and current verification limits: [actuator guide](docs/CAPTCHA_ACTUATOR.md).

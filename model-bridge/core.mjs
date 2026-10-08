@@ -33,7 +33,7 @@ export function validateRoleRequest(value = {}) {
   return { provider, role, systemPrompt, prompt, responseSchema, schemaText, model };
 }
 
-function subscriptionOnlyEnvironment(provider, source = process.env) {
+export function subscriptionOnlyEnvironment(provider, source = process.env) {
   const env = { ...source };
   delete env.TYPESAFE_API_KEY;
   delete env.JEV_API_KEY;
@@ -168,8 +168,9 @@ function parseClaudeResult(stdout) {
 }
 
 export function parseCodexUsage(stdout) {
-  const totals = { inputTokens: 0, outputTokens: 0 };
+  const totals = { inputTokens: 0, outputTokens: 0, cachedInputTokens: 0 };
   let found = false;
+  let foundCached = false;
   for (const line of String(stdout || '').split(/\r?\n/)) {
     if (!line.trim()) continue;
     let event;
@@ -191,6 +192,8 @@ export function parseCodexUsage(stdout) {
       ?? usage.completion_tokens
       ?? usage.completionTokens,
     );
+    const cached = numberOrNull(usage.cached_input_tokens ?? usage.cachedInputTokens);
+    if (cached !== null) { totals.cachedInputTokens += cached; foundCached = true; }
     if (input !== null) {
       totals.inputTokens += input;
       found = true;
@@ -203,6 +206,7 @@ export function parseCodexUsage(stdout) {
   return {
     inputTokens: found ? totals.inputTokens : null,
     outputTokens: found ? totals.outputTokens : null,
+    cachedInputTokens: foundCached ? totals.cachedInputTokens : null,
     providerReportedCostUsd: null,
   };
 }

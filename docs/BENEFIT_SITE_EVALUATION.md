@@ -1,6 +1,6 @@
 # Benefit form filling: promising planning results, unfinished live quality
 
-Nava Labs · Updated October 7, 2026 · [Reviewed result tables](../evaluation/results/README.md)
+Nava Labs · Updated October 8, 2026 · [Reviewed result tables](../evaluation/results/README.md)
 
 The extension fills much of a short intake form, but our saved live tests still require help and have not reached unassisted final review. A new controlled pilot separates requested models, reasoning settings, and planning transports: **30 attempts, 90 actual role calls, 25 planning passes, no operator repairs**. An October 7 Jev decision-stage pilot added **six real requests and four scored planning passes**, with 0.14–0.41-second responses. These results support further testing; they do not establish application completion or production accuracy.
 
@@ -50,7 +50,7 @@ The same saved 3×3 traffic-light grid was classified twice per configuration. M
 
 The two Jev text decisions cost approximately $0.000050904 at the published input-token rate; billed cost is unknown. CLI/Eve used subscription access and Nano used local compute. Response time excludes browser relay work; total operating cost and cost per completed application remain unknown. Requested CLI/Eve identity is distinguished from provider-resolved Jev identity. Chrome exposes no exact Nano version or reasoning effort.
 
-The staged WIC batch was confirmed at the visible checkpoint; no repeated permission questions interrupted its checkbox or follow-up trials. The browser tool's action-time confirmation policy cannot be changed through extension code. The released extension still pauses for a person at CAPTCHA because its planners have no challenge actuator. Removing a pause alone would not supply image input, tile execution, validation or recovery. Installed v0.13/Jev testing remains pending the manual Chrome update and an unlocked Mac; browser-control policy prohibits extension-management URLs and workarounds.
+The staged WIC batch was confirmed at the visible checkpoint; no repeated permission questions interrupted its checkbox or follow-up trials. Version 0.14 now adds a separate native actuator with one opt-in authorization per bounded attempt, static grid input, indexed tile execution, visible acceptance checks and cancellation. Prior live trials still used the external Codex relay. Four browser-fixture checks passed, but installed/live-provider behavior remains unverified; synthetic DOM events may be rejected. The browser tool’s external policy is unchanged. [Native capability and limits](CAPTCHA_ACTUATOR.md).
 
 [Home-page tables](../README.md#which-model-clicked-through-captcha) · [All action/browser trials](../evaluation/results/captcha-oct7-actions.json) · [All image attempts](../evaluation/results/captcha-oct7-images.json) · [Summary](../evaluation/results/captcha-oct7-summary.json)
 
@@ -95,3 +95,7 @@ Jev performed a smaller choice-classification task than the CLI/Eve three-role p
 The larger protocol calls for repeated trials across sites, record variants, requested model/reasoning settings, cold/warm starts, and planning/execution/full-journey layers. Keep exact requested/reported identities, timestamps, failures, field-level outcomes, assistance, usage, and billing evidence. See [the protocol](../evaluation/controlled-planning/protocol.json), [runner](../evaluation/controlled-planning/README.md), and [reviewed result tables](../evaluation/results/README.md). Planned trials are not presented as executed.
 
 The Nava tester release simplifies routine explanations into expandable sections while keeping errors, missing-answer questions, checkpoints, and review actions visible. The previous recordings illustrate the local workflow; they are not proof of current AI speed or live-site quality.
+
+CAPTCHA speed and cost for every retained run, including failures: [complete metrics](CAPTCHA_RUN_METRICS.md). Unknown values are not zeros.
+
+The October 8 native image-adapter smoke tests returned the exact set in 2/2 repeats for both Codex CLI and Eve, requested Sol Low, on one frozen image. Codex elapsed times were 10.260 / 6.877 seconds; Eve 5.160 / 3.305 seconds. [Current adapter speed/cost and limits](CAPTCHA_ACTUATOR.md#evidence-and-speedcost) distinguish these classification checks from earlier live relay acceptance and unverified native browser execution. Four initial MIME-validation failures, rejected before inference, remain in the complete ledger.

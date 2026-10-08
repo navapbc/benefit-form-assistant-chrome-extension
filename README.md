@@ -2,7 +2,7 @@
 
 An experimental Chrome extension that helps a caseworker prepare benefit forms, review missing answers, and verify the values it fills. **The caseworker reviews and submits. The extension never submits an application.**
 
-Version **0.13.0** · Nava Labs tester release · October 7, 2026
+Version **0.14.0** · Nava Labs tester release · October 8, 2026
 
 ## Test results
 
@@ -52,6 +52,17 @@ The current batch's API durations were 0.133–0.268 seconds; planner wall time 
 
 ### Which model clicked through CAPTCHA?
 
+**New in v0.14:** a native extension executor, separate from the earlier Codex browser relay. Four mechanical browser-fixture checks passed; installed/live-provider acceptance remains unverified. The new product image adapters also ran twice on the same saved grid:
+
+| Product image adapter · requested GPT-6.1 Sol Low | Exact tile sets | Elapsed time, repeat 1 / 2 | API-price scenario, repeat 1 / 2¹ |
+|---|---:|---:|---:|
+| Codex CLI | 2/2 | 10.260 s / 6.877 s | $0.039452–$0.049055 / $0.031930–$0.039780 |
+| Eve 0.71.2 | 2/2 | 5.160 s / 3.305 s | $0.006074–$0.007528 / $0.006074–$0.007528 |
+
+¹ Subscription runs: $0 direct API-key charges; billed, subscription allocation and operating cost unknown. Eve’s scenario assumes no cached input because cache counters were not retained. This is **one unique image**, classification only, with different framework envelopes and sequential order. Four initial MIME-validation failures were rejected before inference and are retained in the [full speed/cost table](docs/CAPTCHA_RUN_METRICS.md). [Native setup and limits](docs/CAPTCHA_ACTUATOR.md).
+
+![Product image adapter speed and cost](docs/assets/captcha-adapter-speed-cost.svg)
+
 **October 7: 14 live WIC attempts, 12 confirmed accepted and 2 inconclusive because capture or challenge preparation took too long.** All 14 model decisions chose the correct checkbox action. A shared Codex browser relay performed the clicks; the tested runtimes had no native browser tools. The application was empty and Submit stayed untouched.
 
 | Requested runtime / setting | Accepted / browser attempts | Image sessions completed | Inconclusive |
@@ -82,9 +93,13 @@ These repeats cover **one unique image**, not general CAPTCHA accuracy. Saved-im
 
 The two Jev checkbox decisions took 0.241 s and 0.124 s, with **$0.000050904 total input-token price estimate** and unknown billed cost. Nano decisions took 8.02 s and 2.20 s. CLI/Eve used subscription access; device, subscription, relay and review costs were not allocated. This benchmark does not measure cost per completed application.
 
-**Confirmation and extension status:** the user confirmed this staged WIC batch, and the relay did not ask again for each checkbox or follow-up. The browser-control tool's action-time policy is external to this repository and cannot be removed here. v0.13 still pauses at CAPTCHA because it has no challenge actuator; the new benchmark is not installed-extension automation. Chrome installation verification needs the manual update and an unlocked Mac.
+**Extension status:** v0.14 adds a native, opt-in reCAPTCHA actuator: one authorization covers the checkbox and up to three static image rounds. It uses no Codex browser relay. The prior live results above still belong to the external relay, and cannot be relabeled native successes. Native fixture checks passed; installed-extension and live-provider acceptance are unverified. Provider pages may reject synthetic DOM clicks. The Codex browser tool's external action-time policy remains outside this repository.
 
 ![CAPTCHA image comparison on one common grid](docs/assets/captcha-image-accuracy.svg)
+
+![CAPTCHA decision speed and API-price estimates](docs/assets/captcha-speed-cost.svg)
+
+**Speed and cost for every run:** [all individual attempts, failures and unknowns](docs/CAPTCHA_RUN_METRICS.md) · [machine-readable metrics](evaluation/results/captcha-run-metrics.json). Runtime time includes startup; pure model time and browser observation intervals are separate where recorded. Cost estimates are not invoices; billed and total operating costs are unknown. Untimed historical/startup attempts remain explicitly unknown.
 
 [All 14 action and browser trials](evaluation/results/captcha-oct7-actions.json) · [Every image answer and failure](evaluation/results/captcha-oct7-images.json) · [Summary counts](evaluation/results/captcha-oct7-summary.json) · [Reproduce the pilot](evaluation/captcha/README.md)
 
@@ -113,7 +128,7 @@ The IHSS charts are one historical run per runtime. Readback coverage measures p
 - Tracks several applications, pauses and resumes checkpoints, and exports a value-free activity log.
 - Shows a prototype recertification workspace for upcoming renewals, updates, and client authorization.
 
-**What remains unfinished:** no saved live-site trial reached unassisted final review. Address completeness, missing decisions, and long BenefitsCal flows need work. CAPTCHA and one-time codes require human completion. The extension does not solve CAPTCHA. Eve was tested as a planning transport in a separate harness. Jev is now selectable in v0.13; its installed Chrome execution remains unverified.
+**What remains unfinished:** no saved live-site trial reached unassisted final review. Address completeness, missing decisions, and long BenefitsCal flows need work. Native CAPTCHA automation is experimental and has no verified installed/live-provider run. One-time codes, unsupported challenges and final submission require a person. Eve remains a separate form-planning harness and is now an optional image classifier for the native actuator. Jev’s installed Chrome execution remains unverified.
 
 Read [the current testing writeup](docs/BENEFIT_SITE_EVALUATION.md), or [the developer guide](DEVELOPER_GUIDE.md).
 
@@ -130,6 +145,24 @@ Use desktop Chrome 138+ and fictional data. No production database or paid API k
 7. Review questions and every filled value. Verify the runner stops before certification and Submit. Export the activity log from the dashboard.
 
 If the model is unavailable, the extension reports an error. For the subscription CLI or Jev alternatives, follow [the companion setup](model-bridge/README.md). To explore just the interface without installing or running AI, open `http://127.0.0.1:4173/sidepanel/index.html?preview=1&demo=1`; this preview simulates results and is not a model test.
+
+## Native CAPTCHA automation · v0.14
+
+All form runtimes share the same deterministic checkbox executor; a checkbox click needs no model request. It is a browser mechanism, not evidence that each model can solve an image.
+
+| Runtime | Checkbox executor | Static 3×3 / 4×4 image classification |
+|---|---|---|
+| Gemini Nano | Shared native executor | On-device Prompt API; prior common-grid accuracy 0/2 |
+| Codex CLI | Shared native executor | Cropped image + constrained tile indexes; model and Low/Extra High selectable |
+| Eve | Shared native executor | Optional loopback image agent, GPT-6.1 Sol Low |
+| Jev 1.13.0 | Shared native executor | Current text/JSON route has no image adapter; choose a separate image runtime |
+| Claude CLI | Shared native executor | Image adapter not implemented here; choose a separate image runtime |
+
+Open an application card’s **CAPTCHA automation** disclosure and enable **Allow one CAPTCHA attempt during this run** before **Fill through application**. The runner can then try the checkbox and follow-ups without a new prompt at that checkpoint. At an existing CAPTCHA checkpoint, choose **Authorize and try CAPTCHA** once. **Model runtime → CAPTCHA images** selects the image classifier; Codex/Eve need the paired companion. [Companion setup](model-bridge/README.md#native-captcha-images--v014).
+
+The authorization ends after the attempt, page/document change, Pause, session change, or a three-minute expiry. Only recognized reCAPTCHA controls are executable; images are cropped to the visible grid. The actuator observes visible checkbox acceptance and never reads/writes CAPTCHA tokens or clicks application Submit. Dynamic replacement grids, audio, hCaptcha, Turnstile, hidden/multiple widgets and unsupported layouts hand off. Provider rejection and model refusal also remain visible failures.
+
+**Verification:** the actual frame adapter passed four deterministic browser-fixture checks in both browser-fixture repeats (**5.4 / 6.4 ms**), with zero model calls and $0 direct API-key charge. This is mechanical execution on a simulation, not live CAPTCHA accuracy, complete application speed, or installed Chrome verification. To reproduce, use the local server above and open `http://127.0.0.1:4173/demo/captcha-fixture.html`; run the self-test once from a reset fixture. [Native implementation and test scope](docs/CAPTCHA_ACTUATOR.md).
 
 ## Testing this sprint
 

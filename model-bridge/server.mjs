@@ -2,6 +2,7 @@ import { createHash, randomBytes, timingSafeEqual } from 'node:crypto';
 import { createServer } from 'node:http';
 import { probeProvider, runRoleRequest } from './core.mjs';
 import { JEV_MODEL, runDecisionRequest } from './jev.mjs';
+import { runCaptchaRequest } from './captcha.mjs';
 
 const host = '127.0.0.1';
 const port = Number(process.env.NAVA_MODEL_BRIDGE_PORT || 4174);
@@ -45,12 +46,12 @@ function reply(request, response, status, payload) {
   response.end(`${JSON.stringify(payload)}\n`);
 }
 
-async function readJson(request) {
+async function readJson(request, limit = 256 * 1024) {
   let bytes = 0;
   const chunks = [];
   for await (const chunk of request) {
     bytes += chunk.length;
-    if (bytes > 256 * 1024) throw new Error('The request body is too large.');
+    if (bytes > limit) throw new Error('The request body is too large.');
     chunks.push(chunk);
   }
   try {
@@ -81,7 +82,7 @@ const server = createServer(async (request, response) => {
     reply(request, response, 200, { ok: true, providers: { codex, claude, jev }, activeRequests, maxConcurrent });
     return;
   }
-  if (request.method !== 'POST' || !['/v1/role', '/v1/decision-plan'].includes(request.url)) {
+  if (request.method !== 'POST' || !['/v1/role', '/v1/decision-plan', '/v1/captcha'].includes(request.url)) {
     reply(request, response, 404, { ok: false, error: 'Not found.' });
     return;
   }
@@ -91,8 +92,9 @@ const server = createServer(async (request, response) => {
   }
   activeRequests += 1;
   try {
-    const input = await readJson(request);
-    const result = request.url === '/v1/decision-plan' ? await runDecisionRequest(input) : await runRoleRequest(input);
+    const input = await readJson(request, request.url === '/v1/captcha' ? 1_500_000 : 256 * 1024);
+    const result = request.url === '/v1/captcha' ? await runCaptchaRequest(input)
+      : request.url === '/v1/decision-plan' ? await runDecisionRequest(input) : await runRoleRequest(input);
     reply(request, response, 200, { ok: true, ...result });
   } catch (error) {
     reply(request, response, 400, { ok: false, error: String(error?.message || 'The local model call failed.').slice(0, 800) });

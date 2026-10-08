@@ -1,6 +1,6 @@
 # Reviewed evaluation results
 
-These tables support the October 7 writeup without publishing applicant values or raw live-site artifacts.
+These tables support the October 8 writeup without publishing applicant values or raw live-site artifacts.
 
 - [Controlled attempt ledger](controlled-attempts.json): all 30 plans, requested model/effort/transport, latency, score, usage, and hypothetical API prices. Provider-resolved identity stays unknown. No operator repairs.
 - [Controlled aggregates](controlled-summary.json): two repeats per case/configuration, min/median/max latency and quality counts. Planning passes are not complete applications.
@@ -20,3 +20,9 @@ New raw audits, role calls, workflow IDs, participant records, applicant screens
 - [October 7 CAPTCHA action/browser trials](captcha-oct7-actions.json): every one of 14 decisions and fresh browser attempts; shared relay, two inconclusive observations, no applicant submission.
 - [October 7 CAPTCHA image trials](captcha-oct7-images.json): the frozen-image repeat comparison, live model answers, runtime failures and image hashes. Manual tile adjudication and site acceptance are separate.
 - [October 7 CAPTCHA aggregates](captcha-oct7-summary.json): seven requested configurations, 12 accepted states, two completed image sessions and one rejected image answer.
+
+- [Complete CAPTCHA speed/cost ledger](captcha-run-metrics.json): every historical action/image call, timeout, startup batch, new adapter classification/validation attempt and browser fixture; missing measurements remain explicit nulls.
+- [October 8 product image-adapter trials](captcha-native-adapter-models.json): actual Codex/Eve adapters, two repeats each on one frozen image, with elapsed time, usage, exact-set correctness and unknown billed cost. No live actuation.
+- [Product adapter validation failures](captcha-native-adapter-validation.json): four MIME-mismatch attempts rejected before inference; retained separately from corrected runs.
+- [Native frame-adapter fixture](captcha-native-fixture.json): four mechanical checks in one deterministic Chrome fixture attempt, with no model inference or real CAPTCHA service.
+- [Readable per-run speed/cost table](../../docs/CAPTCHA_RUN_METRICS.md) and [native implementation scope](../../docs/CAPTCHA_ACTUATOR.md).

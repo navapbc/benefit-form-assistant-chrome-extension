@@ -1,6 +1,6 @@
 # CAPTCHA capability pilot
 
-This experimental harness separates **model action selection**, **browser execution**, **checkbox acceptance**, and **image-challenge solving**. It does not add CAPTCHA automation to the released extension. The extension continues to pause for a person.
+This experimental harness separates **model action selection**, **browser execution**, **checkbox acceptance**, and **image-challenge solving**. The historical harness remains separate from the native actuator added in v0.14. Its past relay successes are not native-extension results. [Native implementation and test scope](../../docs/CAPTCHA_ACTUATOR.md).
 
 The input is a minimized, visibly observed Riverside WIC checkbox state. It excludes applicant answers, CAPTCHA response tokens, iframe query strings and browser-profile data. Each authorized batch needs a recorded action-time confirmation for the visible checkpoint; reuse that confirmation within its unchanged, specifically approved scope rather than asking for every checkbox or follow-up. The only selectable browser action is the visible checkbox; Submit is excluded. A separate Codex browser relay can execute an approved decision and record the resulting visible state. The relay is an external harness dependency, not a capability supplied by Nano, Jev or a CLI classification call.
 
@@ -55,4 +55,4 @@ Eve uses the documented file attachment helper, a classifier-only agent and an e
 
 Manually adjudicate the visible tile set and label that basis. Record exact set agreement, refusals, missing/extra tiles, error type, duration and native usage. Separately relay the originating runtime's unedited answer through the confirmed browser tool, inspect visible feedback, and record rejected answers before a follow-up. An accepted checkbox after image verification is stronger evidence than agreement with a saved image, but one shared-profile pilot does not establish unattended reliability.
 
-The released extension still has no CAPTCHA actuator. Its pause is separate from this test harness and the browser tool's external confirmation policy.
+The v0.14 native actuator is separately opt-in and tested on a deterministic fixture. It does not change the Codex browser tool’s external policy or convert earlier relay trials into native successes. [Every run’s speed and cost](../../docs/CAPTCHA_RUN_METRICS.md).

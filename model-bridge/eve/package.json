@@ -1,0 +1,14 @@
+{
+  "name": "nava-captcha-image-agent",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "eve dev --host 127.0.0.1 --port 4194 --no-ui --no-default-extensions"
+  },
+  "dependencies": {
+    "eve": "0.71.2"
+  },
+  "devDependencies": {
+    "just-bash": "3.6.0"
+  }
+}

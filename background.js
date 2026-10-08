@@ -2,6 +2,7 @@ import './shared/connector-engine.js';
 import './shared/work-queue-engine.js';
 import './shared/program-catalog.js';
 import './shared/recertification-engine.js';
+import { createCaptchaService } from './background/captcha-service.mjs';
 
 const connectorEngine = globalThis.NavaConnectorEngine;
 const workQueueEngine = globalThis.NavaWorkQueueEngine;
@@ -17,6 +18,7 @@ const WRITE_COMMAND_TYPES = new Set(['NAVA_FILL', 'NAVA_ADVANCE']);
 const ACTIVE_LEASE_MS = 2 * 60 * 1000;
 const COMMAND_LEASE_MS = 10 * 60 * 1000;
 const activeCommandTargets = new Map();
+const captchaService = createCaptchaService(chrome);
 let coordinatorChain = Promise.resolve();
 
 function coordinate(operation) {
@@ -197,6 +199,7 @@ function registerCommandTarget(applicationId, target) {
 }
 
 function cancelApplicationTargets(applicationIds, sessionApplications = []) {
+  captchaService.cancelApplications(applicationIds);
   const ids = new Set(applicationIds);
   const targets = new Map();
   (sessionApplications || [])
@@ -776,6 +779,30 @@ chrome.tabs.onRemoved.addListener((tabId) => {
 });
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+  if (message?.type === 'NAVA_CAPTCHA_COMMAND') {
+    const authorize = (request) => coordinate(async () => {
+      const applicationId = validCoordinatorId(request.applicationId);
+      const [coordinator, sessionResult, leasesResult] = await Promise.all([
+        coordinatorState(), chrome.storage.session.get(SESSION_STORAGE_KEY), chrome.storage.local.get(LEASE_STORAGE_KEY),
+      ]);
+      assertCoordinatorEpoch(request, coordinator);
+      assertParticipantSession(request, coordinator);
+      assertApplicationGeneration(request, coordinator, applicationId);
+      assertApplicationRevision(request, coordinator, applicationId);
+      const application = sessionResult[SESSION_STORAGE_KEY]?.apps?.find((item) => item.id === applicationId);
+      const lease = leasesResult[LEASE_STORAGE_KEY]?.[applicationId];
+      if (!application || application.checkpoint?.kind !== 'captcha' || application.tabId !== request.tabId || !activeLease(lease) || lease.holder !== request.holder) throw new Error('CAPTCHA requires this application’s checkpoint and active write lease.');
+      const url = application.page?.url || application.url;
+      if (!/^https?:/i.test(url)) throw new Error('Unsupported application URL.');
+      const leases = { ...leasesResult[LEASE_STORAGE_KEY], [applicationId]: { ...lease, expiresAt: new Date(Date.now() + COMMAND_LEASE_MS).toISOString() } };
+      await chrome.storage.local.set({ [LEASE_STORAGE_KEY]: leases });
+      return { applicationId, tabId: application.tabId, url };
+    });
+    captchaService.handle(message, _sender, authorize)
+      .then((result) => sendResponse({ ok: true, ...result }))
+      .catch(() => sendResponse({ ok: false, error: 'CAPTCHA attempt stopped: authorization, page, challenge or capability changed. Complete it manually or try again from the current checkpoint.' }));
+    return true;
+  }
   if (message?.type === 'GET_ASSISTANT_STATE') {
     coordinate(async () => {
       const [coordinator, sessionResult, queueResult] = await Promise.all([

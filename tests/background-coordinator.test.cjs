@@ -71,6 +71,7 @@ function backgroundHarness() {
     NavaConnectorEngine: connectorEngine,
     NavaWorkQueueEngine: workQueueEngine,
     NavaProgramCatalog: programCatalog,
+    createCaptchaService: () => ({ handle: async () => { throw new Error('Unexpected CAPTCHA command'); }, cancelApplications() {} }),
   };
   context.globalThis = context;
   const source = fs.readFileSync(path.join(root, 'background.js'), 'utf8')

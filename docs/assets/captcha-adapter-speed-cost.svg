@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="420" viewBox="0 0 980 420" role="img" aria-labelledby="title desc">
+<title id="title">Corrected product image adapter speed and cost</title><desc id="desc">Two classification repeats per adapter on one frozen image. Both adapters requested GPT-6.1 Sol Low and returned the exact tile set twice. Bars show runtime elapsed time; dollar values are hypothetical API scenarios, not billed cost.</desc>
+<rect width="980" height="420" fill="#fff"/><g font-family="system-ui,sans-serif" fill="#163b4b"><text x="24" y="34" font-size="22" font-weight="700">Product image adapters: speed and cost</text>
+<text x="24" y="62" font-size="14">October 8 · one unique image · classification only · corrected MIME setup</text>
+<text x="260" y="94" font-size="13">Runtime elapsed, seconds</text><text x="645" y="94" font-size="13">API scenario per repeat, USD</text>
+<text x="24" y="138" font-size="15">Codex CLI · Sol Low · r1</text><rect x="260" y="121" width="230.84" height="25" rx="3" fill="#167e98"/><text x="500.8440243824999" y="138" font-size="14">10.260 s</text><text x="645" y="138" font-size="14">$0.039452–$0.049055</text>
+<text x="24" y="184" font-size="15">Codex CLI · Sol Low · r2</text><rect x="260" y="167" width="154.73" height="25" rx="3" fill="#66aebf"/><text x="424.733259375" y="184" font-size="14">6.877 s</text><text x="645" y="184" font-size="14">$0.031930–$0.039780</text>
+<text x="24" y="230" font-size="15">Eve · Sol Low · r1</text><rect x="260" y="213" width="116.10" height="25" rx="3" fill="#167e98"/><text x="386.09625280499995" y="230" font-size="14">5.160 s</text><text x="645" y="230" font-size="14">$0.006074–$0.007528</text>
+<text x="24" y="276" font-size="15">Eve · Sol Low · r2</text><rect x="260" y="259" width="74.36" height="25" rx="3" fill="#66aebf"/><text x="344.3604225075" y="276" font-size="14">3.305 s</text><text x="645" y="276" font-size="14">$0.006074–$0.007528</text>
+<text x="24" y="335" font-size="14">Both: 2/2 exact sets. $0 direct API-key charge; billed and total operating cost unknown.</text>
+<text x="24" y="361" font-size="14">Different framework envelopes and sequential order; no causal speed ranking.</text>
+<text x="24" y="387" font-size="14">Four pre-inference validation failures remain in the full ledger. Eve cache assumed zero.</text></g></svg>
