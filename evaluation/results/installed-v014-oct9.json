@@ -1,0 +1,993 @@
+{
+  "schema": "nava.installed-extension-evaluation.v1",
+  "evaluatedAt": "2026-10-09",
+  "status": "interim; live CAPTCHA batch and remaining repeats pending",
+  "scope": "Four actually executed installed WIC form runs. No native CAPTCHA attempted, no final review and no submission. Planned configurations excluded from attempt denominator.",
+  "releaseSourceCommit": "fe2bd4e6e3425ba5510f998f47f5c40129861dd4",
+  "installation": {
+    "versionUserReported": "0.14.0",
+    "versionSpecificUiObserved": true,
+    "installedManifestIndependentlyRead": false,
+    "sourceCommitOfInstalledFilesIndependentlyAttested": false
+  },
+  "environment": {
+    "chrome": "154.0.8037.98",
+    "macos": "15.6",
+    "codexCli": "0.162.0-alpha.2",
+    "recordSha256": "0b7057d13c3e30ee3cdf69a213cf61746e803f410608b6fe833cfb1e63bbef21",
+    "runtimeInitialization": "outside form timer",
+    "order": "sequential; shared device/profile",
+    "companionObserver": "unchanged contract; forwarding overhead included"
+  },
+  "coverage": {
+    "executedFormRuns": 4,
+    "nativeCaptchaAttempts": 0,
+    "nativeCaptchaAccepted": 0,
+    "nativeCaptchaFailures": 0,
+    "nativeCaptchaInconclusive": 0,
+    "nativeCaptchaPending": 2,
+    "unassistedCorrectCompletions": 0,
+    "runtimeUnavailable": [
+      {
+        "provider": "claude-cli",
+        "reason": "CLI not installed; no model call or browser run"
+      }
+    ],
+    "unexecuted": [
+      "Nano form repeat 2",
+      "Codex default form repeat 2",
+      "staged native CAPTCHA matrix including Eve and explicit Codex image model/effort settings"
+    ],
+    "browserInterruption": {
+      "stage": "before Codex repeat 2",
+      "formStarted": false,
+      "reason": "foreground browser changed to another user activity; native UI actions paused"
+    },
+    "noNativeCaptchaModelLeaderboard": true
+  },
+  "pricingSnapshot": "../installed-v014/pricing-2026-10-09.json",
+  "definitions": {
+    "semanticAnswers": 17,
+    "notApplicableControls": 2,
+    "sourceAgreementIncludesCorrectDefaults": true,
+    "verifiedWriteCountIsNotSemanticAccuracy": true,
+    "modelDurationIsSumOfPossiblyConcurrentCalls": true,
+    "unknownIsNull": true,
+    "permissionAndInspectionWaitExcludedFromFormCheckpointWall": true,
+    "apiScenariosNotBilledCost": true
+  },
+  "attempts": [
+    {
+      "id": "oct9-wic-nano-r1",
+      "site": "Riverside WIC",
+      "repeat": 1,
+      "formRuntime": "chrome-gemini-nano",
+      "requestedModel": null,
+      "providerReportedModel": null,
+      "reasoningEffort": null,
+      "reasoningIdentity": "Chrome managed; not exposed",
+      "confidenceThreshold": null,
+      "startedAt": "2026-10-09T16:24:58.058Z",
+      "firstTerminalAt": "2026-10-09T16:29:01.355Z",
+      "formWallSecondsToCheckpoint": 243.297,
+      "timeToCorrectCompletionSeconds": null,
+      "fillReadbackSeconds": 8.232,
+      "planningScans": 3,
+      "modelCalls": 9,
+      "summedModelSeconds": 334.835,
+      "inputTokens": null,
+      "outputTokens": null,
+      "cachedInputTokens": null,
+      "reasoningTokens": null,
+      "contextUsageUnits": 23718,
+      "directApiKeyChargeUsd": 0,
+      "estimatedApiCostUsd": null,
+      "estimatedApiCostUsdExact": null,
+      "conditionalApiScenarios": null,
+      "billedCostUsd": null,
+      "operatingCostUsd": null,
+      "terminalCheckpoint": "captcha",
+      "semanticQuality": {
+        "method": "Visible DOM and native accessibility readback compared with the complete fictional source. Contact fields adjudicated from native AX because browser DOM masks them.",
+        "correct": 16,
+        "incorrect": 1,
+        "missing": 0,
+        "expected": 17,
+        "incorrectAnswers": [
+          {
+            "field": "Home Address",
+            "errorId": "F01",
+            "expected": "Street, unit, city, state and ZIP",
+            "observed": "Street and unit only; city, state and ZIP missing"
+          }
+        ],
+        "missingAnswers": [],
+        "falseGaps": [],
+        "notApplicableCorrect": 2,
+        "notApplicableExpected": 2,
+        "notApplicableErrors": [],
+        "requiredHtmlValidity": "all required visible controls valid",
+        "manualAnswerRepairs": 0,
+        "manualNavigationRepairs": 0
+      },
+      "verifiedWriteCount": 11,
+      "mechanicalBlockedWriteCount": 0,
+      "falseGaps": 0,
+      "assistanceCount": 0,
+      "finalReviewReached": false,
+      "correctCompletion": false,
+      "captcha": {
+        "reachedByWorkflow": true,
+        "attempted": false,
+        "outcome": "not_attempted_pending_action_time_confirmation",
+        "visibleAccepted": null,
+        "actuator": null,
+        "imageRuntimeActuallyCalled": null,
+        "imageModelActuallyCalled": null,
+        "reasoningActuallyUsed": null,
+        "rounds": 0,
+        "imageCalls": 0,
+        "rejectedAnswers": 0,
+        "wallSeconds": null,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "contextUsageUnits": null,
+        "directApiKeyChargeUsd": 0,
+        "estimatedApiCostUsd": null,
+        "billedCostUsd": null
+      },
+      "modelCallReceipts": [],
+      "deferredCalls": [],
+      "events": [
+        {
+          "type": "scan_completed",
+          "at": "2026-10-09T16:26:18.737Z",
+          "details": {
+            "fieldCount": 19,
+            "gapCount": 0,
+            "modelRuntime": "chrome-gemini-nano",
+            "modelPromptCount": 3,
+            "modelDurationMs": 112433,
+            "modelContextUsageUnits": 7577,
+            "checkpointKind": "captcha",
+            "toStatus": "ready_to_fill"
+          }
+        },
+        {
+          "type": "scan_completed",
+          "at": "2026-10-09T16:27:37.971Z",
+          "details": {
+            "fieldCount": 19,
+            "gapCount": 0,
+            "modelRuntime": "chrome-gemini-nano",
+            "modelPromptCount": 3,
+            "modelDurationMs": 115253,
+            "modelContextUsageUnits": 8259,
+            "checkpointKind": "captcha",
+            "toStatus": "ready_to_fill"
+          }
+        },
+        {
+          "type": "fill_started",
+          "at": "2026-10-09T16:27:37.999Z",
+          "details": {
+            "fieldCount": 11
+          }
+        },
+        {
+          "type": "page_verified",
+          "at": "2026-10-09T16:27:46.231Z",
+          "details": {
+            "gapCount": 0,
+            "verifiedCount": 11,
+            "blockedCount": 0,
+            "pageCount": 1,
+            "toStatus": "ready_to_fill"
+          }
+        },
+        {
+          "type": "scan_completed",
+          "at": "2026-10-09T16:29:01.326Z",
+          "details": {
+            "fieldCount": 19,
+            "gapCount": 0,
+            "modelRuntime": "chrome-gemini-nano",
+            "modelPromptCount": 3,
+            "modelDurationMs": 107149,
+            "modelContextUsageUnits": 7882,
+            "checkpointKind": "captcha",
+            "toStatus": "ready_to_fill"
+          }
+        },
+        {
+          "type": "checkpoint_reached",
+          "at": "2026-10-09T16:29:01.355Z",
+          "details": {
+            "checkpointKind": "captcha",
+            "toStatus": "needs_attention"
+          }
+        }
+      ]
+    },
+    {
+      "id": "oct9-wic-jev-r1",
+      "site": "Riverside WIC",
+      "repeat": 1,
+      "formRuntime": "jev-typesafe-local-companion",
+      "requestedModel": "jev-1.13.0",
+      "providerReportedModel": "jev-1.13.0",
+      "reasoningEffort": null,
+      "reasoningIdentity": "not configurable",
+      "confidenceThreshold": 0.9,
+      "startedAt": "2026-10-09T16:39:39.561Z",
+      "firstTerminalAt": "2026-10-09T16:39:47.951Z",
+      "formWallSecondsToCheckpoint": 8.39,
+      "timeToCorrectCompletionSeconds": null,
+      "fillReadbackSeconds": 7.649,
+      "planningScans": 2,
+      "modelCalls": 2,
+      "summedModelSeconds": 0.501,
+      "inputTokens": 36848,
+      "outputTokens": 15762,
+      "cachedInputTokens": null,
+      "reasoningTokens": null,
+      "contextUsageUnits": null,
+      "directApiKeyChargeUsd": null,
+      "estimatedApiCostUsd": 0.001548,
+      "estimatedApiCostUsdExact": 0.001547616,
+      "conditionalApiScenarios": null,
+      "billedCostUsd": null,
+      "operatingCostUsd": null,
+      "terminalCheckpoint": "human_input",
+      "semanticQuality": {
+        "method": "Native accessibility readback and the exact unanswered question screen compared with the complete fictional source.",
+        "correct": 15,
+        "incorrect": 1,
+        "missing": 1,
+        "expected": 17,
+        "incorrectAnswers": [
+          {
+            "field": "Home Address",
+            "errorId": "F01",
+            "expected": "Street, unit, city, state and ZIP",
+            "observed": "Street and unit only; city, state and ZIP missing"
+          }
+        ],
+        "missingAnswers": [
+          {
+            "field": "Do you have Medi-Cal?",
+            "errorId": "F02",
+            "expected": "Select the supplied No answer",
+            "observed": "No option selected; caseworker question"
+          }
+        ],
+        "falseGaps": [
+          {
+            "field": "Do you have Medi-Cal?",
+            "errorId": "F02",
+            "reason": "Source answer supplied; classification deferred"
+          },
+          {
+            "field": "Mailing address (if different from home address)",
+            "errorId": "F03",
+            "reason": "Same mailing/home address; not applicable"
+          },
+          {
+            "field": "If yes - MediCal Case #",
+            "errorId": "F03",
+            "reason": "Medi-Cal No; not applicable"
+          }
+        ],
+        "notApplicableCorrect": 2,
+        "notApplicableExpected": 2,
+        "notApplicableErrors": [],
+        "requiredHtmlValidity": "not independently read with validity API; required Medi-Cal group visibly unanswered",
+        "manualAnswerRepairs": 0,
+        "manualNavigationRepairs": 0
+      },
+      "verifiedWriteCount": 10,
+      "mechanicalBlockedWriteCount": 0,
+      "falseGaps": 3,
+      "assistanceCount": 0,
+      "finalReviewReached": false,
+      "correctCompletion": false,
+      "captcha": {
+        "reachedByWorkflow": false,
+        "attempted": false,
+        "outcome": "not_reached_form_questions",
+        "visibleAccepted": null,
+        "actuator": null,
+        "imageRuntimeActuallyCalled": null,
+        "imageModelActuallyCalled": null,
+        "reasoningActuallyUsed": null,
+        "rounds": 0,
+        "imageCalls": 0,
+        "rejectedAnswers": 0,
+        "wallSeconds": null,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "contextUsageUnits": null,
+        "directApiKeyChargeUsd": 0,
+        "estimatedApiCostUsd": null,
+        "billedCostUsd": null
+      },
+      "modelCallReceipts": [
+        {
+          "startedAt": "2026-10-09T16:39:39.704Z",
+          "endedAt": "2026-10-09T16:39:40.017Z",
+          "role": "decision_classifier",
+          "requestedModel": null,
+          "requestedReasoning": null,
+          "providerReportedModel": "jev-1.13.0",
+          "runtimeSeconds": 0.310098,
+          "observerSeconds": 0.313181,
+          "inputTokens": 18424,
+          "outputTokens": 7881,
+          "ok": true
+        },
+        {
+          "startedAt": "2026-10-09T16:39:40.090Z",
+          "endedAt": "2026-10-09T16:39:40.283Z",
+          "role": "decision_classifier",
+          "requestedModel": null,
+          "requestedReasoning": null,
+          "providerReportedModel": "jev-1.13.0",
+          "runtimeSeconds": 0.191045,
+          "observerSeconds": 0.193054,
+          "inputTokens": 18424,
+          "outputTokens": 7881,
+          "ok": true
+        }
+      ],
+      "deferredCalls": [
+        {
+          "startedAt": "2026-10-09T16:39:39.704Z",
+          "apiSeconds": 0.310098,
+          "observerSeconds": 0.313181,
+          "approvedMappings": 17,
+          "deferred": [
+            {
+              "field": "Mailing address (if different from home address)",
+              "confidence": 0.54,
+              "reason": "Uncertain or locally unsupported classification"
+            },
+            {
+              "field": "If yes - MediCal Case #",
+              "confidence": 0.67,
+              "reason": "Uncertain or locally unsupported classification"
+            }
+          ]
+        },
+        {
+          "startedAt": "2026-10-09T16:39:40.090Z",
+          "apiSeconds": 0.191045,
+          "observerSeconds": 0.193054,
+          "approvedMappings": 16,
+          "deferred": [
+            {
+              "field": "Mailing address (if different from home address)",
+              "confidence": 0.47,
+              "reason": "Uncertain or locally unsupported classification"
+            },
+            {
+              "field": "If yes - MediCal Case #",
+              "confidence": 0.68,
+              "reason": "Uncertain or locally unsupported classification"
+            },
+            {
+              "field": "Do you have Medi-Cal?",
+              "confidence": 0.87,
+              "reason": "Uncertain or locally unsupported classification"
+            }
+          ]
+        }
+      ],
+      "events": [
+        {
+          "type": "scan_completed",
+          "at": "2026-10-09T16:39:40.039Z",
+          "details": {
+            "fieldCount": 19,
+            "gapCount": 2,
+            "modelRuntime": "jev-typesafe-local-companion",
+            "modelPromptCount": 1,
+            "modelDurationMs": 310,
+            "modelInputTokens": 18424,
+            "modelOutputTokens": 7881,
+            "checkpointKind": "human_input",
+            "toStatus": "needs_attention"
+          }
+        },
+        {
+          "type": "questions_required",
+          "at": "2026-10-09T16:39:40.039Z",
+          "details": {
+            "gapCount": 2,
+            "checkpointKind": "human_input"
+          }
+        },
+        {
+          "type": "scan_completed",
+          "at": "2026-10-09T16:39:40.285Z",
+          "details": {
+            "fieldCount": 19,
+            "gapCount": 3,
+            "modelRuntime": "jev-typesafe-local-companion",
+            "modelPromptCount": 1,
+            "modelDurationMs": 191,
+            "modelInputTokens": 18424,
+            "modelOutputTokens": 7881,
+            "checkpointKind": "human_input",
+            "toStatus": "needs_attention"
+          }
+        },
+        {
+          "type": "questions_required",
+          "at": "2026-10-09T16:39:40.285Z",
+          "details": {
+            "gapCount": 3,
+            "checkpointKind": "human_input"
+          }
+        },
+        {
+          "type": "fill_started",
+          "at": "2026-10-09T16:39:40.302Z",
+          "details": {
+            "fieldCount": 10
+          }
+        },
+        {
+          "type": "checkpoint_reached",
+          "at": "2026-10-09T16:39:47.951Z",
+          "details": {
+            "checkpointKind": "human_input",
+            "toStatus": "needs_attention"
+          }
+        },
+        {
+          "type": "page_verified",
+          "at": "2026-10-09T16:39:47.951Z",
+          "details": {
+            "gapCount": 3,
+            "verifiedCount": 10,
+            "blockedCount": 0,
+            "pageCount": 1,
+            "toStatus": "needs_attention"
+          }
+        }
+      ]
+    },
+    {
+      "id": "oct9-wic-jev-r2",
+      "site": "Riverside WIC",
+      "repeat": 2,
+      "formRuntime": "jev-typesafe-local-companion",
+      "requestedModel": "jev-1.13.0",
+      "providerReportedModel": "jev-1.13.0",
+      "reasoningEffort": null,
+      "reasoningIdentity": "not configurable",
+      "confidenceThreshold": 0.9,
+      "startedAt": "2026-10-09T16:41:09.227Z",
+      "firstTerminalAt": "2026-10-09T16:41:17.677Z",
+      "formWallSecondsToCheckpoint": 8.45,
+      "timeToCorrectCompletionSeconds": null,
+      "fillReadbackSeconds": 7.643,
+      "planningScans": 2,
+      "modelCalls": 2,
+      "summedModelSeconds": 0.519,
+      "inputTokens": 36848,
+      "outputTokens": 15763,
+      "cachedInputTokens": null,
+      "reasoningTokens": null,
+      "contextUsageUnits": null,
+      "directApiKeyChargeUsd": null,
+      "estimatedApiCostUsd": 0.001548,
+      "estimatedApiCostUsdExact": 0.001547616,
+      "conditionalApiScenarios": null,
+      "billedCostUsd": null,
+      "operatingCostUsd": null,
+      "terminalCheckpoint": "human_input",
+      "semanticQuality": {
+        "method": "Native accessibility readback and the exact unanswered question screen compared with the complete fictional source.",
+        "correct": 15,
+        "incorrect": 1,
+        "missing": 1,
+        "expected": 17,
+        "incorrectAnswers": [
+          {
+            "field": "Home Address",
+            "errorId": "F01",
+            "expected": "Street, unit, city, state and ZIP",
+            "observed": "Street and unit only; city, state and ZIP missing"
+          }
+        ],
+        "missingAnswers": [
+          {
+            "field": "Do you have Medi-Cal?",
+            "errorId": "F02",
+            "expected": "Select the supplied No answer",
+            "observed": "No option selected; caseworker question"
+          }
+        ],
+        "falseGaps": [
+          {
+            "field": "Do you have Medi-Cal?",
+            "errorId": "F02",
+            "reason": "Source answer supplied; classification deferred"
+          },
+          {
+            "field": "Mailing address (if different from home address)",
+            "errorId": "F03",
+            "reason": "Same mailing/home address; not applicable"
+          },
+          {
+            "field": "If yes - MediCal Case #",
+            "errorId": "F03",
+            "reason": "Medi-Cal No; not applicable"
+          }
+        ],
+        "notApplicableCorrect": 2,
+        "notApplicableExpected": 2,
+        "notApplicableErrors": [],
+        "requiredHtmlValidity": "not independently read with validity API; required Medi-Cal group visibly unanswered",
+        "manualAnswerRepairs": 0,
+        "manualNavigationRepairs": 0
+      },
+      "verifiedWriteCount": 10,
+      "mechanicalBlockedWriteCount": 0,
+      "falseGaps": 3,
+      "assistanceCount": 0,
+      "finalReviewReached": false,
+      "correctCompletion": false,
+      "captcha": {
+        "reachedByWorkflow": false,
+        "attempted": false,
+        "outcome": "not_reached_form_questions",
+        "visibleAccepted": null,
+        "actuator": null,
+        "imageRuntimeActuallyCalled": null,
+        "imageModelActuallyCalled": null,
+        "reasoningActuallyUsed": null,
+        "rounds": 0,
+        "imageCalls": 0,
+        "rejectedAnswers": 0,
+        "wallSeconds": null,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "contextUsageUnits": null,
+        "directApiKeyChargeUsd": 0,
+        "estimatedApiCostUsd": null,
+        "billedCostUsd": null
+      },
+      "modelCallReceipts": [
+        {
+          "startedAt": "2026-10-09T16:41:09.369Z",
+          "endedAt": "2026-10-09T16:41:09.649Z",
+          "role": "decision_classifier",
+          "requestedModel": null,
+          "requestedReasoning": null,
+          "providerReportedModel": "jev-1.13.0",
+          "runtimeSeconds": 0.276654,
+          "observerSeconds": 0.280064,
+          "inputTokens": 18424,
+          "outputTokens": 7882,
+          "ok": true
+        },
+        {
+          "startedAt": "2026-10-09T16:41:09.766Z",
+          "endedAt": "2026-10-09T16:41:10.010Z",
+          "role": "decision_classifier",
+          "requestedModel": null,
+          "requestedReasoning": null,
+          "providerReportedModel": "jev-1.13.0",
+          "runtimeSeconds": 0.241759,
+          "observerSeconds": 0.243836,
+          "inputTokens": 18424,
+          "outputTokens": 7881,
+          "ok": true
+        }
+      ],
+      "deferredCalls": [
+        {
+          "startedAt": "2026-10-09T16:41:09.369Z",
+          "apiSeconds": 0.276654,
+          "observerSeconds": 0.280064,
+          "approvedMappings": 17,
+          "deferred": [
+            {
+              "field": "Mailing address (if different from home address)",
+              "confidence": 0.41,
+              "reason": "Uncertain or locally unsupported classification"
+            },
+            {
+              "field": "If yes - MediCal Case #",
+              "confidence": 0.68,
+              "reason": "Uncertain or locally unsupported classification"
+            }
+          ]
+        },
+        {
+          "startedAt": "2026-10-09T16:41:09.766Z",
+          "apiSeconds": 0.241759,
+          "observerSeconds": 0.243836,
+          "approvedMappings": 16,
+          "deferred": [
+            {
+              "field": "Mailing address (if different from home address)",
+              "confidence": 0.45,
+              "reason": "Uncertain or locally unsupported classification"
+            },
+            {
+              "field": "If yes - MediCal Case #",
+              "confidence": 0.72,
+              "reason": "Uncertain or locally unsupported classification"
+            },
+            {
+              "field": "Do you have Medi-Cal?",
+              "confidence": 0.89,
+              "reason": "Uncertain or locally unsupported classification"
+            }
+          ]
+        }
+      ],
+      "events": [
+        {
+          "type": "scan_completed",
+          "at": "2026-10-09T16:41:09.707Z",
+          "details": {
+            "fieldCount": 19,
+            "gapCount": 2,
+            "modelRuntime": "jev-typesafe-local-companion",
+            "modelPromptCount": 1,
+            "modelDurationMs": 277,
+            "modelInputTokens": 18424,
+            "modelOutputTokens": 7882,
+            "checkpointKind": "human_input",
+            "toStatus": "needs_attention"
+          }
+        },
+        {
+          "type": "questions_required",
+          "at": "2026-10-09T16:41:09.707Z",
+          "details": {
+            "gapCount": 2,
+            "checkpointKind": "human_input"
+          }
+        },
+        {
+          "type": "scan_completed",
+          "at": "2026-10-09T16:41:10.012Z",
+          "details": {
+            "fieldCount": 19,
+            "gapCount": 3,
+            "modelRuntime": "jev-typesafe-local-companion",
+            "modelPromptCount": 1,
+            "modelDurationMs": 242,
+            "modelInputTokens": 18424,
+            "modelOutputTokens": 7881,
+            "checkpointKind": "human_input",
+            "toStatus": "needs_attention"
+          }
+        },
+        {
+          "type": "questions_required",
+          "at": "2026-10-09T16:41:10.012Z",
+          "details": {
+            "gapCount": 3,
+            "checkpointKind": "human_input"
+          }
+        },
+        {
+          "type": "fill_started",
+          "at": "2026-10-09T16:41:10.034Z",
+          "details": {
+            "fieldCount": 10
+          }
+        },
+        {
+          "type": "checkpoint_reached",
+          "at": "2026-10-09T16:41:17.677Z",
+          "details": {
+            "checkpointKind": "human_input",
+            "toStatus": "needs_attention"
+          }
+        },
+        {
+          "type": "page_verified",
+          "at": "2026-10-09T16:41:17.677Z",
+          "details": {
+            "gapCount": 3,
+            "verifiedCount": 10,
+            "blockedCount": 0,
+            "pageCount": 1,
+            "toStatus": "needs_attention"
+          }
+        }
+      ]
+    },
+    {
+      "id": "oct9-wic-codex-default-r1",
+      "site": "Riverside WIC",
+      "repeat": 1,
+      "formRuntime": "codex-cli-subscription",
+      "requestedModel": null,
+      "providerReportedModel": null,
+      "reasoningEffort": null,
+      "reasoningIdentity": "not specified by v0.14 form route; unknown",
+      "confidenceThreshold": null,
+      "startedAt": "2026-10-09T16:44:07.509Z",
+      "firstTerminalAt": "2026-10-09T16:46:04.020Z",
+      "formWallSecondsToCheckpoint": 116.511,
+      "timeToCorrectCompletionSeconds": null,
+      "fillReadbackSeconds": 8.811,
+      "planningScans": 3,
+      "modelCalls": 9,
+      "summedModelSeconds": 125.335,
+      "inputTokens": 178677,
+      "outputTokens": 3638,
+      "cachedInputTokens": null,
+      "reasoningTokens": null,
+      "contextUsageUnits": null,
+      "directApiKeyChargeUsd": 0,
+      "estimatedApiCostUsd": null,
+      "estimatedApiCostUsdExact": null,
+      "conditionalApiScenarios": {
+        "assumptions": "Same recorded tokens, hypothetical named model, all input ordinary uncached, no context premium. Identity and actual cache use unknown; these are not the run's estimated bill.",
+        "gpt-6.1-sol": 0.393734,
+        "gpt-6-luna": 0.019687
+      },
+      "billedCostUsd": null,
+      "operatingCostUsd": null,
+      "terminalCheckpoint": "captcha",
+      "semanticQuality": {
+        "method": "Native accessibility readback compared with the complete fictional source. Zero operator answer repairs.",
+        "correct": 16,
+        "incorrect": 1,
+        "missing": 0,
+        "expected": 17,
+        "incorrectAnswers": [
+          {
+            "field": "Home Address",
+            "errorId": "F01",
+            "expected": "Street, unit, city, state and ZIP",
+            "observed": "Street and unit only; city, state and ZIP missing"
+          }
+        ],
+        "missingAnswers": [],
+        "falseGaps": [],
+        "notApplicableCorrect": 1,
+        "notApplicableExpected": 2,
+        "notApplicableErrors": [
+          {
+            "field": "Mailing address (if different from home address)",
+            "errorId": "F08",
+            "expected": "Blank because mailing and home are identical",
+            "observed": "Filled with street and unit despite conditional instruction"
+          }
+        ],
+        "requiredHtmlValidity": "not independently read with validity API; all supplied required answers visibly present",
+        "manualAnswerRepairs": 0,
+        "manualNavigationRepairs": 0
+      },
+      "verifiedWriteCount": 12,
+      "mechanicalBlockedWriteCount": 0,
+      "falseGaps": 0,
+      "assistanceCount": 0,
+      "finalReviewReached": false,
+      "correctCompletion": false,
+      "captcha": {
+        "reachedByWorkflow": true,
+        "attempted": false,
+        "outcome": "not_attempted_pending_action_time_confirmation",
+        "visibleAccepted": null,
+        "actuator": null,
+        "imageRuntimeActuallyCalled": null,
+        "imageModelActuallyCalled": null,
+        "reasoningActuallyUsed": null,
+        "rounds": 0,
+        "imageCalls": 0,
+        "rejectedAnswers": 0,
+        "wallSeconds": null,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "contextUsageUnits": null,
+        "directApiKeyChargeUsd": 0,
+        "estimatedApiCostUsd": null,
+        "billedCostUsd": null
+      },
+      "modelCallReceipts": [
+        {
+          "startedAt": "2026-10-09T16:44:07.654Z",
+          "endedAt": "2026-10-09T16:44:14.538Z",
+          "role": "gap_analyst",
+          "requestedModel": null,
+          "requestedReasoning": null,
+          "providerReportedModel": null,
+          "runtimeSeconds": 6.878,
+          "observerSeconds": 6.883713,
+          "inputTokens": 19180,
+          "outputTokens": 43,
+          "ok": true
+        },
+        {
+          "startedAt": "2026-10-09T16:44:07.654Z",
+          "endedAt": "2026-10-09T16:44:23.675Z",
+          "role": "field_mapper",
+          "requestedModel": null,
+          "requestedReasoning": null,
+          "providerReportedModel": null,
+          "runtimeSeconds": 16.017,
+          "observerSeconds": 16.020934,
+          "inputTokens": 19879,
+          "outputTokens": 572,
+          "ok": true
+        },
+        {
+          "startedAt": "2026-10-09T16:44:23.682Z",
+          "endedAt": "2026-10-09T16:44:40.156Z",
+          "role": "form_reviewer",
+          "requestedModel": null,
+          "requestedReasoning": null,
+          "providerReportedModel": null,
+          "runtimeSeconds": 16.471,
+          "observerSeconds": 16.473809,
+          "inputTokens": 20472,
+          "outputTokens": 526,
+          "ok": true
+        },
+        {
+          "startedAt": "2026-10-09T16:44:40.228Z",
+          "endedAt": "2026-10-09T16:44:46.045Z",
+          "role": "gap_analyst",
+          "requestedModel": null,
+          "requestedReasoning": null,
+          "providerReportedModel": null,
+          "runtimeSeconds": 5.814,
+          "observerSeconds": 5.816877,
+          "inputTokens": 19180,
+          "outputTokens": 36,
+          "ok": true
+        },
+        {
+          "startedAt": "2026-10-09T16:44:40.227Z",
+          "endedAt": "2026-10-09T16:45:00.730Z",
+          "role": "field_mapper",
+          "requestedModel": null,
+          "requestedReasoning": null,
+          "providerReportedModel": null,
+          "runtimeSeconds": 20.5,
+          "observerSeconds": 20.503343,
+          "inputTokens": 19883,
+          "outputTokens": 650,
+          "ok": true
+        },
+        {
+          "startedAt": "2026-10-09T16:45:00.738Z",
+          "endedAt": "2026-10-09T16:45:18.609Z",
+          "role": "form_reviewer",
+          "requestedModel": null,
+          "requestedReasoning": null,
+          "providerReportedModel": null,
+          "runtimeSeconds": 17.868,
+          "observerSeconds": 17.874209,
+          "inputTokens": 20509,
+          "outputTokens": 574,
+          "ok": true
+        },
+        {
+          "startedAt": "2026-10-09T16:45:27.501Z",
+          "endedAt": "2026-10-09T16:45:32.829Z",
+          "role": "gap_analyst",
+          "requestedModel": null,
+          "requestedReasoning": null,
+          "providerReportedModel": null,
+          "runtimeSeconds": 5.322,
+          "observerSeconds": 5.325537,
+          "inputTokens": 19178,
+          "outputTokens": 54,
+          "ok": true
+        },
+        {
+          "startedAt": "2026-10-09T16:45:27.500Z",
+          "endedAt": "2026-10-09T16:45:46.805Z",
+          "role": "field_mapper",
+          "requestedModel": null,
+          "requestedReasoning": null,
+          "providerReportedModel": null,
+          "runtimeSeconds": 19.296,
+          "observerSeconds": 19.305685,
+          "inputTokens": 19881,
+          "outputTokens": 617,
+          "ok": true
+        },
+        {
+          "startedAt": "2026-10-09T16:45:46.814Z",
+          "endedAt": "2026-10-09T16:46:03.987Z",
+          "role": "form_reviewer",
+          "requestedModel": null,
+          "requestedReasoning": null,
+          "providerReportedModel": null,
+          "runtimeSeconds": 17.169,
+          "observerSeconds": 17.17296,
+          "inputTokens": 20515,
+          "outputTokens": 566,
+          "ok": true
+        }
+      ],
+      "deferredCalls": [],
+      "events": [
+        {
+          "type": "scan_completed",
+          "at": "2026-10-09T16:44:40.158Z",
+          "details": {
+            "fieldCount": 19,
+            "gapCount": 0,
+            "modelRuntime": "codex-cli-subscription",
+            "modelPromptCount": 3,
+            "modelDurationMs": 39366,
+            "modelInputTokens": 59531,
+            "modelOutputTokens": 1141,
+            "checkpointKind": "captcha",
+            "toStatus": "ready_to_fill"
+          }
+        },
+        {
+          "type": "scan_completed",
+          "at": "2026-10-09T16:45:18.612Z",
+          "details": {
+            "fieldCount": 19,
+            "gapCount": 0,
+            "modelRuntime": "codex-cli-subscription",
+            "modelPromptCount": 3,
+            "modelDurationMs": 44182,
+            "modelInputTokens": 59572,
+            "modelOutputTokens": 1260,
+            "checkpointKind": "captcha",
+            "toStatus": "ready_to_fill"
+          }
+        },
+        {
+          "type": "fill_started",
+          "at": "2026-10-09T16:45:18.660Z",
+          "details": {
+            "fieldCount": 12
+          }
+        },
+        {
+          "type": "page_verified",
+          "at": "2026-10-09T16:45:27.471Z",
+          "details": {
+            "gapCount": 0,
+            "verifiedCount": 12,
+            "blockedCount": 0,
+            "pageCount": 1,
+            "toStatus": "ready_to_fill"
+          }
+        },
+        {
+          "type": "scan_completed",
+          "at": "2026-10-09T16:46:03.992Z",
+          "details": {
+            "fieldCount": 19,
+            "gapCount": 0,
+            "modelRuntime": "codex-cli-subscription",
+            "modelPromptCount": 3,
+            "modelDurationMs": 41787,
+            "modelInputTokens": 59574,
+            "modelOutputTokens": 1237,
+            "checkpointKind": "captcha",
+            "toStatus": "ready_to_fill"
+          }
+        },
+        {
+          "type": "checkpoint_reached",
+          "at": "2026-10-09T16:46:04.020Z",
+          "details": {
+            "checkpointKind": "captcha",
+            "toStatus": "needs_attention"
+          }
+        }
+      ]
+    }
+  ]
+}

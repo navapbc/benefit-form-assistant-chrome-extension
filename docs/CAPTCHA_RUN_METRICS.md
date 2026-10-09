@@ -1,5 +1,7 @@
 # CAPTCHA speed and cost for every retained run
 
+**October 9 installed update:** four fresh WIC form runs have per-run checkpoint speed, source-agreement errors, token/context usage and cost basis in [the new installed batch](INSTALLED_V014_BATCH.md). Nano/Codex each reached CAPTCHA; Jev's two runs stopped at questions. **Zero new native CAPTCHA attempts** means these are not added as CAPTCHA successes or failures in the historical ledger below. [Current native coverage and pending matrix](INSTALLED_V014_BATCH.md#which-models-completed-captcha).
+
 The ledger covers all 14 October 7 action trials, all 21 image trials, the October 5 historical trial, the batch of eight CLI startup failures, four October 8 product-adapter image calls, four MIME-validation failures, and two native browser fixture attempts. Failures and missing results stay in the denominator. **Unknown means unmeasured, not zero.**
 
 Runtime elapsed time includes setup and the model request. Nano alone exposes a separate prompt-time measurement. Browser observation intervals include relay orchestration and waiting. End-to-end journey time was not measured, and these noncontiguous phases cannot be added into a complete application duration.

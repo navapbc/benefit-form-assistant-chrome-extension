@@ -1,0 +1,35 @@
+{
+  "verifiedAt": "2026-10-09",
+  "currency": "USD",
+  "unit": "per million tokens",
+  "billingScope": "Published list-price scenarios, not invoices or subscription allocation",
+  "models": {
+    "gpt-6.1-sol": {
+      "input": 2,
+      "cachedInput": 0.1,
+      "cacheWrite": 2.5,
+      "output": 10,
+      "source": "https://developers.openai.com/api/docs/models/gpt-6.1-sol"
+    },
+    "gpt-6-luna": {
+      "input": 0.1,
+      "cachedInput": 0.01,
+      "cacheWrite": 0.125,
+      "output": 0.5,
+      "source": "https://developers.openai.com/api/docs/models/gpt-6-luna"
+    },
+    "jev-1.13.0": {
+      "input": 0.042,
+      "output": 0,
+      "source": "https://docs.typesafe.ai/models"
+    }
+  },
+  "notes": [
+    "Reasoning tokens are already part of output usage; do not add them twice.",
+    "OpenAI input above 272000 tokens has a 2x input/cache and 1.5x output premium. Apply per request, not to a batch sum.",
+    "Unknown requested/resolved form model means unknown API-price scenario, even if token counts are available.",
+    "Nano context units are not provider API tokens. Direct per-token API charge is zero; device, energy and operator costs were not measured.",
+    "Jev is text only and exposes no configurable reasoning setting in this integration. Output is free at the published rate.",
+    "For subscription transports, zero direct API-key charges does not mean zero billed or operating cost."
+  ]
+}

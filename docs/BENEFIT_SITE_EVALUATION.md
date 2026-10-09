@@ -1,6 +1,8 @@
 # Benefit form filling: promising planning results, unfinished live quality
 
-Nava Labs · Updated October 8, 2026 · [Reviewed result tables](../evaluation/results/README.md)
+Nava Labs · Updated October 9, 2026 · [Reviewed result tables](../evaluation/results/README.md)
+
+**New installed v0.14 WIC batch:** four actually executed form runs, no manual answer repair and 0/4 correct completions. Nano took 243.3 s to CAPTCHA with 16/17 correct answers. Jev took 8.39 / 8.45 s to blocking questions, with 15/17 each and $0.001547616 estimated API cost per repeat. Codex default took 116.5 s to CAPTCHA, with 16/17 plus an unnecessary conditional mailing-address fill. Its actual form model/reasoning is unspecified, so the model-price estimate remains unknown despite measured tokens. Native CAPTCHA attempts remain zero; the staged tests and remaining repeats are pending. [Full per-run timing, tokens, cost and exact errors](INSTALLED_V014_BATCH.md) · [Shareable error catalog](BENCHMARK_ERRORS.md).
 
 The extension fills much of a short intake form, but our saved live tests still require help and have not reached unassisted final review. A new controlled pilot separates requested models, reasoning settings, and planning transports: **30 attempts, 90 actual role calls, 25 planning passes, no operator repairs**. An October 7 Jev decision-stage pilot added **six real requests and four scored planning passes**, with 0.14–0.41-second responses. These results support further testing; they do not establish application completion or production accuracy.
 

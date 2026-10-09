@@ -1,6 +1,9 @@
 # Reviewed evaluation results
 
-These tables support the October 8 writeup without publishing applicant values or raw live-site artifacts.
+These tables support the October 9 writeup without publishing applicant values or raw live-site artifacts.
+
+- **[October 9 installed v14 ledger](installed-v014-oct9.json)** and [CSV](installed-v014-oct9.csv): all four actually executed WIC form runs, stage timestamps, source-agreement errors, conditional-control errors, unnecessary questions, per-call usage and unknown metrics. Nano/Codex each reached CAPTCHA; Jev's two runs stopped at questions. No native CAPTCHA attempt yet; remaining repeats/matrix explicitly unexecuted.
+- [Readable new run results](../../docs/INSTALLED_V014_BATCH.md), [field-level error catalog](../../docs/BENCHMARK_ERRORS.md), and [installed test protocol/pricing](../installed-v014/README.md). CSV blanks are unavailable/not applicable, not zeros; consult the JSON definitions and outcome fields.
 
 - [Controlled attempt ledger](controlled-attempts.json): all 30 plans, requested model/effort/transport, latency, score, usage, and hypothetical API prices. Provider-resolved identity stays unknown. No operator repairs.
 - [Controlled aggregates](controlled-summary.json): two repeats per case/configuration, min/median/max latency and quality counts. Planning passes are not complete applications.

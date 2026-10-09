@@ -6,6 +6,17 @@ Version **0.14.0** · Nava Labs tester release · October 8, 2026
 
 ## Test results
 
+**Latest installed v14 batch · October 9:** four fresh WIC form runs, **0/4 correct completions**, zero operator answer repairs. Nano/Codex reached CAPTCHA with incomplete addresses; Jev paused on unnecessary questions. No new native CAPTCHA action has been attempted yet. The remaining repeats and image-runtime matrix are pending, not measured failures.
+
+| Installed form run | Time to stopped checkpoint | Correct answers | Prompts | Usage | API cost basis | CAPTCHA in this batch |
+|---|---:|---:|---:|---|---|---|
+| Nano 1 · Chrome-managed model/effort | 243.3 s | 16/17 | 9 | 23,718 context units; API tokens unavailable | $0 API charge; device cost unknown | Reached; not attempted |
+| Jev 1.13.0 · repeat 1 | 8.39 s | 15/17 | 2 | 36,848 input / 15,762 output tokens | $0.001547616 estimate; billed unknown | Not reached; questions |
+| Jev 1.13.0 · repeat 2 | 8.45 s | 15/17 | 2 | 36,848 input / 15,763 output tokens | $0.001547616 estimate; billed unknown | Not reached; questions |
+| Codex CLI default · repeat 1 | 116.5 s | 16/17 | 9 | 178,677 input / 3,638 output tokens | $0 direct API-key charge; model-price estimate unknown | Reached; not attempted |
+
+These are **times to a stopped workflow**, not successful completion speeds. All four omit city/state/ZIP from Home Address. Jev leaves Medi-Cal unanswered and asks two not-applicable questions; Codex also fills the conditional mailing-address box unnecessarily, outside the 17-answer denominator. v14's Codex form route does not specify model/reasoning, so it is not attributed to this chat's model. [Full new run details and stage timings](docs/INSTALLED_V014_BATCH.md) · **[Error catalog and reproduction steps](docs/BENCHMARK_ERRORS.md)** · [JSON](evaluation/results/installed-v014-oct9.json) · [CSV](evaluation/results/installed-v014-oct9.csv).
+
 **Live application quality remains unfinished: 0/8 October 5 workflows reached unassisted final review.** The newer tests below measure field planning only, using frozen controls and fictional records. They do not show complete government applications.
 
 | Tested configuration | WIC planning | IHSS subset | CalFresh subset | WIC median time | WIC model-price estimate¹ |
@@ -23,7 +34,7 @@ Passed / attempted, with two repeats per case. CLI/Eve use three planning role c
 
 ![Jev quality and response time across three cases](docs/assets/jev-planning-results.svg)
 
-The original classifier-only Jev pilot missed a required IHSS question after low-confidence deferral. Version 0.13 adds explicit missing-answer questions, a protected Jev companion and a selectable extension runtime. Its new transport/planner tests are below; installed Chrome execution is still pending.
+The original classifier-only Jev pilot missed a required IHSS question after low-confidence deferral. Version 0.13 adds explicit missing-answer questions, a protected Jev companion and a selectable extension runtime. Its transport/planner tests are below; October 9 now adds two actual installed WIC executions, both blocked by unnecessary questions before CAPTCHA.
 
 ### Gemini Nano and playbook results
 
@@ -52,7 +63,9 @@ The current batch's API durations were 0.133–0.268 seconds; planner wall time 
 
 ### Which model clicked through CAPTCHA?
 
-**New in v0.14:** a native extension executor, separate from the earlier Codex browser relay. Four mechanical browser-fixture checks passed; installed/live-provider acceptance remains unverified. The new product image adapters also ran twice on the same saved grid:
+**October 9 native status: 0 attempts, 0 accepted states.** Nano and Codex each have a filled WIC page staged at CAPTCHA; Jev's two workflows stopped at questions. No image runtime has been called in this fresh installed batch. This is pending coverage, not a 0% model accuracy score. [Exact current results, speed/cost and remaining work](docs/INSTALLED_V014_BATCH.md#which-models-completed-captcha).
+
+**New in v0.14:** a native extension executor, separate from the earlier Codex browser relay. Four mechanical browser-fixture checks passed; native live-provider acceptance remains unverified. The new product image adapters also ran twice on the same saved grid:
 
 | Product image adapter · requested GPT-6.1 Sol Low | Exact tile sets | Elapsed time, repeat 1 / 2 | API-price scenario, repeat 1 / 2¹ |
 |---|---:|---:|---:|
@@ -93,7 +106,7 @@ These repeats cover **one unique image**, not general CAPTCHA accuracy. Saved-im
 
 The two Jev checkbox decisions took 0.241 s and 0.124 s, with **$0.000050904 total input-token price estimate** and unknown billed cost. Nano decisions took 8.02 s and 2.20 s. CLI/Eve used subscription access; device, subscription, relay and review costs were not allocated. This benchmark does not measure cost per completed application.
 
-**Extension status:** v0.14 adds a native, opt-in reCAPTCHA actuator: one authorization covers the checkbox and up to three static image rounds. It uses no Codex browser relay. The prior live results above still belong to the external relay, and cannot be relabeled native successes. Native fixture checks passed; installed-extension and live-provider acceptance are unverified. Provider pages may reject synthetic DOM clicks. The Codex browser tool's external action-time policy remains outside this repository.
+**Extension status:** v0.14 adds a native, opt-in reCAPTCHA actuator: one authorization covers the checkbox and up to three static image rounds. It uses no Codex browser relay. The prior live results above still belong to the external relay, and cannot be relabeled native successes. Native fixture checks passed; installed WIC form planning/filling now ran four times, while native CAPTCHA execution and live-provider acceptance remain unverified. Provider pages may reject synthetic DOM clicks. The Codex browser tool's external action-time policy remains outside this repository.
 
 ![CAPTCHA image comparison on one common grid](docs/assets/captcha-image-accuracy.svg)
 
@@ -128,7 +141,7 @@ The IHSS charts are one historical run per runtime. Readback coverage measures p
 - Tracks several applications, pauses and resumes checkpoints, and exports a value-free activity log.
 - Shows a prototype recertification workspace for upcoming renewals, updates, and client authorization.
 
-**What remains unfinished:** no saved live-site trial reached unassisted final review. Address completeness, missing decisions, and long BenefitsCal flows need work. Native CAPTCHA automation is experimental and has no verified installed/live-provider run. One-time codes, unsupported challenges and final submission require a person. Eve remains a separate form-planning harness and is now an optional image classifier for the native actuator. Jev’s installed Chrome execution remains unverified.
+**What remains unfinished:** no saved live-site trial reached unassisted final review. Address completeness, missing decisions, and long BenefitsCal flows need work. Native CAPTCHA automation is experimental and has no verified live-provider run. One-time codes, unsupported challenges and final submission require a person. Eve remains a separate form-planning harness and is now an optional image classifier for the native actuator. Jev's two installed WIC executions filled known values but stopped at unnecessary questions. [Current error details](docs/BENCHMARK_ERRORS.md).
 
 Read [the current testing writeup](docs/BENEFIT_SITE_EVALUATION.md), or [the developer guide](DEVELOPER_GUIDE.md).
 
