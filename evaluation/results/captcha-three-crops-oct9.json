@@ -1,0 +1,2138 @@
+{
+  "schema": "nava.captcha-classification-matrix.v1",
+  "evaluatedAt": "2026-10-09",
+  "scope": "36 fresh product-adapter calls; six configurations, three saved public 3\u00d73 WIC image grids, two repeats each. No live image submissions. Native actuator tested separately.",
+  "order": "CLI/Eve sequential with configuration order reversed in repeat 2, fixture order traffic lights/bridges/bicycles. Nano ran after the 30 CLI/Eve calls on the same device/profile.",
+  "models": "Requested flags/configurations; provider-resolved identity unavailable. Nano exact managed version/effort not exposed. Jev has no image adapter and is not in an image-accuracy denominator.",
+  "groundTruth": "Human review of public crops; bridge/bicycle sets also consistent with prior live acceptance. One reviewer; no independent second review.",
+  "prices": "../installed-v014/pricing-2026-10-09.json",
+  "limits": [
+    "Three unique images, not 36 independent challenge types.",
+    "Image prompts/context differ across Nano/CLI/Eve; this is a product-system comparison.",
+    "Model handoff does not establish refusal motive; explanatory prose is not retained by the product schema.",
+    "Pixels and full challenge screenshots remain local; hashes and crop bounds identify the exact inputs.",
+    "No invoices or operating/device/subscription allocation measured. Nano API cost $0."
+  ],
+  "trials": [
+    {
+      "id": "oct9-crops-traffic-lights-codex-gpt-6.1-sol-low-r1",
+      "batch": "oct9-three-crop-product-adapters",
+      "provider": "codex-cli",
+      "requestedModel": "gpt-6.1-sol",
+      "requestedReasoning": "low",
+      "reportedModel": null,
+      "modelIdentityBasis": "CLI request flags; provider-resolved identity unavailable",
+      "fixtureId": "traffic-lights",
+      "repeat": 1,
+      "task": "Select all images with traffic lights.",
+      "tileCount": 9,
+      "imageSha256": "d94b42f78bfb864ec1cadf2516179e3bd8a790549227d1b507ce170ebff6cd9c",
+      "sourceScreenshotSha256": "ce3ac8f2ad149b7208606fa502fb340ce12e69895536e1bb5df951f84b599dc2",
+      "cropBounds": [
+        74,
+        240,
+        460,
+        628
+      ],
+      "adjudicatedTiles": [
+        1,
+        8,
+        9
+      ],
+      "groundTruthBasis": "Manual review of the saved public screenshot; bridge/bicycle sets also matched prior visible live acceptance. No new site submission.",
+      "startedAt": "2026-10-09T17:36:18.372Z",
+      "endedAt": "2026-10-09T17:36:26.412Z",
+      "durationMs": 8035.060875,
+      "answer": {
+        "action": "select",
+        "tiles": [
+          1,
+          8,
+          9
+        ]
+      },
+      "error": null,
+      "outcome": "exact_set",
+      "exactSetCorrect": true,
+      "missedTiles": [],
+      "extraTiles": [],
+      "usage": {
+        "inputTokens": 18130,
+        "outputTokens": 67,
+        "cachedInputTokens": 0,
+        "providerReportedCostUsd": null,
+        "durationMs": 8028
+      },
+      "modelCalls": 1,
+      "directApiKeyChargeUsd": 0,
+      "billedCostUsd": null,
+      "operatingCostUsd": null,
+      "scope": "Fresh product-adapter inference on three saved public WIC crops; not live challenges, browser actuation, form completion or general CAPTCHA reliability",
+      "siteAccepted": null,
+      "applicationSubmitted": false
+    },
+    {
+      "id": "oct9-crops-traffic-lights-codex-gpt-6.1-sol-xhigh-r1",
+      "batch": "oct9-three-crop-product-adapters",
+      "provider": "codex-cli",
+      "requestedModel": "gpt-6.1-sol",
+      "requestedReasoning": "xhigh",
+      "reportedModel": null,
+      "modelIdentityBasis": "CLI request flags; provider-resolved identity unavailable",
+      "fixtureId": "traffic-lights",
+      "repeat": 1,
+      "task": "Select all images with traffic lights.",
+      "tileCount": 9,
+      "imageSha256": "d94b42f78bfb864ec1cadf2516179e3bd8a790549227d1b507ce170ebff6cd9c",
+      "sourceScreenshotSha256": "ce3ac8f2ad149b7208606fa502fb340ce12e69895536e1bb5df951f84b599dc2",
+      "cropBounds": [
+        74,
+        240,
+        460,
+        628
+      ],
+      "adjudicatedTiles": [
+        1,
+        8,
+        9
+      ],
+      "groundTruthBasis": "Manual review of the saved public screenshot; bridge/bicycle sets also matched prior visible live acceptance. No new site submission.",
+      "startedAt": "2026-10-09T17:36:26.413Z",
+      "endedAt": "2026-10-09T17:36:45.041Z",
+      "durationMs": 18628.717291999998,
+      "answer": {
+        "action": "select",
+        "tiles": [
+          1,
+          8,
+          9
+        ]
+      },
+      "error": null,
+      "outcome": "exact_set",
+      "exactSetCorrect": true,
+      "missedTiles": [],
+      "extraTiles": [],
+      "usage": {
+        "inputTokens": 14842,
+        "outputTokens": 392,
+        "cachedInputTokens": 0,
+        "providerReportedCostUsd": null,
+        "durationMs": 18625
+      },
+      "modelCalls": 1,
+      "directApiKeyChargeUsd": 0,
+      "billedCostUsd": null,
+      "operatingCostUsd": null,
+      "scope": "Fresh product-adapter inference on three saved public WIC crops; not live challenges, browser actuation, form completion or general CAPTCHA reliability",
+      "siteAccepted": null,
+      "applicationSubmitted": false
+    },
+    {
+      "id": "oct9-crops-traffic-lights-codex-gpt-6-luna-low-r1",
+      "batch": "oct9-three-crop-product-adapters",
+      "provider": "codex-cli",
+      "requestedModel": "gpt-6-luna",
+      "requestedReasoning": "low",
+      "reportedModel": null,
+      "modelIdentityBasis": "CLI request flags; provider-resolved identity unavailable",
+      "fixtureId": "traffic-lights",
+      "repeat": 1,
+      "task": "Select all images with traffic lights.",
+      "tileCount": 9,
+      "imageSha256": "d94b42f78bfb864ec1cadf2516179e3bd8a790549227d1b507ce170ebff6cd9c",
+      "sourceScreenshotSha256": "ce3ac8f2ad149b7208606fa502fb340ce12e69895536e1bb5df951f84b599dc2",
+      "cropBounds": [
+        74,
+        240,
+        460,
+        628
+      ],
+      "adjudicatedTiles": [
+        1,
+        8,
+        9
+      ],
+      "groundTruthBasis": "Manual review of the saved public screenshot; bridge/bicycle sets also matched prior visible live acceptance. No new site submission.",
+      "startedAt": "2026-10-09T17:36:45.042Z",
+      "endedAt": "2026-10-09T17:36:49.833Z",
+      "durationMs": 4791.069042000003,
+      "answer": {
+        "action": "select",
+        "tiles": [
+          8,
+          9
+        ]
+      },
+      "error": null,
+      "outcome": "wrong_set",
+      "exactSetCorrect": false,
+      "missedTiles": [
+        1
+      ],
+      "extraTiles": [],
+      "usage": {
+        "inputTokens": 14156,
+        "outputTokens": 21,
+        "cachedInputTokens": 0,
+        "providerReportedCostUsd": null,
+        "durationMs": 4787
+      },
+      "modelCalls": 1,
+      "directApiKeyChargeUsd": 0,
+      "billedCostUsd": null,
+      "operatingCostUsd": null,
+      "scope": "Fresh product-adapter inference on three saved public WIC crops; not live challenges, browser actuation, form completion or general CAPTCHA reliability",
+      "siteAccepted": null,
+      "applicationSubmitted": false
+    },
+    {
+      "id": "oct9-crops-traffic-lights-codex-gpt-6-luna-xhigh-r1",
+      "batch": "oct9-three-crop-product-adapters",
+      "provider": "codex-cli",
+      "requestedModel": "gpt-6-luna",
+      "requestedReasoning": "xhigh",
+      "reportedModel": null,
+      "modelIdentityBasis": "CLI request flags; provider-resolved identity unavailable",
+      "fixtureId": "traffic-lights",
+      "repeat": 1,
+      "task": "Select all images with traffic lights.",
+      "tileCount": 9,
+      "imageSha256": "d94b42f78bfb864ec1cadf2516179e3bd8a790549227d1b507ce170ebff6cd9c",
+      "sourceScreenshotSha256": "ce3ac8f2ad149b7208606fa502fb340ce12e69895536e1bb5df951f84b599dc2",
+      "cropBounds": [
+        74,
+        240,
+        460,
+        628
+      ],
+      "adjudicatedTiles": [
+        1,
+        8,
+        9
+      ],
+      "groundTruthBasis": "Manual review of the saved public screenshot; bridge/bicycle sets also matched prior visible live acceptance. No new site submission.",
+      "startedAt": "2026-10-09T17:36:49.833Z",
+      "endedAt": "2026-10-09T17:36:59.669Z",
+      "durationMs": 9835.431416999996,
+      "answer": {
+        "action": "select",
+        "tiles": [
+          8,
+          9
+        ]
+      },
+      "error": null,
+      "outcome": "wrong_set",
+      "exactSetCorrect": false,
+      "missedTiles": [
+        1
+      ],
+      "extraTiles": [],
+      "usage": {
+        "inputTokens": 14153,
+        "outputTokens": 568,
+        "cachedInputTokens": 0,
+        "providerReportedCostUsd": null,
+        "durationMs": 9831
+      },
+      "modelCalls": 1,
+      "directApiKeyChargeUsd": 0,
+      "billedCostUsd": null,
+      "operatingCostUsd": null,
+      "scope": "Fresh product-adapter inference on three saved public WIC crops; not live challenges, browser actuation, form completion or general CAPTCHA reliability",
+      "siteAccepted": null,
+      "applicationSubmitted": false
+    },
+    {
+      "id": "oct9-crops-traffic-lights-eve-gpt-6.1-sol-low-r1",
+      "batch": "oct9-three-crop-product-adapters",
+      "provider": "eve-0.71.2",
+      "requestedModel": "gpt-6.1-sol",
+      "requestedReasoning": "low",
+      "reportedModel": null,
+      "modelIdentityBasis": "Bundled agent configuration; provider-resolved identity unavailable",
+      "fixtureId": "traffic-lights",
+      "repeat": 1,
+      "task": "Select all images with traffic lights.",
+      "tileCount": 9,
+      "imageSha256": "d94b42f78bfb864ec1cadf2516179e3bd8a790549227d1b507ce170ebff6cd9c",
+      "sourceScreenshotSha256": "ce3ac8f2ad149b7208606fa502fb340ce12e69895536e1bb5df951f84b599dc2",
+      "cropBounds": [
+        74,
+        240,
+        460,
+        628
+      ],
+      "adjudicatedTiles": [
+        1,
+        8,
+        9
+      ],
+      "groundTruthBasis": "Manual review of the saved public screenshot; bridge/bicycle sets also matched prior visible live acceptance. No new site submission.",
+      "startedAt": "2026-10-09T17:36:59.669Z",
+      "endedAt": "2026-10-09T17:37:09.569Z",
+      "durationMs": 9900.281834000001,
+      "answer": {
+        "action": "handoff",
+        "tiles": []
+      },
+      "error": null,
+      "outcome": "model_handoff",
+      "exactSetCorrect": null,
+      "missedTiles": null,
+      "extraTiles": null,
+      "usage": {
+        "inputTokens": 2049,
+        "outputTokens": 139,
+        "providerReportedCostUsd": null,
+        "durationMs": 9899
+      },
+      "modelCalls": 1,
+      "directApiKeyChargeUsd": 0,
+      "billedCostUsd": null,
+      "operatingCostUsd": null,
+      "scope": "Fresh product-adapter inference on three saved public WIC crops; not live challenges, browser actuation, form completion or general CAPTCHA reliability",
+      "siteAccepted": null,
+      "applicationSubmitted": false
+    },
+    {
+      "id": "oct9-crops-traffic-lights-eve-gpt-6.1-sol-low-r2",
+      "batch": "oct9-three-crop-product-adapters",
+      "provider": "eve-0.71.2",
+      "requestedModel": "gpt-6.1-sol",
+      "requestedReasoning": "low",
+      "reportedModel": null,
+      "modelIdentityBasis": "Bundled agent configuration; provider-resolved identity unavailable",
+      "fixtureId": "traffic-lights",
+      "repeat": 2,
+      "task": "Select all images with traffic lights.",
+      "tileCount": 9,
+      "imageSha256": "d94b42f78bfb864ec1cadf2516179e3bd8a790549227d1b507ce170ebff6cd9c",
+      "sourceScreenshotSha256": "ce3ac8f2ad149b7208606fa502fb340ce12e69895536e1bb5df951f84b599dc2",
+      "cropBounds": [
+        74,
+        240,
+        460,
+        628
+      ],
+      "adjudicatedTiles": [
+        1,
+        8,
+        9
+      ],
+      "groundTruthBasis": "Manual review of the saved public screenshot; bridge/bicycle sets also matched prior visible live acceptance. No new site submission.",
+      "startedAt": "2026-10-09T17:37:09.570Z",
+      "endedAt": "2026-10-09T17:37:17.587Z",
+      "durationMs": 8017.702250000002,
+      "answer": {
+        "action": "handoff",
+        "tiles": []
+      },
+      "error": null,
+      "outcome": "model_handoff",
+      "exactSetCorrect": null,
+      "missedTiles": null,
+      "extraTiles": null,
+      "usage": {
+        "inputTokens": 2049,
+        "outputTokens": 171,
+        "providerReportedCostUsd": null,
+        "durationMs": 8015
+      },
+      "modelCalls": 1,
+      "directApiKeyChargeUsd": 0,
+      "billedCostUsd": null,
+      "operatingCostUsd": null,
+      "scope": "Fresh product-adapter inference on three saved public WIC crops; not live challenges, browser actuation, form completion or general CAPTCHA reliability",
+      "siteAccepted": null,
+      "applicationSubmitted": false
+    },
+    {
+      "id": "oct9-crops-traffic-lights-codex-gpt-6-luna-xhigh-r2",
+      "batch": "oct9-three-crop-product-adapters",
+      "provider": "codex-cli",
+      "requestedModel": "gpt-6-luna",
+      "requestedReasoning": "xhigh",
+      "reportedModel": null,
+      "modelIdentityBasis": "CLI request flags; provider-resolved identity unavailable",
+      "fixtureId": "traffic-lights",
+      "repeat": 2,
+      "task": "Select all images with traffic lights.",
+      "tileCount": 9,
+      "imageSha256": "d94b42f78bfb864ec1cadf2516179e3bd8a790549227d1b507ce170ebff6cd9c",
+      "sourceScreenshotSha256": "ce3ac8f2ad149b7208606fa502fb340ce12e69895536e1bb5df951f84b599dc2",
+      "cropBounds": [
+        74,
+        240,
+        460,
+        628
+      ],
+      "adjudicatedTiles": [
+        1,
+        8,
+        9
+      ],
+      "groundTruthBasis": "Manual review of the saved public screenshot; bridge/bicycle sets also matched prior visible live acceptance. No new site submission.",
+      "startedAt": "2026-10-09T17:37:17.588Z",
+      "endedAt": "2026-10-09T17:37:26.024Z",
+      "durationMs": 8436.994124999997,
+      "answer": {
+        "action": "select",
+        "tiles": [
+          8,
+          9
+        ]
+      },
+      "error": null,
+      "outcome": "wrong_set",
+      "exactSetCorrect": false,
+      "missedTiles": [
+        1
+      ],
+      "extraTiles": [],
+      "usage": {
+        "inputTokens": 17438,
+        "outputTokens": 422,
+        "cachedInputTokens": 0,
+        "providerReportedCostUsd": null,
+        "durationMs": 8434
+      },
+      "modelCalls": 1,
+      "directApiKeyChargeUsd": 0,
+      "billedCostUsd": null,
+      "operatingCostUsd": null,
+      "scope": "Fresh product-adapter inference on three saved public WIC crops; not live challenges, browser actuation, form completion or general CAPTCHA reliability",
+      "siteAccepted": null,
+      "applicationSubmitted": false
+    },
+    {
+      "id": "oct9-crops-traffic-lights-codex-gpt-6-luna-low-r2",
+      "batch": "oct9-three-crop-product-adapters",
+      "provider": "codex-cli",
+      "requestedModel": "gpt-6-luna",
+      "requestedReasoning": "low",
+      "reportedModel": null,
+      "modelIdentityBasis": "CLI request flags; provider-resolved identity unavailable",
+      "fixtureId": "traffic-lights",
+      "repeat": 2,
+      "task": "Select all images with traffic lights.",
+      "tileCount": 9,
+      "imageSha256": "d94b42f78bfb864ec1cadf2516179e3bd8a790549227d1b507ce170ebff6cd9c",
+      "sourceScreenshotSha256": "ce3ac8f2ad149b7208606fa502fb340ce12e69895536e1bb5df951f84b599dc2",
+      "cropBounds": [
+        74,
+        240,
+        460,
+        628
+      ],
+      "adjudicatedTiles": [
+        1,
+        8,
+        9
+      ],
+      "groundTruthBasis": "Manual review of the saved public screenshot; bridge/bicycle sets also matched prior visible live acceptance. No new site submission.",
+      "startedAt": "2026-10-09T17:37:26.026Z",
+      "endedAt": "2026-10-09T17:37:31.066Z",
+      "durationMs": 5040.395084000003,
+      "answer": {
+        "action": "select",
+        "tiles": [
+          1,
+          4,
+          8,
+          9
+        ]
+      },
+      "error": null,
+      "outcome": "wrong_set",
+      "exactSetCorrect": false,
+      "missedTiles": [],
+      "extraTiles": [
+        4
+      ],
+      "usage": {
+        "inputTokens": 17438,
+        "outputTokens": 25,
+        "cachedInputTokens": 0,
+        "providerReportedCostUsd": null,
+        "durationMs": 5037
+      },
+      "modelCalls": 1,
+      "directApiKeyChargeUsd": 0,
+      "billedCostUsd": null,
+      "operatingCostUsd": null,
+      "scope": "Fresh product-adapter inference on three saved public WIC crops; not live challenges, browser actuation, form completion or general CAPTCHA reliability",
+      "siteAccepted": null,
+      "applicationSubmitted": false
+    },
+    {
+      "id": "oct9-crops-traffic-lights-codex-gpt-6.1-sol-xhigh-r2",
+      "batch": "oct9-three-crop-product-adapters",
+      "provider": "codex-cli",
+      "requestedModel": "gpt-6.1-sol",
+      "requestedReasoning": "xhigh",
+      "reportedModel": null,
+      "modelIdentityBasis": "CLI request flags; provider-resolved identity unavailable",
+      "fixtureId": "traffic-lights",
+      "repeat": 2,
+      "task": "Select all images with traffic lights.",
+      "tileCount": 9,
+      "imageSha256": "d94b42f78bfb864ec1cadf2516179e3bd8a790549227d1b507ce170ebff6cd9c",
+      "sourceScreenshotSha256": "ce3ac8f2ad149b7208606fa502fb340ce12e69895536e1bb5df951f84b599dc2",
+      "cropBounds": [
+        74,
+        240,
+        460,
+        628
+      ],
+      "adjudicatedTiles": [
+        1,
+        8,
+        9
+      ],
+      "groundTruthBasis": "Manual review of the saved public screenshot; bridge/bicycle sets also matched prior visible live acceptance. No new site submission.",
+      "startedAt": "2026-10-09T17:37:31.067Z",
+      "endedAt": "2026-10-09T17:37:43.631Z",
+      "durationMs": 12564.169542000003,
+      "answer": {
+        "action": "select",
+        "tiles": [
+          1,
+          8,
+          9
+        ]
+      },
+      "error": null,
+      "outcome": "exact_set",
+      "exactSetCorrect": true,
+      "missedTiles": [],
+      "extraTiles": [],
+      "usage": {
+        "inputTokens": 18133,
+        "outputTokens": 221,
+        "cachedInputTokens": 0,
+        "providerReportedCostUsd": null,
+        "durationMs": 12561
+      },
+      "modelCalls": 1,
+      "directApiKeyChargeUsd": 0,
+      "billedCostUsd": null,
+      "operatingCostUsd": null,
+      "scope": "Fresh product-adapter inference on three saved public WIC crops; not live challenges, browser actuation, form completion or general CAPTCHA reliability",
+      "siteAccepted": null,
+      "applicationSubmitted": false
+    },
+    {
+      "id": "oct9-crops-traffic-lights-codex-gpt-6.1-sol-low-r2",
+      "batch": "oct9-three-crop-product-adapters",
+      "provider": "codex-cli",
+      "requestedModel": "gpt-6.1-sol",
+      "requestedReasoning": "low",
+      "reportedModel": null,
+      "modelIdentityBasis": "CLI request flags; provider-resolved identity unavailable",
+      "fixtureId": "traffic-lights",
+      "repeat": 2,
+      "task": "Select all images with traffic lights.",
+      "tileCount": 9,
+      "imageSha256": "d94b42f78bfb864ec1cadf2516179e3bd8a790549227d1b507ce170ebff6cd9c",
+      "sourceScreenshotSha256": "ce3ac8f2ad149b7208606fa502fb340ce12e69895536e1bb5df951f84b599dc2",
+      "cropBounds": [
+        74,
+        240,
+        460,
+        628
+      ],
+      "adjudicatedTiles": [
+        1,
+        8,
+        9
+      ],
+      "groundTruthBasis": "Manual review of the saved public screenshot; bridge/bicycle sets also matched prior visible live acceptance. No new site submission.",
+      "startedAt": "2026-10-09T17:37:43.631Z",
+      "endedAt": "2026-10-09T17:37:52.274Z",
+      "durationMs": 8642.834707999995,
+      "answer": {
+        "action": "select",
+        "tiles": [
+          1,
+          8,
+          9
+        ]
+      },
+      "error": null,
+      "outcome": "exact_set",
+      "exactSetCorrect": true,
+      "missedTiles": [],
+      "extraTiles": [],
+      "usage": {
+        "inputTokens": 18133,
+        "outputTokens": 98,
+        "cachedInputTokens": 0,
+        "providerReportedCostUsd": null,
+        "durationMs": 8639
+      },
+      "modelCalls": 1,
+      "directApiKeyChargeUsd": 0,
+      "billedCostUsd": null,
+      "operatingCostUsd": null,
+      "scope": "Fresh product-adapter inference on three saved public WIC crops; not live challenges, browser actuation, form completion or general CAPTCHA reliability",
+      "siteAccepted": null,
+      "applicationSubmitted": false
+    },
+    {
+      "id": "oct9-crops-bridges-codex-gpt-6.1-sol-low-r1",
+      "batch": "oct9-three-crop-product-adapters",
+      "provider": "codex-cli",
+      "requestedModel": "gpt-6.1-sol",
+      "requestedReasoning": "low",
+      "reportedModel": null,
+      "modelIdentityBasis": "CLI request flags; provider-resolved identity unavailable",
+      "fixtureId": "bridges",
+      "repeat": 1,
+      "task": "Select all images with bridges.",
+      "tileCount": 9,
+      "imageSha256": "1707c130d72f06ca4cee02c1e21338d610896f4073f67e6f06e7cf37e0cd93ac",
+      "sourceScreenshotSha256": "93c3b48617fa93dd1b3d85e423dd2625049b25ba3a17a5f4bdb43b8c9109d0fe",
+      "cropBounds": [
+        74,
+        240,
+        460,
+        628
+      ],
+      "adjudicatedTiles": [
+        4,
+        6,
+        7,
+        9
+      ],
+      "groundTruthBasis": "Manual review of the saved public screenshot; bridge/bicycle sets also matched prior visible live acceptance. No new site submission.",
+      "startedAt": "2026-10-09T17:37:52.276Z",
+      "endedAt": "2026-10-09T17:37:58.728Z",
+      "durationMs": 6452.654333999992,
+      "answer": {
+        "action": "select",
+        "tiles": [
+          4,
+          6,
+          7,
+          9
+        ]
+      },
+      "error": null,
+      "outcome": "exact_set",
+      "exactSetCorrect": true,
+      "missedTiles": [],
+      "extraTiles": [],
+      "usage": {
+        "inputTokens": 18132,
+        "outputTokens": 60,
+        "cachedInputTokens": 0,
+        "providerReportedCostUsd": null,
+        "durationMs": 6449
+      },
+      "modelCalls": 1,
+      "directApiKeyChargeUsd": 0,
+      "billedCostUsd": null,
+      "operatingCostUsd": null,
+      "scope": "Fresh product-adapter inference on three saved public WIC crops; not live challenges, browser actuation, form completion or general CAPTCHA reliability",
+      "siteAccepted": null,
+      "applicationSubmitted": false
+    },
+    {
+      "id": "oct9-crops-bridges-codex-gpt-6.1-sol-xhigh-r1",
+      "batch": "oct9-three-crop-product-adapters",
+      "provider": "codex-cli",
+      "requestedModel": "gpt-6.1-sol",
+      "requestedReasoning": "xhigh",
+      "reportedModel": null,
+      "modelIdentityBasis": "CLI request flags; provider-resolved identity unavailable",
+      "fixtureId": "bridges",
+      "repeat": 1,
+      "task": "Select all images with bridges.",
+      "tileCount": 9,
+      "imageSha256": "1707c130d72f06ca4cee02c1e21338d610896f4073f67e6f06e7cf37e0cd93ac",
+      "sourceScreenshotSha256": "93c3b48617fa93dd1b3d85e423dd2625049b25ba3a17a5f4bdb43b8c9109d0fe",
+      "cropBounds": [
+        74,
+        240,
+        460,
+        628
+      ],
+      "adjudicatedTiles": [
+        4,
+        6,
+        7,
+        9
+      ],
+      "groundTruthBasis": "Manual review of the saved public screenshot; bridge/bicycle sets also matched prior visible live acceptance. No new site submission.",
+      "startedAt": "2026-10-09T17:37:58.729Z",
+      "endedAt": "2026-10-09T17:38:08.053Z",
+      "durationMs": 9324.723125000004,
+      "answer": {
+        "action": "select",
+        "tiles": [
+          4,
+          6,
+          7,
+          9
+        ]
+      },
+      "error": null,
+      "outcome": "exact_set",
+      "exactSetCorrect": true,
+      "missedTiles": [],
+      "extraTiles": [],
+      "usage": {
+        "inputTokens": 14844,
+        "outputTokens": 165,
+        "cachedInputTokens": 0,
+        "providerReportedCostUsd": null,
+        "durationMs": 9320
+      },
+      "modelCalls": 1,
+      "directApiKeyChargeUsd": 0,
+      "billedCostUsd": null,
+      "operatingCostUsd": null,
+      "scope": "Fresh product-adapter inference on three saved public WIC crops; not live challenges, browser actuation, form completion or general CAPTCHA reliability",
+      "siteAccepted": null,
+      "applicationSubmitted": false
+    },
+    {
+      "id": "oct9-crops-bridges-codex-gpt-6-luna-low-r1",
+      "batch": "oct9-three-crop-product-adapters",
+      "provider": "codex-cli",
+      "requestedModel": "gpt-6-luna",
+      "requestedReasoning": "low",
+      "reportedModel": null,
+      "modelIdentityBasis": "CLI request flags; provider-resolved identity unavailable",
+      "fixtureId": "bridges",
+      "repeat": 1,
+      "task": "Select all images with bridges.",
+      "tileCount": 9,
+      "imageSha256": "1707c130d72f06ca4cee02c1e21338d610896f4073f67e6f06e7cf37e0cd93ac",
+      "sourceScreenshotSha256": "93c3b48617fa93dd1b3d85e423dd2625049b25ba3a17a5f4bdb43b8c9109d0fe",
+      "cropBounds": [
+        74,
+        240,
+        460,
+        628
+      ],
+      "adjudicatedTiles": [
+        4,
+        6,
+        7,
+        9
+      ],
+      "groundTruthBasis": "Manual review of the saved public screenshot; bridge/bicycle sets also matched prior visible live acceptance. No new site submission.",
+      "startedAt": "2026-10-09T17:38:08.055Z",
+      "endedAt": "2026-10-09T17:38:12.420Z",
+      "durationMs": 4365.217957999994,
+      "answer": {
+        "action": "select",
+        "tiles": [
+          4,
+          7,
+          9
+        ]
+      },
+      "error": null,
+      "outcome": "wrong_set",
+      "exactSetCorrect": false,
+      "missedTiles": [
+        6
+      ],
+      "extraTiles": [],
+      "usage": {
+        "inputTokens": 17440,
+        "outputTokens": 75,
+        "cachedInputTokens": 0,
+        "providerReportedCostUsd": null,
+        "durationMs": 4360
+      },
+      "modelCalls": 1,
+      "directApiKeyChargeUsd": 0,
+      "billedCostUsd": null,
+      "operatingCostUsd": null,
+      "scope": "Fresh product-adapter inference on three saved public WIC crops; not live challenges, browser actuation, form completion or general CAPTCHA reliability",
+      "siteAccepted": null,
+      "applicationSubmitted": false
+    },
+    {
+      "id": "oct9-crops-bridges-codex-gpt-6-luna-xhigh-r1",
+      "batch": "oct9-three-crop-product-adapters",
+      "provider": "codex-cli",
+      "requestedModel": "gpt-6-luna",
+      "requestedReasoning": "xhigh",
+      "reportedModel": null,
+      "modelIdentityBasis": "CLI request flags; provider-resolved identity unavailable",
+      "fixtureId": "bridges",
+      "repeat": 1,
+      "task": "Select all images with bridges.",
+      "tileCount": 9,
+      "imageSha256": "1707c130d72f06ca4cee02c1e21338d610896f4073f67e6f06e7cf37e0cd93ac",
+      "sourceScreenshotSha256": "93c3b48617fa93dd1b3d85e423dd2625049b25ba3a17a5f4bdb43b8c9109d0fe",
+      "cropBounds": [
+        74,
+        240,
+        460,
+        628
+      ],
+      "adjudicatedTiles": [
+        4,
+        6,
+        7,
+        9
+      ],
+      "groundTruthBasis": "Manual review of the saved public screenshot; bridge/bicycle sets also matched prior visible live acceptance. No new site submission.",
+      "startedAt": "2026-10-09T17:38:12.420Z",
+      "endedAt": "2026-10-09T17:38:17.405Z",
+      "durationMs": 4985.137084000002,
+      "answer": {
+        "action": "handoff",
+        "tiles": []
+      },
+      "error": null,
+      "outcome": "model_handoff",
+      "exactSetCorrect": null,
+      "missedTiles": null,
+      "extraTiles": null,
+      "usage": {
+        "inputTokens": 17437,
+        "outputTokens": 98,
+        "cachedInputTokens": 0,
+        "providerReportedCostUsd": null,
+        "durationMs": 4982
+      },
+      "modelCalls": 1,
+      "directApiKeyChargeUsd": 0,
+      "billedCostUsd": null,
+      "operatingCostUsd": null,
+      "scope": "Fresh product-adapter inference on three saved public WIC crops; not live challenges, browser actuation, form completion or general CAPTCHA reliability",
+      "siteAccepted": null,
+      "applicationSubmitted": false
+    },
+    {
+      "id": "oct9-crops-bridges-eve-gpt-6.1-sol-low-r1",
+      "batch": "oct9-three-crop-product-adapters",
+      "provider": "eve-0.71.2",
+      "requestedModel": "gpt-6.1-sol",
+      "requestedReasoning": "low",
+      "reportedModel": null,
+      "modelIdentityBasis": "Bundled agent configuration; provider-resolved identity unavailable",
+      "fixtureId": "bridges",
+      "repeat": 1,
+      "task": "Select all images with bridges.",
+      "tileCount": 9,
+      "imageSha256": "1707c130d72f06ca4cee02c1e21338d610896f4073f67e6f06e7cf37e0cd93ac",
+      "sourceScreenshotSha256": "93c3b48617fa93dd1b3d85e423dd2625049b25ba3a17a5f4bdb43b8c9109d0fe",
+      "cropBounds": [
+        74,
+        240,
+        460,
+        628
+      ],
+      "adjudicatedTiles": [
+        4,
+        6,
+        7,
+        9
+      ],
+      "groundTruthBasis": "Manual review of the saved public screenshot; bridge/bicycle sets also matched prior visible live acceptance. No new site submission.",
+      "startedAt": "2026-10-09T17:38:17.406Z",
+      "endedAt": "2026-10-09T17:38:22.080Z",
+      "durationMs": 4673.693291999996,
+      "answer": {
+        "action": "select",
+        "tiles": [
+          4,
+          6,
+          7,
+          9
+        ]
+      },
+      "error": null,
+      "outcome": "exact_set",
+      "exactSetCorrect": true,
+      "missedTiles": [],
+      "extraTiles": [],
+      "usage": {
+        "inputTokens": 2048,
+        "outputTokens": 57,
+        "providerReportedCostUsd": null,
+        "durationMs": 4671
+      },
+      "modelCalls": 1,
+      "directApiKeyChargeUsd": 0,
+      "billedCostUsd": null,
+      "operatingCostUsd": null,
+      "scope": "Fresh product-adapter inference on three saved public WIC crops; not live challenges, browser actuation, form completion or general CAPTCHA reliability",
+      "siteAccepted": null,
+      "applicationSubmitted": false
+    },
+    {
+      "id": "oct9-crops-bridges-eve-gpt-6.1-sol-low-r2",
+      "batch": "oct9-three-crop-product-adapters",
+      "provider": "eve-0.71.2",
+      "requestedModel": "gpt-6.1-sol",
+      "requestedReasoning": "low",
+      "reportedModel": null,
+      "modelIdentityBasis": "Bundled agent configuration; provider-resolved identity unavailable",
+      "fixtureId": "bridges",
+      "repeat": 2,
+      "task": "Select all images with bridges.",
+      "tileCount": 9,
+      "imageSha256": "1707c130d72f06ca4cee02c1e21338d610896f4073f67e6f06e7cf37e0cd93ac",
+      "sourceScreenshotSha256": "93c3b48617fa93dd1b3d85e423dd2625049b25ba3a17a5f4bdb43b8c9109d0fe",
+      "cropBounds": [
+        74,
+        240,
+        460,
+        628
+      ],
+      "adjudicatedTiles": [
+        4,
+        6,
+        7,
+        9
+      ],
+      "groundTruthBasis": "Manual review of the saved public screenshot; bridge/bicycle sets also matched prior visible live acceptance. No new site submission.",
+      "startedAt": "2026-10-09T17:38:22.081Z",
+      "endedAt": "2026-10-09T17:38:28.062Z",
+      "durationMs": 5981.6317500000005,
+      "answer": {
+        "action": "select",
+        "tiles": [
+          4,
+          6,
+          7,
+          9
+        ]
+      },
+      "error": null,
+      "outcome": "exact_set",
+      "exactSetCorrect": true,
+      "missedTiles": [],
+      "extraTiles": [],
+      "usage": {
+        "inputTokens": 2048,
+        "outputTokens": 53,
+        "providerReportedCostUsd": null,
+        "durationMs": 5980
+      },
+      "modelCalls": 1,
+      "directApiKeyChargeUsd": 0,
+      "billedCostUsd": null,
+      "operatingCostUsd": null,
+      "scope": "Fresh product-adapter inference on three saved public WIC crops; not live challenges, browser actuation, form completion or general CAPTCHA reliability",
+      "siteAccepted": null,
+      "applicationSubmitted": false
+    },
+    {
+      "id": "oct9-crops-bridges-codex-gpt-6-luna-xhigh-r2",
+      "batch": "oct9-three-crop-product-adapters",
+      "provider": "codex-cli",
+      "requestedModel": "gpt-6-luna",
+      "requestedReasoning": "xhigh",
+      "reportedModel": null,
+      "modelIdentityBasis": "CLI request flags; provider-resolved identity unavailable",
+      "fixtureId": "bridges",
+      "repeat": 2,
+      "task": "Select all images with bridges.",
+      "tileCount": 9,
+      "imageSha256": "1707c130d72f06ca4cee02c1e21338d610896f4073f67e6f06e7cf37e0cd93ac",
+      "sourceScreenshotSha256": "93c3b48617fa93dd1b3d85e423dd2625049b25ba3a17a5f4bdb43b8c9109d0fe",
+      "cropBounds": [
+        74,
+        240,
+        460,
+        628
+      ],
+      "adjudicatedTiles": [
+        4,
+        6,
+        7,
+        9
+      ],
+      "groundTruthBasis": "Manual review of the saved public screenshot; bridge/bicycle sets also matched prior visible live acceptance. No new site submission.",
+      "startedAt": "2026-10-09T17:38:28.063Z",
+      "endedAt": "2026-10-09T17:38:33.200Z",
+      "durationMs": 5137.025374999997,
+      "answer": {
+        "action": "handoff",
+        "tiles": []
+      },
+      "error": null,
+      "outcome": "model_handoff",
+      "exactSetCorrect": null,
+      "missedTiles": null,
+      "extraTiles": null,
+      "usage": {
+        "inputTokens": 17440,
+        "outputTokens": 106,
+        "cachedInputTokens": 15104,
+        "providerReportedCostUsd": null,
+        "durationMs": 5135
+      },
+      "modelCalls": 1,
+      "directApiKeyChargeUsd": 0,
+      "billedCostUsd": null,
+      "operatingCostUsd": null,
+      "scope": "Fresh product-adapter inference on three saved public WIC crops; not live challenges, browser actuation, form completion or general CAPTCHA reliability",
+      "siteAccepted": null,
+      "applicationSubmitted": false
+    },
+    {
+      "id": "oct9-crops-bridges-codex-gpt-6-luna-low-r2",
+      "batch": "oct9-three-crop-product-adapters",
+      "provider": "codex-cli",
+      "requestedModel": "gpt-6-luna",
+      "requestedReasoning": "low",
+      "reportedModel": null,
+      "modelIdentityBasis": "CLI request flags; provider-resolved identity unavailable",
+      "fixtureId": "bridges",
+      "repeat": 2,
+      "task": "Select all images with bridges.",
+      "tileCount": 9,
+      "imageSha256": "1707c130d72f06ca4cee02c1e21338d610896f4073f67e6f06e7cf37e0cd93ac",
+      "sourceScreenshotSha256": "93c3b48617fa93dd1b3d85e423dd2625049b25ba3a17a5f4bdb43b8c9109d0fe",
+      "cropBounds": [
+        74,
+        240,
+        460,
+        628
+      ],
+      "adjudicatedTiles": [
+        4,
+        6,
+        7,
+        9
+      ],
+      "groundTruthBasis": "Manual review of the saved public screenshot; bridge/bicycle sets also matched prior visible live acceptance. No new site submission.",
+      "startedAt": "2026-10-09T17:38:33.201Z",
+      "endedAt": "2026-10-09T17:38:38.196Z",
+      "durationMs": 4995.5106660000165,
+      "answer": {
+        "action": "select",
+        "tiles": [
+          4,
+          7,
+          9
+        ]
+      },
+      "error": null,
+      "outcome": "wrong_set",
+      "exactSetCorrect": false,
+      "missedTiles": [
+        6
+      ],
+      "extraTiles": [],
+      "usage": {
+        "inputTokens": 17437,
+        "outputTokens": 23,
+        "cachedInputTokens": 0,
+        "providerReportedCostUsd": null,
+        "durationMs": 4992
+      },
+      "modelCalls": 1,
+      "directApiKeyChargeUsd": 0,
+      "billedCostUsd": null,
+      "operatingCostUsd": null,
+      "scope": "Fresh product-adapter inference on three saved public WIC crops; not live challenges, browser actuation, form completion or general CAPTCHA reliability",
+      "siteAccepted": null,
+      "applicationSubmitted": false
+    },
+    {
+      "id": "oct9-crops-bridges-codex-gpt-6.1-sol-xhigh-r2",
+      "batch": "oct9-three-crop-product-adapters",
+      "provider": "codex-cli",
+      "requestedModel": "gpt-6.1-sol",
+      "requestedReasoning": "xhigh",
+      "reportedModel": null,
+      "modelIdentityBasis": "CLI request flags; provider-resolved identity unavailable",
+      "fixtureId": "bridges",
+      "repeat": 2,
+      "task": "Select all images with bridges.",
+      "tileCount": 9,
+      "imageSha256": "1707c130d72f06ca4cee02c1e21338d610896f4073f67e6f06e7cf37e0cd93ac",
+      "sourceScreenshotSha256": "93c3b48617fa93dd1b3d85e423dd2625049b25ba3a17a5f4bdb43b8c9109d0fe",
+      "cropBounds": [
+        74,
+        240,
+        460,
+        628
+      ],
+      "adjudicatedTiles": [
+        4,
+        6,
+        7,
+        9
+      ],
+      "groundTruthBasis": "Manual review of the saved public screenshot; bridge/bicycle sets also matched prior visible live acceptance. No new site submission.",
+      "startedAt": "2026-10-09T17:38:38.197Z",
+      "endedAt": "2026-10-09T17:38:47.003Z",
+      "durationMs": 8806.845833,
+      "answer": {
+        "action": "select",
+        "tiles": [
+          4,
+          6,
+          7,
+          9
+        ]
+      },
+      "error": null,
+      "outcome": "exact_set",
+      "exactSetCorrect": true,
+      "missedTiles": [],
+      "extraTiles": [],
+      "usage": {
+        "inputTokens": 18132,
+        "outputTokens": 146,
+        "cachedInputTokens": 12416,
+        "providerReportedCostUsd": null,
+        "durationMs": 8804
+      },
+      "modelCalls": 1,
+      "directApiKeyChargeUsd": 0,
+      "billedCostUsd": null,
+      "operatingCostUsd": null,
+      "scope": "Fresh product-adapter inference on three saved public WIC crops; not live challenges, browser actuation, form completion or general CAPTCHA reliability",
+      "siteAccepted": null,
+      "applicationSubmitted": false
+    },
+    {
+      "id": "oct9-crops-bridges-codex-gpt-6.1-sol-low-r2",
+      "batch": "oct9-three-crop-product-adapters",
+      "provider": "codex-cli",
+      "requestedModel": "gpt-6.1-sol",
+      "requestedReasoning": "low",
+      "reportedModel": null,
+      "modelIdentityBasis": "CLI request flags; provider-resolved identity unavailable",
+      "fixtureId": "bridges",
+      "repeat": 2,
+      "task": "Select all images with bridges.",
+      "tileCount": 9,
+      "imageSha256": "1707c130d72f06ca4cee02c1e21338d610896f4073f67e6f06e7cf37e0cd93ac",
+      "sourceScreenshotSha256": "93c3b48617fa93dd1b3d85e423dd2625049b25ba3a17a5f4bdb43b8c9109d0fe",
+      "cropBounds": [
+        74,
+        240,
+        460,
+        628
+      ],
+      "adjudicatedTiles": [
+        4,
+        6,
+        7,
+        9
+      ],
+      "groundTruthBasis": "Manual review of the saved public screenshot; bridge/bicycle sets also matched prior visible live acceptance. No new site submission.",
+      "startedAt": "2026-10-09T17:38:47.004Z",
+      "endedAt": "2026-10-09T17:38:53.601Z",
+      "durationMs": 6596.838125000009,
+      "answer": {
+        "action": "select",
+        "tiles": [
+          4,
+          6,
+          7,
+          9
+        ]
+      },
+      "error": null,
+      "outcome": "exact_set",
+      "exactSetCorrect": true,
+      "missedTiles": [],
+      "extraTiles": [],
+      "usage": {
+        "inputTokens": 18129,
+        "outputTokens": 56,
+        "cachedInputTokens": 0,
+        "providerReportedCostUsd": null,
+        "durationMs": 6593
+      },
+      "modelCalls": 1,
+      "directApiKeyChargeUsd": 0,
+      "billedCostUsd": null,
+      "operatingCostUsd": null,
+      "scope": "Fresh product-adapter inference on three saved public WIC crops; not live challenges, browser actuation, form completion or general CAPTCHA reliability",
+      "siteAccepted": null,
+      "applicationSubmitted": false
+    },
+    {
+      "id": "oct9-crops-bicycles-codex-gpt-6.1-sol-low-r1",
+      "batch": "oct9-three-crop-product-adapters",
+      "provider": "codex-cli",
+      "requestedModel": "gpt-6.1-sol",
+      "requestedReasoning": "low",
+      "reportedModel": null,
+      "modelIdentityBasis": "CLI request flags; provider-resolved identity unavailable",
+      "fixtureId": "bicycles",
+      "repeat": 1,
+      "task": "Select all images with bicycles.",
+      "tileCount": 9,
+      "imageSha256": "354a8580699a1fc7a99bb4c279fedbd755552395c095ef8ea9146d6e0be2b10b",
+      "sourceScreenshotSha256": "a4a0988f17d331dd42ca81f5aa12f47befc0bf1b876bf9bb4e4c677bbbb6f9a8",
+      "cropBounds": [
+        74,
+        225,
+        460,
+        612
+      ],
+      "adjudicatedTiles": [
+        1,
+        3,
+        6
+      ],
+      "groundTruthBasis": "Manual review of the saved public screenshot; bridge/bicycle sets also matched prior visible live acceptance. No new site submission.",
+      "startedAt": "2026-10-09T17:38:53.603Z",
+      "endedAt": "2026-10-09T17:39:04.237Z",
+      "durationMs": 10633.845625000016,
+      "answer": {
+        "action": "select",
+        "tiles": [
+          1,
+          3,
+          4,
+          6
+        ]
+      },
+      "error": null,
+      "outcome": "wrong_set",
+      "exactSetCorrect": false,
+      "missedTiles": [],
+      "extraTiles": [
+        4
+      ],
+      "usage": {
+        "inputTokens": 18132,
+        "outputTokens": 114,
+        "cachedInputTokens": 16640,
+        "providerReportedCostUsd": null,
+        "durationMs": 10631
+      },
+      "modelCalls": 1,
+      "directApiKeyChargeUsd": 0,
+      "billedCostUsd": null,
+      "operatingCostUsd": null,
+      "scope": "Fresh product-adapter inference on three saved public WIC crops; not live challenges, browser actuation, form completion or general CAPTCHA reliability",
+      "siteAccepted": null,
+      "applicationSubmitted": false
+    },
+    {
+      "id": "oct9-crops-bicycles-codex-gpt-6.1-sol-xhigh-r1",
+      "batch": "oct9-three-crop-product-adapters",
+      "provider": "codex-cli",
+      "requestedModel": "gpt-6.1-sol",
+      "requestedReasoning": "xhigh",
+      "reportedModel": null,
+      "modelIdentityBasis": "CLI request flags; provider-resolved identity unavailable",
+      "fixtureId": "bicycles",
+      "repeat": 1,
+      "task": "Select all images with bicycles.",
+      "tileCount": 9,
+      "imageSha256": "354a8580699a1fc7a99bb4c279fedbd755552395c095ef8ea9146d6e0be2b10b",
+      "sourceScreenshotSha256": "a4a0988f17d331dd42ca81f5aa12f47befc0bf1b876bf9bb4e4c677bbbb6f9a8",
+      "cropBounds": [
+        74,
+        225,
+        460,
+        612
+      ],
+      "adjudicatedTiles": [
+        1,
+        3,
+        6
+      ],
+      "groundTruthBasis": "Manual review of the saved public screenshot; bridge/bicycle sets also matched prior visible live acceptance. No new site submission.",
+      "startedAt": "2026-10-09T17:39:04.237Z",
+      "endedAt": "2026-10-09T17:39:34.338Z",
+      "durationMs": 30101.88870899999,
+      "answer": {
+        "action": "handoff",
+        "tiles": []
+      },
+      "error": null,
+      "outcome": "model_handoff",
+      "exactSetCorrect": null,
+      "missedTiles": null,
+      "extraTiles": null,
+      "usage": {
+        "inputTokens": 18129,
+        "outputTokens": 604,
+        "cachedInputTokens": 0,
+        "providerReportedCostUsd": null,
+        "durationMs": 30098
+      },
+      "modelCalls": 1,
+      "directApiKeyChargeUsd": 0,
+      "billedCostUsd": null,
+      "operatingCostUsd": null,
+      "scope": "Fresh product-adapter inference on three saved public WIC crops; not live challenges, browser actuation, form completion or general CAPTCHA reliability",
+      "siteAccepted": null,
+      "applicationSubmitted": false
+    },
+    {
+      "id": "oct9-crops-bicycles-codex-gpt-6-luna-low-r1",
+      "batch": "oct9-three-crop-product-adapters",
+      "provider": "codex-cli",
+      "requestedModel": "gpt-6-luna",
+      "requestedReasoning": "low",
+      "reportedModel": null,
+      "modelIdentityBasis": "CLI request flags; provider-resolved identity unavailable",
+      "fixtureId": "bicycles",
+      "repeat": 1,
+      "task": "Select all images with bicycles.",
+      "tileCount": 9,
+      "imageSha256": "354a8580699a1fc7a99bb4c279fedbd755552395c095ef8ea9146d6e0be2b10b",
+      "sourceScreenshotSha256": "a4a0988f17d331dd42ca81f5aa12f47befc0bf1b876bf9bb4e4c677bbbb6f9a8",
+      "cropBounds": [
+        74,
+        225,
+        460,
+        612
+      ],
+      "adjudicatedTiles": [
+        1,
+        3,
+        6
+      ],
+      "groundTruthBasis": "Manual review of the saved public screenshot; bridge/bicycle sets also matched prior visible live acceptance. No new site submission.",
+      "startedAt": "2026-10-09T17:39:34.339Z",
+      "endedAt": "2026-10-09T17:39:38.027Z",
+      "durationMs": 3687.7708339999954,
+      "answer": {
+        "action": "select",
+        "tiles": [
+          1,
+          3,
+          6
+        ]
+      },
+      "error": null,
+      "outcome": "exact_set",
+      "exactSetCorrect": true,
+      "missedTiles": [],
+      "extraTiles": [],
+      "usage": {
+        "inputTokens": 17443,
+        "outputTokens": 23,
+        "cachedInputTokens": 11008,
+        "providerReportedCostUsd": null,
+        "durationMs": 3684
+      },
+      "modelCalls": 1,
+      "directApiKeyChargeUsd": 0,
+      "billedCostUsd": null,
+      "operatingCostUsd": null,
+      "scope": "Fresh product-adapter inference on three saved public WIC crops; not live challenges, browser actuation, form completion or general CAPTCHA reliability",
+      "siteAccepted": null,
+      "applicationSubmitted": false
+    },
+    {
+      "id": "oct9-crops-bicycles-codex-gpt-6-luna-xhigh-r1",
+      "batch": "oct9-three-crop-product-adapters",
+      "provider": "codex-cli",
+      "requestedModel": "gpt-6-luna",
+      "requestedReasoning": "xhigh",
+      "reportedModel": null,
+      "modelIdentityBasis": "CLI request flags; provider-resolved identity unavailable",
+      "fixtureId": "bicycles",
+      "repeat": 1,
+      "task": "Select all images with bicycles.",
+      "tileCount": 9,
+      "imageSha256": "354a8580699a1fc7a99bb4c279fedbd755552395c095ef8ea9146d6e0be2b10b",
+      "sourceScreenshotSha256": "a4a0988f17d331dd42ca81f5aa12f47befc0bf1b876bf9bb4e4c677bbbb6f9a8",
+      "cropBounds": [
+        74,
+        225,
+        460,
+        612
+      ],
+      "adjudicatedTiles": [
+        1,
+        3,
+        6
+      ],
+      "groundTruthBasis": "Manual review of the saved public screenshot; bridge/bicycle sets also matched prior visible live acceptance. No new site submission.",
+      "startedAt": "2026-10-09T17:39:38.028Z",
+      "endedAt": "2026-10-09T17:39:48.123Z",
+      "durationMs": 10095.396416000003,
+      "answer": {
+        "action": "handoff",
+        "tiles": []
+      },
+      "error": null,
+      "outcome": "model_handoff",
+      "exactSetCorrect": null,
+      "missedTiles": null,
+      "extraTiles": null,
+      "usage": {
+        "inputTokens": 17440,
+        "outputTokens": 66,
+        "cachedInputTokens": 0,
+        "providerReportedCostUsd": null,
+        "durationMs": 10089
+      },
+      "modelCalls": 1,
+      "directApiKeyChargeUsd": 0,
+      "billedCostUsd": null,
+      "operatingCostUsd": null,
+      "scope": "Fresh product-adapter inference on three saved public WIC crops; not live challenges, browser actuation, form completion or general CAPTCHA reliability",
+      "siteAccepted": null,
+      "applicationSubmitted": false
+    },
+    {
+      "id": "oct9-crops-bicycles-eve-gpt-6.1-sol-low-r1",
+      "batch": "oct9-three-crop-product-adapters",
+      "provider": "eve-0.71.2",
+      "requestedModel": "gpt-6.1-sol",
+      "requestedReasoning": "low",
+      "reportedModel": null,
+      "modelIdentityBasis": "Bundled agent configuration; provider-resolved identity unavailable",
+      "fixtureId": "bicycles",
+      "repeat": 1,
+      "task": "Select all images with bicycles.",
+      "tileCount": 9,
+      "imageSha256": "354a8580699a1fc7a99bb4c279fedbd755552395c095ef8ea9146d6e0be2b10b",
+      "sourceScreenshotSha256": "a4a0988f17d331dd42ca81f5aa12f47befc0bf1b876bf9bb4e4c677bbbb6f9a8",
+      "cropBounds": [
+        74,
+        225,
+        460,
+        612
+      ],
+      "adjudicatedTiles": [
+        1,
+        3,
+        6
+      ],
+      "groundTruthBasis": "Manual review of the saved public screenshot; bridge/bicycle sets also matched prior visible live acceptance. No new site submission.",
+      "startedAt": "2026-10-09T17:39:48.124Z",
+      "endedAt": "2026-10-09T17:39:55.486Z",
+      "durationMs": 7361.788374999975,
+      "answer": {
+        "action": "select",
+        "tiles": [
+          1,
+          3,
+          4,
+          6
+        ]
+      },
+      "error": null,
+      "outcome": "wrong_set",
+      "exactSetCorrect": false,
+      "missedTiles": [],
+      "extraTiles": [
+        4
+      ],
+      "usage": {
+        "inputTokens": 2048,
+        "outputTokens": 149,
+        "providerReportedCostUsd": null,
+        "durationMs": 7359
+      },
+      "modelCalls": 1,
+      "directApiKeyChargeUsd": 0,
+      "billedCostUsd": null,
+      "operatingCostUsd": null,
+      "scope": "Fresh product-adapter inference on three saved public WIC crops; not live challenges, browser actuation, form completion or general CAPTCHA reliability",
+      "siteAccepted": null,
+      "applicationSubmitted": false
+    },
+    {
+      "id": "oct9-crops-bicycles-eve-gpt-6.1-sol-low-r2",
+      "batch": "oct9-three-crop-product-adapters",
+      "provider": "eve-0.71.2",
+      "requestedModel": "gpt-6.1-sol",
+      "requestedReasoning": "low",
+      "reportedModel": null,
+      "modelIdentityBasis": "Bundled agent configuration; provider-resolved identity unavailable",
+      "fixtureId": "bicycles",
+      "repeat": 2,
+      "task": "Select all images with bicycles.",
+      "tileCount": 9,
+      "imageSha256": "354a8580699a1fc7a99bb4c279fedbd755552395c095ef8ea9146d6e0be2b10b",
+      "sourceScreenshotSha256": "a4a0988f17d331dd42ca81f5aa12f47befc0bf1b876bf9bb4e4c677bbbb6f9a8",
+      "cropBounds": [
+        74,
+        225,
+        460,
+        612
+      ],
+      "adjudicatedTiles": [
+        1,
+        3,
+        6
+      ],
+      "groundTruthBasis": "Manual review of the saved public screenshot; bridge/bicycle sets also matched prior visible live acceptance. No new site submission.",
+      "startedAt": "2026-10-09T17:39:55.486Z",
+      "endedAt": "2026-10-09T17:39:59.875Z",
+      "durationMs": 4388.768833000009,
+      "answer": {
+        "action": "select",
+        "tiles": [
+          1,
+          3,
+          6
+        ]
+      },
+      "error": null,
+      "outcome": "exact_set",
+      "exactSetCorrect": true,
+      "missedTiles": [],
+      "extraTiles": [],
+      "usage": {
+        "inputTokens": 2048,
+        "outputTokens": 56,
+        "providerReportedCostUsd": null,
+        "durationMs": 4388
+      },
+      "modelCalls": 1,
+      "directApiKeyChargeUsd": 0,
+      "billedCostUsd": null,
+      "operatingCostUsd": null,
+      "scope": "Fresh product-adapter inference on three saved public WIC crops; not live challenges, browser actuation, form completion or general CAPTCHA reliability",
+      "siteAccepted": null,
+      "applicationSubmitted": false
+    },
+    {
+      "id": "oct9-crops-bicycles-codex-gpt-6-luna-xhigh-r2",
+      "batch": "oct9-three-crop-product-adapters",
+      "provider": "codex-cli",
+      "requestedModel": "gpt-6-luna",
+      "requestedReasoning": "xhigh",
+      "reportedModel": null,
+      "modelIdentityBasis": "CLI request flags; provider-resolved identity unavailable",
+      "fixtureId": "bicycles",
+      "repeat": 2,
+      "task": "Select all images with bicycles.",
+      "tileCount": 9,
+      "imageSha256": "354a8580699a1fc7a99bb4c279fedbd755552395c095ef8ea9146d6e0be2b10b",
+      "sourceScreenshotSha256": "a4a0988f17d331dd42ca81f5aa12f47befc0bf1b876bf9bb4e4c677bbbb6f9a8",
+      "cropBounds": [
+        74,
+        225,
+        460,
+        612
+      ],
+      "adjudicatedTiles": [
+        1,
+        3,
+        6
+      ],
+      "groundTruthBasis": "Manual review of the saved public screenshot; bridge/bicycle sets also matched prior visible live acceptance. No new site submission.",
+      "startedAt": "2026-10-09T17:39:59.875Z",
+      "endedAt": "2026-10-09T17:40:04.720Z",
+      "durationMs": 4844.882333000016,
+      "answer": {
+        "action": "select",
+        "tiles": [
+          1,
+          3,
+          6
+        ]
+      },
+      "error": null,
+      "outcome": "exact_set",
+      "exactSetCorrect": true,
+      "missedTiles": [],
+      "extraTiles": [],
+      "usage": {
+        "inputTokens": 14158,
+        "outputTokens": 149,
+        "cachedInputTokens": 0,
+        "providerReportedCostUsd": null,
+        "durationMs": 4843
+      },
+      "modelCalls": 1,
+      "directApiKeyChargeUsd": 0,
+      "billedCostUsd": null,
+      "operatingCostUsd": null,
+      "scope": "Fresh product-adapter inference on three saved public WIC crops; not live challenges, browser actuation, form completion or general CAPTCHA reliability",
+      "siteAccepted": null,
+      "applicationSubmitted": false
+    },
+    {
+      "id": "oct9-crops-bicycles-codex-gpt-6-luna-low-r2",
+      "batch": "oct9-three-crop-product-adapters",
+      "provider": "codex-cli",
+      "requestedModel": "gpt-6-luna",
+      "requestedReasoning": "low",
+      "reportedModel": null,
+      "modelIdentityBasis": "CLI request flags; provider-resolved identity unavailable",
+      "fixtureId": "bicycles",
+      "repeat": 2,
+      "task": "Select all images with bicycles.",
+      "tileCount": 9,
+      "imageSha256": "354a8580699a1fc7a99bb4c279fedbd755552395c095ef8ea9146d6e0be2b10b",
+      "sourceScreenshotSha256": "a4a0988f17d331dd42ca81f5aa12f47befc0bf1b876bf9bb4e4c677bbbb6f9a8",
+      "cropBounds": [
+        74,
+        225,
+        460,
+        612
+      ],
+      "adjudicatedTiles": [
+        1,
+        3,
+        6
+      ],
+      "groundTruthBasis": "Manual review of the saved public screenshot; bridge/bicycle sets also matched prior visible live acceptance. No new site submission.",
+      "startedAt": "2026-10-09T17:40:04.721Z",
+      "endedAt": "2026-10-09T17:40:09.580Z",
+      "durationMs": 4859.71520799998,
+      "answer": {
+        "action": "select",
+        "tiles": [
+          1,
+          3,
+          6
+        ]
+      },
+      "error": null,
+      "outcome": "exact_set",
+      "exactSetCorrect": true,
+      "missedTiles": [],
+      "extraTiles": [],
+      "usage": {
+        "inputTokens": 17443,
+        "outputTokens": 23,
+        "cachedInputTokens": 0,
+        "providerReportedCostUsd": null,
+        "durationMs": 4852
+      },
+      "modelCalls": 1,
+      "directApiKeyChargeUsd": 0,
+      "billedCostUsd": null,
+      "operatingCostUsd": null,
+      "scope": "Fresh product-adapter inference on three saved public WIC crops; not live challenges, browser actuation, form completion or general CAPTCHA reliability",
+      "siteAccepted": null,
+      "applicationSubmitted": false
+    },
+    {
+      "id": "oct9-crops-bicycles-codex-gpt-6.1-sol-xhigh-r2",
+      "batch": "oct9-three-crop-product-adapters",
+      "provider": "codex-cli",
+      "requestedModel": "gpt-6.1-sol",
+      "requestedReasoning": "xhigh",
+      "reportedModel": null,
+      "modelIdentityBasis": "CLI request flags; provider-resolved identity unavailable",
+      "fixtureId": "bicycles",
+      "repeat": 2,
+      "task": "Select all images with bicycles.",
+      "tileCount": 9,
+      "imageSha256": "354a8580699a1fc7a99bb4c279fedbd755552395c095ef8ea9146d6e0be2b10b",
+      "sourceScreenshotSha256": "a4a0988f17d331dd42ca81f5aa12f47befc0bf1b876bf9bb4e4c677bbbb6f9a8",
+      "cropBounds": [
+        74,
+        225,
+        460,
+        612
+      ],
+      "adjudicatedTiles": [
+        1,
+        3,
+        6
+      ],
+      "groundTruthBasis": "Manual review of the saved public screenshot; bridge/bicycle sets also matched prior visible live acceptance. No new site submission.",
+      "startedAt": "2026-10-09T17:40:09.582Z",
+      "endedAt": "2026-10-09T17:40:36.666Z",
+      "durationMs": 27085.534459000017,
+      "answer": {
+        "action": "handoff",
+        "tiles": []
+      },
+      "error": null,
+      "outcome": "model_handoff",
+      "exactSetCorrect": null,
+      "missedTiles": null,
+      "extraTiles": null,
+      "usage": {
+        "inputTokens": 14841,
+        "outputTokens": 301,
+        "cachedInputTokens": 0,
+        "providerReportedCostUsd": null,
+        "durationMs": 27080
+      },
+      "modelCalls": 1,
+      "directApiKeyChargeUsd": 0,
+      "billedCostUsd": null,
+      "operatingCostUsd": null,
+      "scope": "Fresh product-adapter inference on three saved public WIC crops; not live challenges, browser actuation, form completion or general CAPTCHA reliability",
+      "siteAccepted": null,
+      "applicationSubmitted": false
+    },
+    {
+      "id": "oct9-crops-bicycles-codex-gpt-6.1-sol-low-r2",
+      "batch": "oct9-three-crop-product-adapters",
+      "provider": "codex-cli",
+      "requestedModel": "gpt-6.1-sol",
+      "requestedReasoning": "low",
+      "reportedModel": null,
+      "modelIdentityBasis": "CLI request flags; provider-resolved identity unavailable",
+      "fixtureId": "bicycles",
+      "repeat": 2,
+      "task": "Select all images with bicycles.",
+      "tileCount": 9,
+      "imageSha256": "354a8580699a1fc7a99bb4c279fedbd755552395c095ef8ea9146d6e0be2b10b",
+      "sourceScreenshotSha256": "a4a0988f17d331dd42ca81f5aa12f47befc0bf1b876bf9bb4e4c677bbbb6f9a8",
+      "cropBounds": [
+        74,
+        225,
+        460,
+        612
+      ],
+      "adjudicatedTiles": [
+        1,
+        3,
+        6
+      ],
+      "groundTruthBasis": "Manual review of the saved public screenshot; bridge/bicycle sets also matched prior visible live acceptance. No new site submission.",
+      "startedAt": "2026-10-09T17:40:36.667Z",
+      "endedAt": "2026-10-09T17:40:47.283Z",
+      "durationMs": 10616.417916000006,
+      "answer": {
+        "action": "select",
+        "tiles": [
+          1,
+          3,
+          4,
+          6
+        ]
+      },
+      "error": null,
+      "outcome": "wrong_set",
+      "exactSetCorrect": false,
+      "missedTiles": [],
+      "extraTiles": [
+        4
+      ],
+      "usage": {
+        "inputTokens": 14844,
+        "outputTokens": 138,
+        "cachedInputTokens": 12416,
+        "providerReportedCostUsd": null,
+        "durationMs": 10614
+      },
+      "modelCalls": 1,
+      "directApiKeyChargeUsd": 0,
+      "billedCostUsd": null,
+      "operatingCostUsd": null,
+      "scope": "Fresh product-adapter inference on three saved public WIC crops; not live challenges, browser actuation, form completion or general CAPTCHA reliability",
+      "siteAccepted": null,
+      "applicationSubmitted": false
+    },
+    {
+      "id": "oct9-crops-traffic-lights-nano-r1",
+      "batch": "oct9-three-crop-product-adapters",
+      "provider": "nano-prompt-api",
+      "requestedModel": "Gemini Nano (Chrome managed)",
+      "requestedReasoning": null,
+      "reportedModel": null,
+      "modelIdentityBasis": "Chrome exact managed version/effort not exposed",
+      "fixtureId": "traffic-lights",
+      "repeat": 1,
+      "task": "Select all images with traffic lights.",
+      "tileCount": 9,
+      "sourceScreenshotSha256": "ce3ac8f2ad149b7208606fa502fb340ce12e69895536e1bb5df951f84b599dc2",
+      "cropBounds": [
+        74,
+        240,
+        460,
+        628
+      ],
+      "adjudicatedTiles": [
+        1,
+        8,
+        9
+      ],
+      "groundTruthBasis": "Manual review of the saved public screenshot; bridge/bicycle sets also matched prior visible live acceptance. No new site submission.",
+      "startedAt": "2026-10-09T17:41:33.057Z",
+      "endedAt": "2026-10-09T17:41:54.683Z",
+      "durationMs": 21625.800000000745,
+      "answer": {
+        "action": "select",
+        "tiles": [
+          1,
+          9
+        ]
+      },
+      "error": null,
+      "outcome": "wrong_set",
+      "exactSetCorrect": false,
+      "missedTiles": [
+        8
+      ],
+      "extraTiles": [],
+      "usage": {
+        "provider": "nano",
+        "requestedModel": "Chrome-managed Gemini Nano",
+        "requestedReasoning": null,
+        "durationMs": 21623,
+        "contextUsageUnits": 453,
+        "inferenceCalls": 1,
+        "directApiKeyChargeUsd": 0,
+        "inputTokens": null,
+        "outputTokens": null,
+        "providerReportedCostUsd": null
+      },
+      "modelCalls": 1,
+      "directApiKeyChargeUsd": 0,
+      "billedCostUsd": null,
+      "operatingCostUsd": null,
+      "scope": "Fresh Nano product-adapter inference on three saved public WIC crops; not live challenges, browser actuation or form completion",
+      "siteAccepted": null,
+      "applicationSubmitted": false,
+      "imageSha256": "d94b42f78bfb864ec1cadf2516179e3bd8a790549227d1b507ce170ebff6cd9c"
+    },
+    {
+      "id": "oct9-crops-traffic-lights-nano-r2",
+      "batch": "oct9-three-crop-product-adapters",
+      "provider": "nano-prompt-api",
+      "requestedModel": "Gemini Nano (Chrome managed)",
+      "requestedReasoning": null,
+      "reportedModel": null,
+      "modelIdentityBasis": "Chrome exact managed version/effort not exposed",
+      "fixtureId": "traffic-lights",
+      "repeat": 2,
+      "task": "Select all images with traffic lights.",
+      "tileCount": 9,
+      "sourceScreenshotSha256": "ce3ac8f2ad149b7208606fa502fb340ce12e69895536e1bb5df951f84b599dc2",
+      "cropBounds": [
+        74,
+        240,
+        460,
+        628
+      ],
+      "adjudicatedTiles": [
+        1,
+        8,
+        9
+      ],
+      "groundTruthBasis": "Manual review of the saved public screenshot; bridge/bicycle sets also matched prior visible live acceptance. No new site submission.",
+      "startedAt": "2026-10-09T17:41:54.683Z",
+      "endedAt": "2026-10-09T17:41:56.980Z",
+      "durationMs": 2296.400000002235,
+      "answer": {
+        "action": "select",
+        "tiles": [
+          1,
+          9
+        ]
+      },
+      "error": null,
+      "outcome": "wrong_set",
+      "exactSetCorrect": false,
+      "missedTiles": [
+        8
+      ],
+      "extraTiles": [],
+      "usage": {
+        "provider": "nano",
+        "requestedModel": "Chrome-managed Gemini Nano",
+        "requestedReasoning": null,
+        "durationMs": 2296.199999999255,
+        "contextUsageUnits": 453,
+        "inferenceCalls": 1,
+        "directApiKeyChargeUsd": 0,
+        "inputTokens": null,
+        "outputTokens": null,
+        "providerReportedCostUsd": null
+      },
+      "modelCalls": 1,
+      "directApiKeyChargeUsd": 0,
+      "billedCostUsd": null,
+      "operatingCostUsd": null,
+      "scope": "Fresh Nano product-adapter inference on three saved public WIC crops; not live challenges, browser actuation or form completion",
+      "siteAccepted": null,
+      "applicationSubmitted": false,
+      "imageSha256": "d94b42f78bfb864ec1cadf2516179e3bd8a790549227d1b507ce170ebff6cd9c"
+    },
+    {
+      "id": "oct9-crops-bridges-nano-r1",
+      "batch": "oct9-three-crop-product-adapters",
+      "provider": "nano-prompt-api",
+      "requestedModel": "Gemini Nano (Chrome managed)",
+      "requestedReasoning": null,
+      "reportedModel": null,
+      "modelIdentityBasis": "Chrome exact managed version/effort not exposed",
+      "fixtureId": "bridges",
+      "repeat": 1,
+      "task": "Select all images with bridges.",
+      "tileCount": 9,
+      "sourceScreenshotSha256": "93c3b48617fa93dd1b3d85e423dd2625049b25ba3a17a5f4bdb43b8c9109d0fe",
+      "cropBounds": [
+        74,
+        240,
+        460,
+        628
+      ],
+      "adjudicatedTiles": [
+        4,
+        6,
+        7,
+        9
+      ],
+      "groundTruthBasis": "Manual review of the saved public screenshot; bridge/bicycle sets also matched prior visible live acceptance. No new site submission.",
+      "startedAt": "2026-10-09T17:41:56.996Z",
+      "endedAt": "2026-10-09T17:41:59.492Z",
+      "durationMs": 2496.300000000745,
+      "answer": {
+        "action": "select",
+        "tiles": [
+          1,
+          3,
+          6,
+          9
+        ]
+      },
+      "error": null,
+      "outcome": "wrong_set",
+      "exactSetCorrect": false,
+      "missedTiles": [
+        4,
+        7
+      ],
+      "extraTiles": [
+        1,
+        3
+      ],
+      "usage": {
+        "provider": "nano",
+        "requestedModel": "Chrome-managed Gemini Nano",
+        "requestedReasoning": null,
+        "durationMs": 2495.300000000745,
+        "contextUsageUnits": 458,
+        "inferenceCalls": 1,
+        "directApiKeyChargeUsd": 0,
+        "inputTokens": null,
+        "outputTokens": null,
+        "providerReportedCostUsd": null
+      },
+      "modelCalls": 1,
+      "directApiKeyChargeUsd": 0,
+      "billedCostUsd": null,
+      "operatingCostUsd": null,
+      "scope": "Fresh Nano product-adapter inference on three saved public WIC crops; not live challenges, browser actuation or form completion",
+      "siteAccepted": null,
+      "applicationSubmitted": false,
+      "imageSha256": "1707c130d72f06ca4cee02c1e21338d610896f4073f67e6f06e7cf37e0cd93ac"
+    },
+    {
+      "id": "oct9-crops-bridges-nano-r2",
+      "batch": "oct9-three-crop-product-adapters",
+      "provider": "nano-prompt-api",
+      "requestedModel": "Gemini Nano (Chrome managed)",
+      "requestedReasoning": null,
+      "reportedModel": null,
+      "modelIdentityBasis": "Chrome exact managed version/effort not exposed",
+      "fixtureId": "bridges",
+      "repeat": 2,
+      "task": "Select all images with bridges.",
+      "tileCount": 9,
+      "sourceScreenshotSha256": "93c3b48617fa93dd1b3d85e423dd2625049b25ba3a17a5f4bdb43b8c9109d0fe",
+      "cropBounds": [
+        74,
+        240,
+        460,
+        628
+      ],
+      "adjudicatedTiles": [
+        4,
+        6,
+        7,
+        9
+      ],
+      "groundTruthBasis": "Manual review of the saved public screenshot; bridge/bicycle sets also matched prior visible live acceptance. No new site submission.",
+      "startedAt": "2026-10-09T17:41:59.492Z",
+      "endedAt": "2026-10-09T17:42:02.093Z",
+      "durationMs": 2600.599999997765,
+      "answer": {
+        "action": "select",
+        "tiles": [
+          1,
+          3,
+          5,
+          7,
+          9
+        ]
+      },
+      "error": null,
+      "outcome": "wrong_set",
+      "exactSetCorrect": false,
+      "missedTiles": [
+        4,
+        6
+      ],
+      "extraTiles": [
+        1,
+        3,
+        5
+      ],
+      "usage": {
+        "provider": "nano",
+        "requestedModel": "Chrome-managed Gemini Nano",
+        "requestedReasoning": null,
+        "durationMs": 2600.300000000745,
+        "contextUsageUnits": 461,
+        "inferenceCalls": 1,
+        "directApiKeyChargeUsd": 0,
+        "inputTokens": null,
+        "outputTokens": null,
+        "providerReportedCostUsd": null
+      },
+      "modelCalls": 1,
+      "directApiKeyChargeUsd": 0,
+      "billedCostUsd": null,
+      "operatingCostUsd": null,
+      "scope": "Fresh Nano product-adapter inference on three saved public WIC crops; not live challenges, browser actuation or form completion",
+      "siteAccepted": null,
+      "applicationSubmitted": false,
+      "imageSha256": "1707c130d72f06ca4cee02c1e21338d610896f4073f67e6f06e7cf37e0cd93ac"
+    },
+    {
+      "id": "oct9-crops-bicycles-nano-r1",
+      "batch": "oct9-three-crop-product-adapters",
+      "provider": "nano-prompt-api",
+      "requestedModel": "Gemini Nano (Chrome managed)",
+      "requestedReasoning": null,
+      "reportedModel": null,
+      "modelIdentityBasis": "Chrome exact managed version/effort not exposed",
+      "fixtureId": "bicycles",
+      "repeat": 1,
+      "task": "Select all images with bicycles.",
+      "tileCount": 9,
+      "sourceScreenshotSha256": "a4a0988f17d331dd42ca81f5aa12f47befc0bf1b876bf9bb4e4c677bbbb6f9a8",
+      "cropBounds": [
+        74,
+        225,
+        460,
+        612
+      ],
+      "adjudicatedTiles": [
+        1,
+        3,
+        6
+      ],
+      "groundTruthBasis": "Manual review of the saved public screenshot; bridge/bicycle sets also matched prior visible live acceptance. No new site submission.",
+      "startedAt": "2026-10-09T17:42:02.100Z",
+      "endedAt": "2026-10-09T17:42:04.173Z",
+      "durationMs": 2072.5,
+      "answer": {
+        "action": "handoff",
+        "tiles": []
+      },
+      "error": null,
+      "outcome": "model_handoff",
+      "exactSetCorrect": null,
+      "missedTiles": null,
+      "extraTiles": null,
+      "usage": {
+        "provider": "nano",
+        "requestedModel": "Chrome-managed Gemini Nano",
+        "requestedReasoning": null,
+        "durationMs": 2072.2999999970198,
+        "contextUsageUnits": 449,
+        "inferenceCalls": 1,
+        "directApiKeyChargeUsd": 0,
+        "inputTokens": null,
+        "outputTokens": null,
+        "providerReportedCostUsd": null
+      },
+      "modelCalls": 1,
+      "directApiKeyChargeUsd": 0,
+      "billedCostUsd": null,
+      "operatingCostUsd": null,
+      "scope": "Fresh Nano product-adapter inference on three saved public WIC crops; not live challenges, browser actuation or form completion",
+      "siteAccepted": null,
+      "applicationSubmitted": false,
+      "imageSha256": "354a8580699a1fc7a99bb4c279fedbd755552395c095ef8ea9146d6e0be2b10b"
+    },
+    {
+      "id": "oct9-crops-bicycles-nano-r2",
+      "batch": "oct9-three-crop-product-adapters",
+      "provider": "nano-prompt-api",
+      "requestedModel": "Gemini Nano (Chrome managed)",
+      "requestedReasoning": null,
+      "reportedModel": null,
+      "modelIdentityBasis": "Chrome exact managed version/effort not exposed",
+      "fixtureId": "bicycles",
+      "repeat": 2,
+      "task": "Select all images with bicycles.",
+      "tileCount": 9,
+      "sourceScreenshotSha256": "a4a0988f17d331dd42ca81f5aa12f47befc0bf1b876bf9bb4e4c677bbbb6f9a8",
+      "cropBounds": [
+        74,
+        225,
+        460,
+        612
+      ],
+      "adjudicatedTiles": [
+        1,
+        3,
+        6
+      ],
+      "groundTruthBasis": "Manual review of the saved public screenshot; bridge/bicycle sets also matched prior visible live acceptance. No new site submission.",
+      "startedAt": "2026-10-09T17:42:04.173Z",
+      "endedAt": "2026-10-09T17:42:06.446Z",
+      "durationMs": 2273.199999999255,
+      "answer": {
+        "action": "select",
+        "tiles": [
+          1,
+          4,
+          8
+        ]
+      },
+      "error": null,
+      "outcome": "wrong_set",
+      "exactSetCorrect": false,
+      "missedTiles": [
+        3,
+        6
+      ],
+      "extraTiles": [
+        4,
+        8
+      ],
+      "usage": {
+        "provider": "nano",
+        "requestedModel": "Chrome-managed Gemini Nano",
+        "requestedReasoning": null,
+        "durationMs": 2273,
+        "contextUsageUnits": 452,
+        "inferenceCalls": 1,
+        "directApiKeyChargeUsd": 0,
+        "inputTokens": null,
+        "outputTokens": null,
+        "providerReportedCostUsd": null
+      },
+      "modelCalls": 1,
+      "directApiKeyChargeUsd": 0,
+      "billedCostUsd": null,
+      "operatingCostUsd": null,
+      "scope": "Fresh Nano product-adapter inference on three saved public WIC crops; not live challenges, browser actuation or form completion",
+      "siteAccepted": null,
+      "applicationSubmitted": false,
+      "imageSha256": "354a8580699a1fc7a99bb4c279fedbd755552395c095ef8ea9146d6e0be2b10b"
+    }
+  ],
+  "productSourceCommit": "46d7d1b92b40f360bf9b0b8ac26333fa7e3825e6",
+  "classifierSources": [
+    {
+      "path": "model-bridge/captcha.mjs",
+      "sha256": "0306bf234d629936987317b5ebc4e28bfae47a44450ce9dfb5be84e9febc9594"
+    },
+    {
+      "path": "sidepanel/captcha-model.js",
+      "sha256": "4f9a09b2f0df09a394f4728e93e423fdf800c202d65e065f8fd0f0e8e258a785"
+    },
+    {
+      "path": "shared/captcha-engine.js",
+      "sha256": "da3c0285cc0e7f01b92b9cc73077cc2a65ff2a57008074fa9e9c46c4b0775cfc"
+    }
+  ]
+}

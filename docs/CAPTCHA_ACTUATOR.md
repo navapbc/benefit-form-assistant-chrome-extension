@@ -2,7 +2,7 @@
 
 The extension can now attempt supported reCAPTCHA controls without a Codex browser relay. One explicit opt-in covers one bounded attempt, including up to three static image rounds. A caseworker can enable it before starting an application run, or at an existing CAPTCHA checkpoint. It never activates application Submit.
 
-This is an experimental implementation. Installed Chrome and live-provider acceptance have **not** been verified. Providers can reject synthetic DOM events even when the executor clicked the right elements. Earlier October 7 live successes used a separate external browser relay and remain labeled that way.
+This is experimental. October 9 installed testing recorded **two accepted WIC checkbox states in three native attempts**, with viewport assistance and zero image calls. Live native image solving remains unverified; providers may reject synthetic DOM events. Earlier October 7 successes used an external browser relay and remain labeled that way. [Current native receipts, image accuracy, speed/cost and continuation limits](CAPTCHA_OCT9.md).
 
 ## Supported paths
 
@@ -22,6 +22,8 @@ Dynamic replacement grids, audio, hCaptcha, Turnstile, translated/changed layout
 The product authorization is distinct from Codex’s external browser tool policy. That policy cannot be changed through this repository. The native product path does not invoke that browser tool.
 
 ## Evidence and speed/cost
+
+**October 9 installed follow-up:** the initial offscreen handoff took 0.031 s; prepared-viewport native checkboxes accepted in 2.494 / 1.882 s, with zero model calls and $0 API cost. One subsequent CLI-default workflow reached final review but retained semantic errors; the other stalled. No live image challenge occurred. The separate product-adapter comparison made 36 new calls on three saved grids, retaining exact sets, wrong sets and handoffs. [Full fresh results and per-call tokens/cost](CAPTCHA_OCT9.md).
 
 The actual frame adapter passed four deterministic Chrome-fixture checks: checkbox acceptance, correct selected tiles plus Verify, revoked authorization rejection, and untouched Submit. The two attempts took **5.4 / 6.4 ms**, with zero model calls and $0 direct API-key charge. This tests mechanical execution on a simulation, not real CAPTCHA accuracy, screenshot/crop transport, or an installed application journey.
 

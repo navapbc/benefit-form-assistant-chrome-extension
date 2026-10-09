@@ -1,0 +1,371 @@
+{
+  "schema": "nava.native-captcha-live.v1",
+  "evaluatedAt": "2026-10-09",
+  "extensionVersionUserReported": "0.14.0",
+  "releaseSourceCommit": "fe2bd4e6e3425ba5510f998f47f5c40129861dd4",
+  "installedSourceIndependentlyAttested": false,
+  "site": "https://www.ruhealth.org/appointments/apply-4-wic-form",
+  "scope": "Three actual native attempts, two visibly accepted checkbox states, zero image challenges/calls. Application Submit untouched.",
+  "coverage": {
+    "attempted": 3,
+    "accepted": 2,
+    "handoffBeforeClick": 1,
+    "imageModelCalls": 0,
+    "imageRounds": 0,
+    "postAcceptanceFinalReviewWorkflows": 1,
+    "correctApplicationCompletions": 0
+  },
+  "limits": [
+    "The configured image runtime is not credited as a CAPTCHA-solving model when no image inference occurred.",
+    "The same shared native executor served both accepted checkbox states. Other settings cannot be awarded unexecuted native successes.",
+    "A manually prepared viewport was used before both accepted attempts; the initial offscreen attempt is retained.",
+    "Post-acceptance form continuation used unspecified CLI default, including the Nano-origin page. It is not unassisted Nano completion.",
+    "One continuation stalled at navigation_unknown; one reached final review but still had semantic errors.",
+    "Provider validity can expire during inspection; accepted-at-attempt is not indefinite submission readiness.",
+    "No invoice or operating/subscription allocation measured."
+  ],
+  "trials": [
+    {
+      "id": "oct9-native-nano-r1",
+      "batch": "oct9-installed-native-actuator",
+      "site": "Riverside WIC",
+      "provider": "extension-dom-v0.14",
+      "actuator": "extension-dom-v0.14",
+      "repeat": 1,
+      "formOriginRunId": "oct9-wic-nano-r1",
+      "configuredImageRuntime": "nano",
+      "configuredImageModel": "Gemini Nano (Chrome managed)",
+      "configuredReasoning": null,
+      "requestedModel": null,
+      "reportedModel": null,
+      "requestedReasoning": null,
+      "modelIdentityBasis": "No image model called; configured selection is not an executed model identity.",
+      "startedAtUi": "2026-10-09T17:44:58.441Z",
+      "endedAt": "2026-10-09T17:44:58.619Z",
+      "startedAt": "2026-10-09T17:44:58.588000Z",
+      "startTimeBasis": "Derived from precise audit end timestamp minus millisecond-rounded engine duration; UI click timestamp separately retained.",
+      "durationMs": 31,
+      "modelMs": 0,
+      "modelCalls": 0,
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "contextUsageUnits": 0
+      },
+      "outcome": "handoff",
+      "reason": "widget_hidden_or_unsupported",
+      "visibleAccepted": false,
+      "imageChallengeEncountered": false,
+      "rounds": 0,
+      "answerInterventions": 0,
+      "navigationAssistanceCount": 0,
+      "navigationAssistance": null,
+      "directApiKeyChargeUsd": 0,
+      "marginalApiCostUsd": 0,
+      "billedCostUsd": null,
+      "operatingCostUsd": null,
+      "applicationSubmitted": false,
+      "scope": "Installed v0.14 native live WIC checkbox; no image model inference, external relay or Submit. One offscreen handoff and two viewport-prepared accepted attempts.",
+      "sourceAuditSha256": "e6e9a2eaefb7f2cd9953a6cd12f43a0735951fc6935c11987ed01e5b4ec6c124",
+      "publicEvidenceBasis": "Value-free audit metrics plus visible checkbox AX state; raw audit and screenshots local.",
+      "errorIds": [
+        "C10"
+      ]
+    },
+    {
+      "id": "oct9-native-nano-r2",
+      "batch": "oct9-installed-native-actuator",
+      "site": "Riverside WIC",
+      "provider": "extension-dom-v0.14",
+      "actuator": "extension-dom-v0.14",
+      "repeat": 2,
+      "formOriginRunId": "oct9-wic-nano-r1",
+      "configuredImageRuntime": "nano",
+      "configuredImageModel": "Gemini Nano (Chrome managed)",
+      "configuredReasoning": null,
+      "requestedModel": null,
+      "reportedModel": null,
+      "requestedReasoning": null,
+      "modelIdentityBasis": "No image model called; configured selection is not an executed model identity.",
+      "startedAtUi": "2026-10-09T17:45:47.401Z",
+      "endedAt": "2026-10-09T17:45:50.040Z",
+      "startedAt": "2026-10-09T17:45:47.546000Z",
+      "startTimeBasis": "Derived from precise audit end timestamp minus millisecond-rounded engine duration; UI click timestamp separately retained.",
+      "durationMs": 2494,
+      "modelMs": 0,
+      "modelCalls": 0,
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "contextUsageUnits": 0
+      },
+      "outcome": "accepted",
+      "reason": "visible_checkbox_accepted",
+      "visibleAccepted": true,
+      "imageChallengeEncountered": false,
+      "rounds": 0,
+      "answerInterventions": 0,
+      "navigationAssistanceCount": 1,
+      "navigationAssistance": "Scrolled/focused the existing checkbox into view before the attempt",
+      "directApiKeyChargeUsd": 0,
+      "marginalApiCostUsd": 0,
+      "billedCostUsd": null,
+      "operatingCostUsd": null,
+      "applicationSubmitted": false,
+      "scope": "Installed v0.14 native live WIC checkbox; no image model inference, external relay or Submit. One offscreen handoff and two viewport-prepared accepted attempts.",
+      "sourceAuditSha256": "e6e9a2eaefb7f2cd9953a6cd12f43a0735951fc6935c11987ed01e5b4ec6c124",
+      "publicEvidenceBasis": "Value-free audit metrics plus visible checkbox AX state; raw audit and screenshots local.",
+      "errorIds": [
+        "C11",
+        "F01",
+        "F08"
+      ],
+      "postAcceptanceFormContinuation": {
+        "formRuntime": "codex-cli-subscription",
+        "requestedModel": null,
+        "reportedModel": null,
+        "reasoningEffort": null,
+        "modelIdentityBasis": "Global form runtime was CLI default during continuation; no model/effort flags. Original Nano form receipt remains unchanged.",
+        "scanCount": 2,
+        "modelCalls": 6,
+        "inputTokens": 115804,
+        "outputTokens": 2635,
+        "summedModelSeconds": 85.229,
+        "acceptedToTerminalSeconds": 75.357,
+        "terminalAt": "2026-10-09T17:47:05.397Z",
+        "terminalCheckpoint": "navigation_unknown",
+        "finalReviewReached": false,
+        "directApiKeyChargeUsd": 0,
+        "apiPriceEstimateUsd": null,
+        "apiPriceBasis": "Unknown actual form model/cache; zero direct API-key transport charge is not zero operating/subscription cost.",
+        "additionalVerifiedWrites": 1,
+        "semanticCorrect": 16,
+        "semanticExpected": 17,
+        "notApplicableCorrect": 1,
+        "notApplicableExpected": 2,
+        "correctCompletion": false,
+        "observedErrors": [
+          "Home address lacks city/state/ZIP",
+          "Mailing address filled despite matching home"
+        ],
+        "events": [
+          {
+            "type": "scan_completed",
+            "at": "2026-10-09T17:46:25.981Z",
+            "details": {
+              "fieldCount": 19,
+              "gapCount": 0,
+              "modelRuntime": "codex-cli-subscription",
+              "modelPromptCount": 3,
+              "modelDurationMs": 42816,
+              "modelInputCharacters": 23816,
+              "modelOutputCharacters": 4639,
+              "modelInputTokens": 59525,
+              "modelOutputTokens": 1256,
+              "modelApiCostMicros": 0,
+              "checkpointKind": "final_review",
+              "toStatus": "ready_to_fill"
+            }
+          },
+          {
+            "type": "checkpoint_completed",
+            "at": "2026-10-09T17:46:26.009Z",
+            "details": {
+              "checkpointKind": "captcha",
+              "toStatus": "ready_to_fill"
+            }
+          },
+          {
+            "type": "fill_started",
+            "at": "2026-10-09T17:46:26.032Z",
+            "details": {
+              "fieldCount": 1,
+              "fromStatus": "ready_to_fill"
+            }
+          },
+          {
+            "type": "page_verified",
+            "at": "2026-10-09T17:46:28.458Z",
+            "details": {
+              "verifiedCount": 1,
+              "blockedCount": 0,
+              "gapCount": 0,
+              "pageCount": 1,
+              "toStatus": "ready_to_fill"
+            }
+          },
+          {
+            "type": "scan_completed",
+            "at": "2026-10-09T17:47:05.368Z",
+            "details": {
+              "fieldCount": 19,
+              "gapCount": 0,
+              "modelRuntime": "codex-cli-subscription",
+              "modelPromptCount": 3,
+              "modelDurationMs": 42413,
+              "modelInputCharacters": 24004,
+              "modelOutputCharacters": 5064,
+              "modelInputTokens": 56279,
+              "modelOutputTokens": 1379,
+              "modelApiCostMicros": 0,
+              "checkpointKind": "final_review",
+              "toStatus": "ready_to_fill"
+            }
+          },
+          {
+            "type": "checkpoint_reached",
+            "at": "2026-10-09T17:47:05.397Z",
+            "details": {
+              "checkpointKind": "navigation_unknown",
+              "toStatus": "needs_attention"
+            }
+          }
+        ],
+        "startedAt": "2026-10-09T17:45:50.040Z",
+        "endedAt": "2026-10-09T17:47:05.397Z",
+        "wallSeconds": 75.357,
+        "site": "Riverside WIC",
+        "scope": "Post-native-acceptance CLI-default form continuation; separate from zero-model checkbox actuation",
+        "originNativeRunId": "oct9-native-nano-r2",
+        "repeat": 2
+      }
+    },
+    {
+      "id": "oct9-native-codex-sol-low-r1",
+      "batch": "oct9-installed-native-actuator",
+      "site": "Riverside WIC",
+      "provider": "extension-dom-v0.14",
+      "actuator": "extension-dom-v0.14",
+      "repeat": 1,
+      "formOriginRunId": "oct9-wic-codex-default-r1",
+      "configuredImageRuntime": "codex",
+      "configuredImageModel": "gpt-6.1-sol",
+      "configuredReasoning": "low",
+      "requestedModel": null,
+      "reportedModel": null,
+      "requestedReasoning": null,
+      "modelIdentityBasis": "No image model called; configured selection is not an executed model identity.",
+      "startedAtUi": "2026-10-09T17:49:23.112Z",
+      "endedAt": "2026-10-09T17:49:25.122Z",
+      "startedAt": "2026-10-09T17:49:23.240000Z",
+      "startTimeBasis": "Derived from precise audit end timestamp minus millisecond-rounded engine duration; UI click timestamp separately retained.",
+      "durationMs": 1882,
+      "modelMs": 0,
+      "modelCalls": 0,
+      "usage": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "contextUsageUnits": 0
+      },
+      "outcome": "accepted",
+      "reason": "visible_checkbox_accepted",
+      "visibleAccepted": true,
+      "imageChallengeEncountered": false,
+      "rounds": 0,
+      "answerInterventions": 0,
+      "navigationAssistanceCount": 1,
+      "navigationAssistance": "Scrolled/focused the existing checkbox into view before the attempt",
+      "directApiKeyChargeUsd": 0,
+      "marginalApiCostUsd": 0,
+      "billedCostUsd": null,
+      "operatingCostUsd": null,
+      "applicationSubmitted": false,
+      "scope": "Installed v0.14 native live WIC checkbox; no image model inference, external relay or Submit. One offscreen handoff and two viewport-prepared accepted attempts.",
+      "sourceAuditSha256": "e6e9a2eaefb7f2cd9953a6cd12f43a0735951fc6935c11987ed01e5b4ec6c124",
+      "publicEvidenceBasis": "Value-free audit metrics plus visible checkbox AX state; raw audit and screenshots local.",
+      "errorIds": [
+        "F01",
+        "F08",
+        "F09"
+      ],
+      "postAcceptanceFormContinuation": {
+        "formRuntime": "codex-cli-subscription",
+        "requestedModel": null,
+        "reportedModel": null,
+        "reasoningEffort": null,
+        "modelIdentityBasis": "Global form runtime was CLI default during continuation; no model/effort flags. Original Nano form receipt remains unchanged.",
+        "scanCount": 1,
+        "modelCalls": 3,
+        "inputTokens": 59597,
+        "outputTokens": 1296,
+        "summedModelSeconds": 45.428,
+        "acceptedToTerminalSeconds": 39.105,
+        "terminalAt": "2026-10-09T17:50:04.227Z",
+        "terminalCheckpoint": "final_review",
+        "finalReviewReached": true,
+        "directApiKeyChargeUsd": 0,
+        "apiPriceEstimateUsd": null,
+        "apiPriceBasis": "Unknown actual form model/cache; zero direct API-key transport charge is not zero operating/subscription cost.",
+        "additionalVerifiedWrites": 0,
+        "semanticCorrect": 16,
+        "semanticExpected": 17,
+        "notApplicableCorrect": 1,
+        "notApplicableExpected": 2,
+        "correctCompletion": false,
+        "observedErrors": [
+          "Home address lacks city/state/ZIP",
+          "Mailing address filled despite matching home"
+        ],
+        "events": [
+          {
+            "type": "scan_completed",
+            "at": "2026-10-09T17:50:04.178Z",
+            "details": {
+              "fieldCount": 19,
+              "gapCount": 0,
+              "modelRuntime": "codex-cli-subscription",
+              "modelPromptCount": 3,
+              "modelDurationMs": 45428,
+              "modelInputCharacters": 24231,
+              "modelOutputCharacters": 5090,
+              "modelInputTokens": 59597,
+              "modelOutputTokens": 1296,
+              "modelApiCostMicros": 0,
+              "checkpointKind": "final_review",
+              "toStatus": "ready_to_fill"
+            }
+          },
+          {
+            "type": "checkpoint_completed",
+            "at": "2026-10-09T17:50:04.201Z",
+            "details": {
+              "checkpointKind": "captcha",
+              "toStatus": "ready_to_fill"
+            }
+          },
+          {
+            "type": "checkpoint_reached",
+            "at": "2026-10-09T17:50:04.227Z",
+            "details": {
+              "checkpointKind": "final_review",
+              "toStatus": "ready_for_review"
+            }
+          },
+          {
+            "type": "review_reached",
+            "at": "2026-10-09T17:50:04.228Z",
+            "details": {
+              "checkpointKind": "final_review",
+              "pageCount": 1,
+              "toStatus": "ready_for_review"
+            }
+          }
+        ],
+        "reviewVerifiedBadge": 50,
+        "reviewBadgeIsUniqueAnswerCount": false,
+        "startedAt": "2026-10-09T17:49:25.122Z",
+        "endedAt": "2026-10-09T17:50:04.227Z",
+        "wallSeconds": 39.105,
+        "site": "Riverside WIC",
+        "scope": "Post-native-acceptance CLI-default form continuation; separate from zero-model checkbox actuation",
+        "originNativeRunId": "oct9-native-codex-sol-low-r1",
+        "repeat": 1
+      },
+      "laterInspection": {
+        "checkboxChecked": false,
+        "atLeastSecondsAfterAccepted": 139,
+        "interpretation": "Observed after the final-review inspection delay. Challenge expiry/recreation not isolated; not treated as an image-model failure."
+      }
+    }
+  ]
+}

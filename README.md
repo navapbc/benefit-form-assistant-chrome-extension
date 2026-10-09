@@ -6,16 +6,20 @@ Version **0.14.0** · Nava Labs tester release · October 8, 2026
 
 ## Test results
 
-**Latest installed v14 batch · October 9:** four fresh WIC form runs, **0/4 correct completions**, zero operator answer repairs. Nano/Codex reached CAPTCHA with incomplete addresses; Jev paused on unnecessary questions. No new native CAPTCHA action has been attempted yet. The remaining repeats and image-runtime matrix are pending, not measured failures.
+**Latest installed v14 batch · October 9:** four fresh WIC form runs, **0/4 correct completions**, zero operator answer repairs. The follow-up adds **three native CAPTCHA attempts: two accepted checkboxes, zero live image calls**, and **36 fresh saved-image classifications**. One workflow reached final review after viewport assistance, but its answers were still incorrect. [Fresh CAPTCHA comparison, exact errors, speed and cost](docs/CAPTCHA_OCT9.md).
 
-| Installed form run | Time to stopped checkpoint | Correct answers | Prompts | Usage | API cost basis | CAPTCHA in this batch |
-|---|---:|---:|---:|---|---|---|
-| Nano 1 · Chrome-managed model/effort | 243.3 s | 16/17 | 9 | 23,718 context units; API tokens unavailable | $0 API charge; device cost unknown | Reached; not attempted |
-| Jev 1.13.0 · repeat 1 | 8.39 s | 15/17 | 2 | 36,848 input / 15,762 output tokens | $0.001547616 estimate; billed unknown | Not reached; questions |
-| Jev 1.13.0 · repeat 2 | 8.45 s | 15/17 | 2 | 36,848 input / 15,763 output tokens | $0.001547616 estimate; billed unknown | Not reached; questions |
-| Codex CLI default · repeat 1 | 116.5 s | 16/17 | 9 | 178,677 input / 3,638 output tokens | $0 direct API-key charge; model-price estimate unknown | Reached; not attempted |
+| Installed form run | Time to stopped checkpoint | Minutes:seconds¹ | Correct answers | Prompts | Usage | API cost basis | CAPTCHA at first form checkpoint |
+|---|---:|---:|---:|---:|---|---|---|
+| Nano 1 · Chrome-managed model/effort | 243.3 s | **4:03** | 16/17 | 9 | 23,718 context units; API tokens unavailable | **$0 API cost**; device/operating cost unmeasured | Reached; not attempted |
+| Jev 1.13.0 · repeat 1 | 8.39 s | **0:08** | 15/17 | 2 | 36,848 input / 15,762 output tokens | $0.001547616 estimate; billed unknown | Not reached; questions |
+| Jev 1.13.0 · repeat 2 | 8.45 s | **0:08** | 15/17 | 2 | 36,848 input / 15,763 output tokens | $0.001547616 estimate; billed unknown | Not reached; questions |
+| Codex CLI default · repeat 1 | 116.5 s | **1:57** | 16/17 | 9 | 178,677 input / 3,638 output tokens | $0 direct API-key charge; model-price estimate unknown | Reached; not attempted |
+
+¹ Rounded to the nearest second. For comparison, **76 seconds is 1:16**; it is not the duration of this installed Codex WIC run. Planner-subset timings elsewhere measure different work.
 
 These are **times to a stopped workflow**, not successful completion speeds. All four omit city/state/ZIP from Home Address. Jev leaves Medi-Cal unanswered and asks two not-applicable questions; Codex also fills the conditional mailing-address box unnecessarily, outside the 17-answer denominator. v14's Codex form route does not specify model/reasoning, so it is not attributed to this chat's model. [Full new run details and stage timings](docs/INSTALLED_V014_BATCH.md) · **[Error catalog and reproduction steps](docs/BENCHMARK_ERRORS.md)** · [JSON](evaluation/results/installed-v014-oct9.json) · [CSV](evaluation/results/installed-v014-oct9.csv).
+
+**Jev is the fastest observed installed form runtime in this small batch; overall quality is unresolved.** Its two runs stop at questions with 15/17 correct answers. Nano and CLI default each score 16/17 but still leave an incorrect address. None has a measured cost or time per correctly completed application. The runner already loops; [targeted applicability and rescan recovery](docs/INSTALLED_V014_BATCH.md#can-a-better-harness-keep-jev-moving) could address Jev's false questions, but has not yet been tested. The [error catalog now identifies every cited run's runtime, requested/reported model, reasoning, scope and evidence](docs/BENCHMARK_ERRORS.md#exact-run-provenance), including explicit unknowns.
 
 **Live application quality remains unfinished: 0/8 October 5 workflows reached unassisted final review.** The newer tests below measure field planning only, using frozen controls and fictional records. They do not show complete government applications.
 
@@ -63,9 +67,25 @@ The current batch's API durations were 0.133–0.268 seconds; planner wall time 
 
 ### Which model clicked through CAPTCHA?
 
-**October 9 native status: 0 attempts, 0 accepted states.** Nano and Codex each have a filled WIC page staged at CAPTCHA; Jev's two workflows stopped at questions. No image runtime has been called in this fresh installed batch. This is pending coverage, not a 0% model accuracy score. [Exact current results, speed/cost and remaining work](docs/INSTALLED_V014_BATCH.md#which-models-completed-captcha).
+**October 9 native results: 2 accepted / 3 attempts.** The initial offscreen attempt handed off in 0.031 s. After operator viewport preparation, the shared native executor accepted checkboxes in **2.494 s and 1.882 s**, with **zero image-model calls and $0 API cost**. Nano and Sol Low were configured as image fallbacks but never called; these are executor successes, not model image-solving wins. One subsequent CLI-default workflow reached final review with an incomplete address and an unnecessary mailing fill; another stalled. Jev's form runs stopped before CAPTCHA. [Three exact native receipts and continuation results](docs/CAPTCHA_OCT9.md#installed-native-attempts-and-form-continuation).
 
-**New in v0.14:** a native extension executor, separate from the earlier Codex browser relay. Four mechanical browser-fixture checks passed; native live-provider acceptance remains unverified. The new product image adapters also ran twice on the same saved grid:
+**Fresh image comparison: three saved grids, two repeats each.** All configurations made six calls through the product image adapters. These answers were not submitted to live challenges.
+
+| Requested image configuration | Exact tile sets / 6 | Wrong sets | Handoffs | Median call time |
+|---|---:|---:|---:|---:|
+| Codex CLI · GPT-6.1 Sol Low | **4/6** | 2 | 0 | 8.339 s |
+| Codex CLI · GPT-6.1 Sol Extra High | **4/6** | 0 | 2 | 15.596 s |
+| Codex CLI · GPT-6 Luna Low | 2/6 | 4 | 0 | 4.825 s |
+| Codex CLI · GPT-6 Luna Extra High | 1/6 | 2 | 3 | 6.787 s |
+| Eve 0.71.2 · GPT-6.1 Sol Low | 3/6 | 1 | 2 | 6.672 s |
+| Gemini Nano · managed version/effort | 0/6 | 5 | 1 | 2.396 s |
+| Jev 1.13.0 | Not tested: no image adapter | — | — | — |
+
+![Fresh product image results and median response times](docs/assets/captcha-three-grid-quality.svg)
+
+**Nano API cost is $0.** CLI/Eve used subscription access, with $0 direct API-key charges; measured tokens support hypothetical API-price scenarios, not invoices. The [complete new report](docs/CAPTCHA_OCT9.md) includes every expected/returned tile set, missed/extra tiles, model/effort, seconds, tokens and price estimate. Handoffs stay in the denominator; their motive is unknown. Three images do not establish general reliability. Earlier live image-solving evidence remains below.
+
+**October 8 adapter smoke tests:** four mechanical browser-fixture checks passed. The new product image adapters also ran twice on the same saved grid:
 
 | Product image adapter · requested GPT-6.1 Sol Low | Exact tile sets | Elapsed time, repeat 1 / 2 | API-price scenario, repeat 1 / 2¹ |
 |---|---:|---:|---:|
@@ -106,7 +126,7 @@ These repeats cover **one unique image**, not general CAPTCHA accuracy. Saved-im
 
 The two Jev checkbox decisions took 0.241 s and 0.124 s, with **$0.000050904 total input-token price estimate** and unknown billed cost. Nano decisions took 8.02 s and 2.20 s. CLI/Eve used subscription access; device, subscription, relay and review costs were not allocated. This benchmark does not measure cost per completed application.
 
-**Extension status:** v0.14 adds a native, opt-in reCAPTCHA actuator: one authorization covers the checkbox and up to three static image rounds. It uses no Codex browser relay. The prior live results above still belong to the external relay, and cannot be relabeled native successes. Native fixture checks passed; installed WIC form planning/filling now ran four times, while native CAPTCHA execution and live-provider acceptance remain unverified. Provider pages may reject synthetic DOM clicks. The Codex browser tool's external action-time policy remains outside this repository.
+**Extension status:** v0.14 adds a native, opt-in reCAPTCHA actuator: one authorization covers the checkbox and up to three static image rounds. October 9 established two visible native checkbox acceptances, with viewport assistance and no image inference. October 7 successes remain external-relay results. Live native image solving and correct application completion remain unverified. The Codex browser tool's external policy is outside this repository.
 
 ![CAPTCHA image comparison on one common grid](docs/assets/captcha-image-accuracy.svg)
 
@@ -141,7 +161,7 @@ The IHSS charts are one historical run per runtime. Readback coverage measures p
 - Tracks several applications, pauses and resumes checkpoints, and exports a value-free activity log.
 - Shows a prototype recertification workspace for upcoming renewals, updates, and client authorization.
 
-**What remains unfinished:** no saved live-site trial reached unassisted final review. Address completeness, missing decisions, and long BenefitsCal flows need work. Native CAPTCHA automation is experimental and has no verified live-provider run. One-time codes, unsupported challenges and final submission require a person. Eve remains a separate form-planning harness and is now an optional image classifier for the native actuator. Jev's two installed WIC executions filled known values but stopped at unnecessary questions. [Current error details](docs/BENCHMARK_ERRORS.md).
+**What remains unfinished:** no saved live-site trial correctly completed the application. One October 9 workflow reached final review with viewport assistance but retained address/applicability errors. Address completeness, missing decisions, and long BenefitsCal flows need work. Native CAPTCHA automation has two verified checkbox acceptances; live native image solving is untested. One-time codes, unsupported challenges and final submission require a person. Eve remains a separate form-planning harness and is now an optional image classifier for the native actuator. Jev's two installed WIC executions filled known values but stopped at unnecessary questions. [Current error details](docs/BENCHMARK_ERRORS.md).
 
 Read [the current testing writeup](docs/BENEFIT_SITE_EVALUATION.md), or [the developer guide](DEVELOPER_GUIDE.md).
 
@@ -165,7 +185,7 @@ All form runtimes share the same deterministic checkbox executor; a checkbox cli
 
 | Runtime | Checkbox executor | Static 3×3 / 4×4 image classification |
 |---|---|---|
-| Gemini Nano | Shared native executor | On-device Prompt API; prior common-grid accuracy 0/2 |
+| Gemini Nano | Shared native executor | On-device Prompt API; latest three-grid exact sets 0/6 |
 | Codex CLI | Shared native executor | Cropped image + constrained tile indexes; model and Low/Extra High selectable |
 | Eve | Shared native executor | Optional loopback image agent, GPT-6.1 Sol Low |
 | Jev 1.13.0 | Shared native executor | Current text/JSON route has no image adapter; choose a separate image runtime |

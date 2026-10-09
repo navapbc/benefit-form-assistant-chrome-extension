@@ -11,6 +11,13 @@ const summary = await load('evaluation/results/captcha-oct7-summary.json');
 const fixture = await load('evaluation/results/captcha-native-fixture.json');
 const adapters = await load('evaluation/results/captcha-native-adapter-models.json');
 const validation = await load('evaluation/results/captcha-native-adapter-validation.json');
+const freshPrices = await load('evaluation/installed-v014/pricing-2026-10-09.json');
+let matrix = { trials: [] };
+try { matrix = await load('evaluation/results/captcha-three-crops-oct9.json'); }
+catch (error) { if (error.code !== 'ENOENT') throw error; }
+let native = { trials: [] };
+try { native = await load('evaluation/results/captcha-native-oct9.json'); }
+catch (error) { if (error.code !== 'ENOENT') throw error; }
 const known = (number) => typeof number === 'number' && Number.isFinite(number) && number >= 0;
 function interval(start, end) {
   const elapsed = Date.parse(end) - Date.parse(start);
@@ -18,19 +25,26 @@ function interval(start, end) {
 }
 function metrics(row) {
   const usage = row.usage || {};
-  const rate = prices.models[row.requestedModel];
+  const freshRate = row.batch === 'oct9-three-crop-product-adapters' ? freshPrices.models[row.requestedModel] : null;
+  const rate = freshRate ? { inputPerMillion: freshRate.input, cachedInputPerMillion: freshRate.cachedInput, cacheWritePerMillion: freshRate.cacheWrite, outputPerMillion: freshRate.output, source: freshRate.source } : prices.models[row.requestedModel];
   const input = usage.inputTokens, output = usage.outputTokens, cached = usage.cachedInputTokens ?? usage.cacheReadTokens ?? 0;
   let estimate = null, upper = null, basis = 'Usage or compatible rate unavailable';
   let source = null, verifiedAt = null;
-  if (row.provider === 'jev-api' && known(input)) {
+  if (row.provider === 'nano-prompt-api' || row.modelCalls === 0 && row.directApiKeyChargeUsd === 0) {
+    estimate = 0; upper = 0; basis = row.provider === 'nano-prompt-api' ? 'On-device Nano: $0 API cost; device/operating cost unmeasured' : 'No model inference: $0 marginal API cost; operating cost unmeasured';
+  } else if (row.provider === 'jev-api' && known(input)) {
     estimate = input * jevPrice.inputUsdPerMillionTokens / 1e6; upper = estimate;
     source = jevPrice.source; verifiedAt = jevPrice.checkedAt; basis = 'Published input-token estimate; invoice unverified';
   } else if (rate && known(input) && known(output) && known(cached) && cached <= input) {
     estimate = ((input - cached) * rate.inputPerMillion + cached * rate.cachedInputPerMillion + output * rate.outputPerMillion) / 1e6;
     upper = ((input - cached) * rate.cacheWritePerMillion + cached * rate.cachedInputPerMillion + output * rate.outputPerMillion) / 1e6;
-    source = rate.source; verifiedAt = prices.verifiedAt; basis = 'Hypothetical API price scenario for subscription run; range is ordinary-input vs cache-write scenario, not confidence or invoice';
+    source = rate.source; verifiedAt = freshRate ? freshPrices.verifiedAt : prices.verifiedAt; basis = 'Hypothetical API price scenario for subscription run; range is ordinary-input vs cache-write scenario, not confidence or invoice';
   }
-  return { runtimeElapsedMs: known(row.durationMs) ? row.durationMs : null,
+  return { inputTokens: known(input) ? input : null, outputTokens: known(output) ? output : null,
+    cachedInputTokens: known(usage.cachedInputTokens ?? usage.cacheReadTokens) ? (usage.cachedInputTokens ?? usage.cacheReadTokens) : null,
+    reasoningTokens: known(usage.reasoningTokens) ? usage.reasoningTokens : null,
+    contextUsageUnits: known(usage.contextUsageUnits) ? usage.contextUsageUnits : null,
+    runtimeElapsedMs: known(row.durationMs) ? row.durationMs : null,
     pureInferenceMs: known(row.modelMs) ? row.modelMs : null,
     runtimeTimeBasis: 'Call wall time including runtime/session startup; pure inference isolated only where separately recorded',
     browserObservationIntervalMs: interval(row.browserExecution?.startedAt, row.browserExecution?.observedAt),
@@ -59,24 +73,30 @@ const rows = [
   ...validation.trials.map((row) => ({ id: `${row.id}-validation`, layer: 'product-adapter-validation', provider: row.provider, model: row.requestedModel, reasoning: row.requestedReasoning, repeat: row.repeat,
     outcome: 'MIME validation rejected before inference', metrics: { ...metrics(row), runtimeTimeBasis: 'Request-validation wall time; no model inference occurred' } })),
 ];
-const ledger = { schema: 'captcha-run-metrics/v1', generatedFrom: ['captcha-oct7-actions.json', 'captcha-oct7-images.json', 'captcha-summary.json', 'captcha-native-fixture.json', 'captcha-native-adapter-models.json', 'captcha-native-adapter-validation.json'],
+rows.push(...matrix.trials.map((row) => ({ id: row.id, layer: 'oct9-three-crop-product-adapters', provider: row.provider, model: row.requestedModel, reasoning: row.requestedReasoning,
+  repeat: row.repeat, fixtureId: row.fixtureId, outcome: row.outcome, metrics: metrics(row) })));
+rows.push(...native.trials.map((row) => ({ id: row.id, layer: 'oct9-installed-native-actuator', provider: row.provider, model: null, reasoning: null,
+  configuredImageModel: row.configuredImageModel, configuredReasoning: row.configuredReasoning, repeat: row.repeat, outcome: row.outcome + ': ' + row.reason,
+  metrics: { ...metrics(row), runtimeTimeBasis: 'Installed native actuator engine duration; excludes UI preparation, permission wait and subsequent form rescan' } })));
+const ledger = { schema: 'captcha-run-metrics/v1', generatedFrom: ['captcha-oct7-actions.json', 'captcha-oct7-images.json', 'captcha-summary.json', 'captcha-native-fixture.json', 'captcha-native-adapter-models.json', 'captcha-native-adapter-validation.json', ...(matrix.trials.length ? ['captcha-three-crops-oct9.json'] : []), ...(native.trials.length ? ['captcha-native-oct9.json'] : [])],
+  freshPriceSnapshot: matrix.trials.length ? 'evaluation/installed-v014/pricing-2026-10-09.json' : null,
   priceSnapshotSha256: createHash('sha256').update(pricesText).digest('hex'), rows,
   limits: ['All missing speed/cost metrics are explicit nulls, not zeros.', 'API scenarios are not subscription or billed amounts.',
     'Failures and the historical untimed trial remain included.', 'Eight startup failures are preserved as one batch because individual timings were not retained.',
-    'No complete benefit application, native-extension live CAPTCHA, or total operating cost was measured.'] };
+    'No correctly completed benefit application or total operating cost was measured. Native checkbox acceptance appears only in the October 9 layer; zero native live image calls.'] };
 await writeFile(new URL('evaluation/results/captcha-run-metrics.json', root), JSON.stringify(ledger, null, 2) + '\n');
 const seconds = (ms) => known(ms) ? `${(ms / 1000).toFixed(3)} s` : 'Unknown';
 const money = (value) => known(value) ? `$${value.toFixed(6)}` : 'Unknown';
 function estimate(row) { const m = row.metrics; return m.apiPriceEstimateLowerUsd === null ? 'Unknown' : `${money(m.apiPriceEstimateLowerUsd)}${m.apiPriceEstimateUpperUsd !== m.apiPriceEstimateLowerUsd ? `–${money(m.apiPriceEstimateUpperUsd)}` : ''}`; }
 const markdown = [
   '# CAPTCHA speed and cost for every retained run', '',
-  'The ledger covers all 14 October 7 action trials, all 21 image trials, the October 5 historical trial, the batch of eight CLI startup failures, four October 8 product-adapter image calls, four MIME-validation failures, and two native browser fixture attempts. Failures and missing results stay in the denominator. **Unknown means unmeasured, not zero.**', '',
-  'Runtime elapsed time includes setup and the model request. Nano alone exposes a separate prompt-time measurement. Browser observation intervals include relay orchestration and waiting. End-to-end journey time was not measured, and these noncontiguous phases cannot be added into a complete application duration.', '',
-  `Costs use the [October 6 price snapshot](../evaluation/controlled-planning/pricing.json) for hypothetical CLI/Eve API scenarios and the [October 7 Jev rate snapshot](../evaluation/results/jev-summary.json). Ranges reflect two cache-pricing scenarios, not statistical confidence. Actual billed amount, subscription allocation, device, relay, review and total operating cost remain unknown for every run. CLI/Eve/Nano used no directly billed API key; Jev used an API key, so its actual direct charge is unknown. Nano has no token-priced API estimate.`, '',
+  'The ledger covers all 14 October 7 action trials, all 21 image trials, the October 5 historical trial, the batch of eight CLI startup failures, four October 8 product-adapter image calls, four MIME-validation failures, two native browser fixture attempts, 36 fresh October 9 product classifications and three installed native attempts. Failures and missing results stay in the denominator. **Unknown means unmeasured, not zero.**', '',
+  'Runtime elapsed time includes setup and the model request. The older Nano image harness exposes separate prompt time; the new product adapter records whole-call duration. Browser observation intervals include relay orchestration and waiting. End-to-end journey time was not measured, and these noncontiguous phases cannot be added into a complete application duration.', '',
+  `Costs use the [October 6 price snapshot](../evaluation/controlled-planning/pricing.json) for hypothetical CLI/Eve API scenarios and the [October 7 Jev rate snapshot](../evaluation/results/jev-summary.json). Ranges reflect two cache-pricing scenarios, not statistical confidence. Actual billed amount, subscription allocation, device, relay, review and total operating cost remain unknown for every run. CLI/Eve/Nano used no directly billed API key; Jev used an API key, so its actual direct charge is unknown. **Nano API cost is $0**; device/operating cost is unmeasured. October 9 CLI/Eve classifications use the [October 9 price snapshot](../evaluation/installed-v014/pricing-2026-10-09.json). Native checkbox-only attempts also have $0 marginal API cost.`, '',
   'Where cache counters were not recorded, the API scenario assumes zero cached input; the ledger flags this assumption. It is not an attested cache charge. Failed requests without usage retain an unknown model-price estimate.', '',
   '[Machine-readable full ledger](../evaluation/results/captcha-run-metrics.json) · [Original actions](../evaluation/results/captcha-oct7-actions.json) · [Original image trials](../evaluation/results/captcha-oct7-images.json)', '',
 ];
-for (const [layer, heading] of [['checkbox-action', 'Checkbox action selection and live relay outcome'], ['image-classification', 'Every October 7 image call, including timeouts and rejected answers'], ['product-adapter-image', 'October 8 product image adapters: classification only'], ['product-adapter-validation', 'October 8 MIME-validation failures before inference'], ['historical-checkbox', 'Earlier chat observation'], ['infrastructure-failure', 'Startup failures before inference']]) {
+for (const [layer, heading] of [['checkbox-action', 'Checkbox action selection and live relay outcome'], ['image-classification', 'Every October 7 image call, including timeouts and rejected answers'], ['product-adapter-image', 'October 8 product image adapters: classification only'], ['product-adapter-validation', 'October 8 MIME-validation failures before inference'], ...(matrix.trials.length ? [['oct9-three-crop-product-adapters', 'October 9 product adapters across three saved grids']] : []), ...(native.trials.length ? [['oct9-installed-native-actuator', 'October 9 installed native checkbox attempts (no image model called)']] : []), ['historical-checkbox', 'Earlier chat observation'], ['infrastructure-failure', 'Startup failures before inference']]) {
   markdown.push(`## ${heading}`, '', '| Trial | Outcome | Runtime elapsed | Pure inference | Browser observation interval | API-price estimate/scenario | Direct API-key charge | Billed cost |', '|---|---|---:|---:|---:|---:|---:|---:|');
   for (const row of rows.filter((item) => item.layer === layer)) markdown.push(`| ${row.id}${row.attempts ? ` (${row.attempts} attempts)` : ''} | ${row.outcome.replaceAll('_', ' ')} | ${seconds(row.metrics.runtimeElapsedMs)} | ${seconds(row.metrics.pureInferenceMs)} | ${seconds(row.metrics.browserObservationIntervalMs)} | ${estimate(row)} | ${money(row.metrics.directApiKeyChargeUsd)} | Unknown |`);
   markdown.push('');
