@@ -8,12 +8,26 @@ Version **0.14.0** · Nava Labs tester release · October 8, 2026
 
 **Latest installed v14 batch · October 9:** four fresh WIC form runs, **0/4 correct completions**, zero operator answer repairs. The follow-up adds **three native CAPTCHA attempts: two accepted checkboxes, zero live image calls**, and **36 fresh saved-image classifications**. One workflow reached final review after viewport assistance, but its answers were still incorrect. [Fresh CAPTCHA comparison, exact errors, speed and cost](docs/CAPTCHA_OCT9.md).
 
-| Installed form run | Time to stopped checkpoint | Minutes:seconds¹ | Correct answers | Prompts | Usage | API cost basis | CAPTCHA at first form checkpoint |
-|---|---:|---:|---:|---:|---|---|---|
-| Nano 1 · Chrome-managed model/effort | 243.3 s | **4:03** | 16/17 | 9 | 23,718 context units; API tokens unavailable | **$0 API cost**; device/operating cost unmeasured | Reached; not attempted |
-| Jev 1.13.0 · repeat 1 | 8.39 s | **0:08** | 15/17 | 2 | 36,848 input / 15,762 output tokens | $0.001547616 estimate; billed unknown | Not reached; questions |
-| Jev 1.13.0 · repeat 2 | 8.45 s | **0:08** | 15/17 | 2 | 36,848 input / 15,763 output tokens | $0.001547616 estimate; billed unknown | Not reached; questions |
-| Codex CLI default · repeat 1 | 116.5 s | **1:57** | 16/17 | 9 | 178,677 input / 3,638 output tokens | $0 direct API-key charge; model-price estimate unknown | Reached; not attempted |
+| Installed form run | Time to stopped checkpoint¹ | Correct / 17 | API cost basis |
+|---|---:|---:|---|
+| Nano · repeat 1 | 243.3 s · **4:03** | 16/17 | **$0 API cost** |
+| Jev 1.13.0 · repeat 1 | 8.39 s · **0:08** | 15/17 | ~$0.00155 estimated |
+| Jev 1.13.0 · repeat 2 | 8.45 s · **0:08** | 15/17 | ~$0.00155 estimated |
+| Codex CLI default · repeat 1 | 116.5 s · **1:57** | 16/17 | $0 direct API-key charge; model-price estimate unknown |
+
+Nano/Codex stopped at CAPTCHA in these original form receipts; Jev stopped at questions. Device, operating and billed/subscription allocation costs are unmeasured. Jev’s exact published-rate estimate is $0.001547616 per repeat.
+
+<details>
+<summary>Prompt and token usage for these four form runs</summary>
+
+| Run | Prompts | Usage |
+|---|---:|---|
+| Nano 1 · Chrome-managed version/effort | 9 | 23,718 context units; API tokens unavailable |
+| Jev 1 | 2 | 36,848 input / 15,762 output tokens |
+| Jev 2 | 2 | 36,848 input / 15,763 output tokens |
+| CLI default 1 · model/effort unspecified | 9 | 178,677 input / 3,638 output tokens |
+
+</details>
 
 ¹ Rounded to the nearest second. For comparison, **76 seconds is 1:16**; it is not the duration of this installed Codex WIC run. Planner-subset timings elsewhere measure different work.
 
