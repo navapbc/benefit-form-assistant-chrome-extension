@@ -66,6 +66,12 @@ Earlier live WIC image acceptance used a shared external browser relay. Luna Low
 
 Nano/Codex full-form repeat 2 and fresh native image sessions remain unexecuted, rather than measured failures. Jev has two full-form repeats, both stopped at questions. There is no native live-image model leaderboard yet.
 
+## What the Jev result measures
+
+The provider returned **`jev-1.13.0`** in these receipts. It classifies field purposes; JavaScript validation/filling controls the application. Confidence is fixed at 0.90 and uncertain decisions become questions. There is **no Eve/Sonnet coordinator or generative fallback** in this extension route. Separate Eve tests used Sol Low and must not be combined with these Jev results as though a hybrid agent was executed.
+
+A hybrid that uses Jev for bounded decisions and a generative agent for interpretation, recovery and navigation is a different system. Its prompts, context, accepted confidence, tools, site/record, assistance and completion rubric need to be matched before comparing quality. Higher quality from another Jev-assisted system would not establish a different underlying Jev intelligence. This batch establishes our version; it does not attest another deployment’s Jev version or reproduce its reported success.
+
 ## Can a better harness keep Jev moving?
 
 **Yes, targeted recovery could remove these unnecessary stops; a blind retry loop is not yet a demonstrated fix.** The runner already has a loop with up to three same-page fill passes ([runner](../sidepanel/sidepanel.js#L2947), [pass limit](../sidepanel/sidepanel.js#L48)). It returns for unresolved/blocked fields before reaching another pass. Both Jev executions hit that path after the second scan, so adding a loop around the same classifier would repeat a decision that can vary: Medi-Cal was approved in the first scan and deferred at 0.87 / 0.89 in the later scan.
