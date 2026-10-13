@@ -42,7 +42,7 @@ test('dynamic page-agent injection installs site adapters before the content age
 
 test('page-agent readiness is versioned and requires the exact live-site adapters', () => {
   const source = section('async function ensurePageAgent', 'async function sendToTab');
-  assert.match(panel, /const PAGE_AGENT_VERSION = 6/);
+  assert.match(panel, /const PAGE_AGENT_VERSION = 7/);
   assert.match(source, /pong\.agentVersion === PAGE_AGENT_VERSION && pong\.adaptersReady/);
   assert.match(source, /verified\.agentVersion === PAGE_AGENT_VERSION && verified\.adaptersReady/);
   assert.match(source, /older form-filling agent.*Refresh this tab once/i);
@@ -101,7 +101,7 @@ test('automatic runs fill known assignments before pausing for unanswered fields
   assert.match(runner, /await fillCurrentPage\(current, suppliedAssignments, unresolvedForFill/);
   assert.ok(
     runner.indexOf('await fillCurrentPage(current, suppliedAssignments, unresolvedForFill')
-      < runner.indexOf('if (current.empty.length || current.blocked.length)'),
+      < runner.indexOf('if (current.blocked.length)'),
   );
   assert.match(runner, /paused after filling the known values/);
 });
@@ -196,4 +196,51 @@ test('multi-select gap answers fan out to explicit yes and no checkbox writes', 
   assert.match(panel, /data\.getAll\(`answer-\$\{index\}`\)/);
   assert.match(panel, /selected\.includes\('__none__'\)/);
   assert.match(panel, /chosen\.has\(member\.fieldKey\) \? 'no' : 'yes'/);
+});
+
+function executableRunner(rescan, blocked = false) {
+  const calls = { fills: 0, rescans: 0, reviewEvents: 0 };
+  const context = { previewMode: true, state: {}, MAX_SAME_PAGE_FILL_PASSES: 3, captchaAuthorizations: new Set(),
+    assertApplicationRun() {}, assertApprovedApplicationLocation() {}, persist: async () => {}, renewApplicationLease: async () => {},
+    setCheckpoint(app, kind, _label, status) { app.checkpoint = { kind }; app.status = status; },
+    recordAudit(type) { if (type === 'review_reached') calls.reviewEvents++; },
+    navigationStatusFor: async () => ({ kind: 'final_review', text: 'Submit', reason: 'Human final review' }),
+    fillCurrentPage: async (app, _answers, gaps) => { calls.fills++; app.empty = gaps; app.blocked = blocked ? [{}] : []; },
+    rescanCurrentPageAfterFill: async app => { calls.rescans++; return rescan(app); },
+  };
+  vm.runInNewContext(`${section('async function runThroughApplication', 'async function fillApplication')}\nresult = runThroughApplication;`, context);
+  return { run: context.result, calls };
+}
+
+test('a fresh rescan resolves stale questions after filling and reaches final review', async () => {
+  const app = { id: 'test', url: 'https://example.test', analysis: { assignments: [{}], gaps: [{}] }, empty: [], blocked: [] };
+  const { run, calls } = executableRunner(current => { current.analysis = { assignments: [], gaps: [] }; current.empty = []; return current; });
+  await run(app);
+  assert.equal(calls.fills, 1); assert.equal(calls.rescans, 1);
+  assert.equal(app.status, 'ready_for_review'); assert.equal(calls.reviewEvents, 1);
+});
+
+test('genuine unanswered fields and blocked writes stop recovery before final review', async () => {
+  for (const blocked of [false, true]) {
+    const app = { id: 'test', url: 'https://example.test', analysis: { assignments: [{}], gaps: [{}] }, empty: [], blocked: [] };
+    const { run, calls } = executableRunner(current => { current.analysis = { assignments: [], gaps: [{}] }; return current; }, blocked);
+    await run(app);
+    assert.equal(calls.fills, 1); assert.equal(calls.reviewEvents, 0); assert.notEqual(app.status, 'ready_for_review');
+    assert.equal(calls.rescans, blocked ? 0 : 1);
+  }
+});
+
+test('repeated same-page assignments stop at three fill passes', async () => {
+  const app = { id: 'test', url: 'https://example.test', analysis: { assignments: [{}], gaps: [] }, empty: [], blocked: [] };
+  const { run, calls } = executableRunner(current => current);
+  await run(app);
+  assert.equal(calls.fills, 3); assert.equal(calls.rescans, 3);
+  assert.equal(app.checkpoint.kind, 'navigation_unknown'); assert.equal(calls.reviewEvents, 0);
+});
+
+test('review evidence is deduplicated by stable DOM identity while keeping the latest command ID', () => {
+  const { mergeVerifiedProvenance } = provenanceHelpers();
+  const evidence = mergeVerifiedProvenance([{ fieldKey: 'field:1:0', identityKey: 'id:name', value: 'Synthetic' }],
+    [{ fieldKey: 'field:2:0', identityKey: 'id:name', value: 'Synthetic', matchesRecord: true }]);
+  assert.equal(evidence.length, 1); assert.equal(evidence[0].fieldKey, 'field:2:0');
 });

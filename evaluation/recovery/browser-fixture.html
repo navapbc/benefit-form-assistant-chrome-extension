@@ -1,0 +1,10 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Jev recovery · real DOM fixture</title>
+<style>body{font:16px system-ui;max-width:1050px;margin:32px auto;padding:0 24px;background:#f7f8fa;color:#172b40}h1{font-size:28px}p{line-height:1.5}form{display:grid;grid-template-columns:1fr 1fr;gap:18px;background:white;padding:24px;border-radius:14px}label{display:block;font-size:14px}input:not([type=checkbox]):not([type=radio]),select{display:block;width:95%;padding:8px;margin-top:6px;border:1px solid #adb6c0;border-radius:5px}button{padding:10px 16px;border:0;border-radius:6px;background:#075c50;color:white;font-weight:600;margin:12px 6px 12px 0}#result{background:#e1eee9;padding:16px;white-space:pre-wrap;line-height:1.5}.note{background:#fff2d9;padding:14px}fieldset{border:1px solid #bcc6cc;border-radius:8px}fieldset label{margin:8px}#case{display:inline-block;width:auto}</style>
+<h1>Jev recovery: browser field verification</h1>
+<p class="note">Synthetic local WIC fixture. Uses the product scanner, fill/readback code and real Jev API. It does not test the installed extension, live WIC, CAPTCHA or submission.</p>
+<label for="case">Test case</label><select id="case" data-nava-ignore="true"><option value="wic-no-same">Medi-Cal No · same mailing address</option><option value="wic-yes-different">Medi-Cal Yes · different mailing address</option><option value="wic-missing-case">Medi-Cal Yes · missing case number</option><option value="wic-missing-zip">Missing home ZIP</option></select>
+<button id="run" type="button">Run Jev browser fixture</button><p id="status">Ready</p><pre id="result">No run yet.</pre>
+<form id="application" onsubmit="return false"></form>
+<script src="/engine.js"></script><script src="/adapters.js"></script><script src="/fixture.js"></script><script src="/agent.js"></script>
+</html>

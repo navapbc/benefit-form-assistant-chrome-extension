@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1040" height="520" viewBox="0 0 1040 520" role="img" aria-labelledby="title desc">
+  <title id="title">Jev v0.15 recovery speed and estimated cost</title>
+  <desc id="desc">The default v0.15 recovery planner had a median time of 0.409 seconds and estimated cost of 0.000602 dollars per case, lower than the v0.14 baseline and retry-only variant.</desc>
+  <rect width="1040" height="520" rx="24" fill="#f8fafc"/>
+  <text x="52" y="55" font-family="system-ui, sans-serif" font-size="28" font-weight="700" fill="#172554">Jev recovery stayed fast and inexpensive</text>
+  <text x="52" y="84" font-family="system-ui, sans-serif" font-size="15" fill="#475569">Median per controlled case · planner/API scope, not a browser journey</text>
+
+  <text x="52" y="137" font-family="system-ui, sans-serif" font-size="18" font-weight="650" fill="#1e293b">Median planner time</text>
+  <text x="550" y="137" font-family="system-ui, sans-serif" font-size="18" font-weight="650" fill="#1e293b">Median estimated API cost</text>
+  <line x1="52" y1="154" x2="470" y2="154" stroke="#cbd5e1"/>
+  <line x1="550" y1="154" x2="968" y2="154" stroke="#cbd5e1"/>
+
+  <text x="52" y="204" font-family="system-ui, sans-serif" font-size="15" fill="#334155">v0.14 baseline</text>
+  <rect x="174" y="180" width="249" height="32" rx="6" fill="#94a3b8"/>
+  <text x="432" y="203" font-family="system-ui, sans-serif" font-size="15" font-weight="700" fill="#334155">0.527 s</text>
+  <text x="550" y="204" font-family="system-ui, sans-serif" font-size="15" fill="#334155">v0.14 baseline</text>
+  <rect x="672" y="180" width="249" height="32" rx="6" fill="#94a3b8"/>
+  <text x="930" y="203" font-family="system-ui, sans-serif" font-size="15" font-weight="700" fill="#334155">$0.001303</text>
+
+  <text x="52" y="284" font-family="system-ui, sans-serif" font-size="15" fill="#334155">Retry only</text>
+  <rect x="174" y="260" width="313" height="32" rx="6" fill="#60a5fa"/>
+  <text x="432" y="283" font-family="system-ui, sans-serif" font-size="15" font-weight="700" fill="#1e3a8a">0.663 s</text>
+  <text x="550" y="284" font-family="system-ui, sans-serif" font-size="15" fill="#334155">Retry only</text>
+  <rect x="672" y="260" width="132" height="32" rx="6" fill="#60a5fa"/>
+  <text x="813" y="283" font-family="system-ui, sans-serif" font-size="15" font-weight="700" fill="#1e3a8a">$0.000688</text>
+
+  <text x="52" y="364" font-family="system-ui, sans-serif" font-size="15" fill="#334155">v0.15 default</text>
+  <rect x="174" y="340" width="193" height="32" rx="6" fill="#2563eb"/>
+  <text x="376" y="363" font-family="system-ui, sans-serif" font-size="15" font-weight="700" fill="#172554">0.409 s</text>
+  <text x="550" y="364" font-family="system-ui, sans-serif" font-size="15" fill="#334155">v0.15 default</text>
+  <rect x="672" y="340" width="115" height="32" rx="6" fill="#2563eb"/>
+  <text x="796" y="363" font-family="system-ui, sans-serif" font-size="15" font-weight="700" fill="#172554">$0.000602</text>
+
+  <rect x="52" y="419" width="916" height="58" rx="12" fill="#ecfeff" stroke="#a5f3fc"/>
+  <text x="72" y="445" font-family="system-ui, sans-serif" font-size="14" font-weight="650" fill="#155e75">Real-browser WIC fixture: 8/8 safe · 8.994 s median · $0.000638 median estimated Jev cost</text>
+  <text x="72" y="466" font-family="system-ui, sans-serif" font-size="12" fill="#0e7490">Browser time includes scanning, DOM writes, readback and rescan; controlled planner bars do not.</text>
+  <text x="52" y="505" font-family="system-ui, sans-serif" font-size="12" fill="#64748b">Cost uses $0.042/M input tokens and $0/M output tokens; billed and operating costs are unknown.</text>
+</svg>

@@ -1,4 +1,4 @@
-# Tester guide · v0.14.0
+# Tester guide · v0.15.0
 
 Use fictional records. The goal is to find confusing interactions, incorrect or incomplete answers, and recovery failures. A fast fill or green verification mark alone is not a quality pass.
 
@@ -15,11 +15,11 @@ Optional live tests: repeat Riverside WIC, then IHSS or BenefitsCal with approve
 
 ## Known limits to look for
 
-- WIC's composite home address can omit city/state/ZIP even when the street mapping is approved.
+- v0.15 fixes the known WIC composite-address and conditional-question defects in local browser fixtures. Recheck both on the installed extension and live site; report any recurrence.
 - Nano can be very slow and can return malformed or truncated JSON. Runtime details and model settings are expandable.
 - BenefitsCal address validation, route changes, and resume behavior need more complete testing.
 - IHSS required decisions have been silently omitted in earlier live runs.
-- The 30-attempt controlled pilot tests field planning, not full website journeys. Eve’s form-planning tests use a separate harness; its optional v0.14 integration classifies CAPTCHA images. Jev is selectable for form planning, with installed Chrome behavior still unverified. The separate six-request Jev API pilot passed four scored plans and missed a required IHSS question twice.
+- Controlled pilots test field planning, not full website journeys. Eve’s form-planning tests use a separate harness; its optional integration classifies CAPTCHA images. Jev is selectable for form planning. The v0.15 recovery batch passed 10/12 controlled cases and 8/8 local real-browser WIC fixtures; the installed/live route still needs a fresh attested run.
 - Other database names in the catalog require server adapters. They are not working production integrations.
 
 ## Record each attempt
@@ -44,7 +44,7 @@ Product feedback: what was confusing or useful?
 
 Keep failed attempts. Do not replace them with a later successful retry. Readback success means a write persisted; correctness requires checking its meaning and completeness.
 
-For Jev, follow [the protected companion setup](../model-bridge/README.md#jev-in-the-chrome-extension--v013). Record `jev-1.13.0`, reasoning **not configurable**, and confidence **0.90**. Keep missing billed cost unknown. A low-confidence question counts as a quality limitation even when it safely prevents a wrong fill.
+For Jev, follow [the protected companion setup](../model-bridge/README.md#jev-in-the-chrome-extension--v013). Record `jev-1.13.0`, reasoning **not configurable**, and confidence **0.90**. Keep missing billed cost unknown. Record whether each mapping came from initial Jev, Jev retry, an exact site rule, or verified reuse. A low-confidence question counts as a quality limitation even when it safely prevents a wrong fill.
 
 ## Native CAPTCHA checks · experimental
 

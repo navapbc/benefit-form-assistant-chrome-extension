@@ -4,6 +4,10 @@ This catalog explains what failed, what was expected, and which evidence support
 
 The [individual result tables](../evaluation/results/README.md) retain timings, usage and price scenarios. The [CAPTCHA ledger](CAPTCHA_RUN_METRICS.md) retains successful attempts, rejected answers, timeouts, startup failures and unknown costs. Every error ID below links to its exact run provenance: requested/reported model, runtime, reasoning, date/repeat, test scope and individual receipt. Historical/default Codex identity stays explicitly unknown. Exact historical exceptions were not always retained publicly; missing diagnostic detail is identified below instead of reconstructed.
 
+## v0.15 recovery status
+
+The October 13 v0.15 Jev batch adds explicit follow-up evidence without rewriting the historical failures below. F01, F02, F03 and the Jev form of F08 were resolved in all eight local real-browser WIC fixture trials. The fix combines Jev with deterministic WIC applicability/address rules and verified DOM reuse; it is not attributable to Jev alone. The installed extension and live WIC site have not yet been re-attested. F04 remains open: both controlled CalFresh repeats missed the `Stable housing` to homelessness `No` transformation, with one county-confidence variation. [Per-run results, source attribution, speed and cost](JEV_RECOVERY_V015.md).
+
 ## Form preparation
 
 | ID | Observable error | Stage / attribution | Evidence and completion criterion |

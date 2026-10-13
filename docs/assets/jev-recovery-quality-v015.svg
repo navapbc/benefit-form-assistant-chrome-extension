@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1040" height="520" viewBox="0 0 1040 520" role="img" aria-labelledby="title desc">
+  <title id="title">Jev v0.15 recovery quality</title>
+  <desc id="desc">Safe cases improved from zero of twelve in the v0.14 baseline to seven with retry only and ten with v0.15 default. False questions fell from seventy to four and one.</desc>
+  <rect width="1040" height="520" rx="24" fill="#f8fafc"/>
+  <text x="52" y="55" font-family="system-ui, sans-serif" font-size="28" font-weight="700" fill="#172554">Jev recovery: more safe cases, fewer false questions</text>
+  <text x="52" y="84" font-family="system-ui, sans-serif" font-size="15" fill="#475569">Real Jev calls · six frozen cases × two repeats · no operator answer repairs</text>
+
+  <text x="52" y="132" font-family="system-ui, sans-serif" font-size="18" font-weight="650" fill="#1e293b">Safe cases</text>
+  <line x1="215" y1="145" x2="925" y2="145" stroke="#cbd5e1"/>
+  <line x1="215" y1="145" x2="215" y2="340" stroke="#94a3b8"/>
+  <text x="52" y="188" font-family="system-ui, sans-serif" font-size="16" fill="#334155">v0.14 baseline</text>
+  <rect x="215" y="164" width="2" height="34" rx="4" fill="#94a3b8"/>
+  <text x="228" y="188" font-family="system-ui, sans-serif" font-size="16" font-weight="700" fill="#475569">0/12</text>
+  <text x="52" y="253" font-family="system-ui, sans-serif" font-size="16" fill="#334155">Retry only</text>
+  <rect x="215" y="229" width="414" height="34" rx="7" fill="#60a5fa"/>
+  <text x="641" y="253" font-family="system-ui, sans-serif" font-size="16" font-weight="700" fill="#1e3a8a">7/12</text>
+  <text x="52" y="318" font-family="system-ui, sans-serif" font-size="16" fill="#334155">v0.15 default</text>
+  <rect x="215" y="294" width="592" height="34" rx="7" fill="#2563eb"/>
+  <text x="819" y="318" font-family="system-ui, sans-serif" font-size="16" font-weight="700" fill="#172554">10/12</text>
+  <text x="215" y="362" font-family="system-ui, sans-serif" font-size="13" fill="#64748b">0</text>
+  <text x="500" y="362" font-family="system-ui, sans-serif" font-size="13" fill="#64748b">6</text>
+  <text x="906" y="362" font-family="system-ui, sans-serif" font-size="13" fill="#64748b">12</text>
+
+  <rect x="52" y="398" width="286" height="76" rx="12" fill="#e2e8f0"/>
+  <text x="72" y="428" font-family="system-ui, sans-serif" font-size="14" fill="#475569">v0.14 false questions</text>
+  <text x="72" y="458" font-family="system-ui, sans-serif" font-size="28" font-weight="750" fill="#334155">70</text>
+  <rect x="367" y="398" width="286" height="76" rx="12" fill="#dbeafe"/>
+  <text x="387" y="428" font-family="system-ui, sans-serif" font-size="14" fill="#1e40af">Retry-only false questions</text>
+  <text x="387" y="458" font-family="system-ui, sans-serif" font-size="28" font-weight="750" fill="#1d4ed8">4</text>
+  <rect x="682" y="398" width="306" height="76" rx="12" fill="#dcfce7"/>
+  <text x="702" y="428" font-family="system-ui, sans-serif" font-size="14" fill="#166534">v0.15 default false questions</text>
+  <text x="702" y="458" font-family="system-ui, sans-serif" font-size="28" font-weight="750" fill="#15803d">1</text>
+  <text x="52" y="505" font-family="system-ui, sans-serif" font-size="12" fill="#64748b">Safe = every expected answer correct and exactly the expected missing-data questions.</text>
+</svg>

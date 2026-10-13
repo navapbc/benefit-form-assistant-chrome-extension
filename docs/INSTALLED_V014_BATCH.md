@@ -74,18 +74,18 @@ A hybrid that uses Jev for bounded decisions and a generative agent for interpre
 
 ## Can a better harness keep Jev moving?
 
-**Yes, targeted recovery could remove these unnecessary stops; a blind retry loop is not yet a demonstrated fix.** The runner already has a loop with up to three same-page fill passes ([runner](../sidepanel/sidepanel.js#L2947), [pass limit](../sidepanel/sidepanel.js#L48)). It returns for unresolved/blocked fields before reaching another pass. Both Jev executions hit that path after the second scan, so adding a loop around the same classifier would repeat a decision that can vary: Medi-Cal was approved in the first scan and deferred at 0.87 / 0.89 in the later scan.
+**Yes. The v0.15 controlled and browser-fixture results now demonstrate that bounded recovery removes the v0.14 WIC stops.** Retry alone passed 7/12 controlled cases. The complete path—one bounded retry, exact WIC applicability rules, full-address composition and verified DOM reuse—passed all eight controlled WIC cases and all eight real-browser WIC fixture trials. It did not resolve the two CalFresh diagnostic repeats.
 
 The [Jev request](../model-bridge/jev.mjs#L29) sends field descriptions and available source purposes, with participant values kept local. The classifier therefore cannot inspect the actual No coverage answer or compare home/mailing values. Its adapter turns low-confidence classifications into gaps, and the [local planner](../shared/agentic-planner.js#L605) can turn an optional hinted control into a question even when a model chooses leave. The [analysis merge](../sidepanel/sidepanel.js#L2453) appends remaining model gaps. These code paths support a harness/applicability explanation for the false questions; a controlled fix still needs testing.
 
-A proposed recovery path should:
+The tested recovery path:
 
 1. Resolve conditional applicability locally from the reviewed source and versioned site rules: coverage No means no case number; matching home/mailing means no separate mailing answer.
 2. Preserve a prior approved purpose and verified readback only while the source revision, person, field identity, options and document remain unchanged. Do not silently reuse a stale mapping after a changed question.
 3. Retry only the remaining unresolved applicable controls with their exact site hints and local validation. Stop after a bounded number of attempts or when no new correct field is verified; retain every attempt's timing, usage and outcome.
 4. Compose and verify the full home address, then continue to CAPTCHA and final review while retaining the existing stop before Submit.
 
-This is a proposed experiment, **not a tested Jev improvement**. Compare current v0.14 and recovery variants on the same complete records, genuinely missing-answer cases, Medi-Cal Yes/No, and same/different mailing addresses. Measure correct completion, false questions, extra writes, interventions, seconds and tokens/cost together. A correct 17/17 answer score also needs both not-applicable controls correct; merely reaching the end is insufficient.
+The controlled comparison used the same complete and incomplete records, Medi-Cal Yes/No, and same/different mailing addresses. v0.15 default reached 10/12 safe controlled cases, up from 0/12 for the frozen baseline, and reduced false questions from 70 to 1. The real-browser WIC fixture passed 8/8 trials with an 8.994-second median and $0.000638 median estimated Jev cost. These are local fixture results; the installed extension and live WIC site still need an attested v0.15 rerun. [Full v0.15 method and receipts](JEV_RECOVERY_V015.md).
 
 ## Limits and next verification
 

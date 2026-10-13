@@ -120,6 +120,9 @@
     const firstHasEvidence = parts.some((aliases) => readPart(first, aliases));
     const secondHasEvidence = parts.some((aliases) => readPart(second, aliases));
     if (!firstHasEvidence || !secondHasEvidence) return undefined;
+    // Incomplete addresses cannot establish that a conditional mailing box is inapplicable.
+    if ([first, second].some((address) => parts.filter((aliases) => !aliases.includes('unit'))
+      .some((aliases) => !readPart(address, aliases)))) return undefined;
     return parts.every((aliases) => normalize(readPart(first, aliases)) === normalize(readPart(second, aliases)));
   }
 
@@ -145,7 +148,7 @@
     const businessOnly = Boolean(businessName && !firstName && !lastName);
     const addressesMatch = sameAddress(residential, mailing);
     const alternateMailingAddress = addressesMatch === false
-      ? [mailing.street || mailing.line1, mailing.unit || mailing.line2, mailing.city, mailing.state, mailing.zip || mailing.postalCode]
+      ? [firstValue(mailing, ['street', 'line1', 'addressLine1']), firstValue(mailing, ['unit', 'line2', 'addressLine2']), mailing.city, mailing.state, mailing.zip || mailing.postalCode]
         .filter(Boolean).join(', ')
       : undefined;
     const values = {
@@ -162,9 +165,9 @@
         'phone', 'contact_information.phones.cell', 'contact_information.phones.main',
         'contact_information.phones.home', 'contact.phone',
       ]),
-      addressLine1: firstValue(record, ['addressLine1', 'address.street', 'address.residential.street', 'residentialAddress.street'])
+      addressLine1: firstValue(record, ['addressLine1', 'address.street']) || firstValue(residential, ['street', 'line1', 'addressLine1'])
         || (businessOnly ? businessAddressLine1 : undefined),
-      addressLine2: firstValue(record, ['addressLine2', 'address.unit', 'address.residential.unit', 'residentialAddress.unit'])
+      addressLine2: firstValue(record, ['addressLine2', 'address.unit']) || firstValue(residential, ['unit', 'line2', 'addressLine2'])
         || (businessOnly ? businessAddressLine2 : undefined),
       city: firstValue(record, ['city', 'address.city', 'address.residential.city', 'residentialAddress.city'])
         || (businessOnly ? businessCity : undefined),
@@ -172,7 +175,7 @@
         || (businessOnly ? businessState : undefined),
       county: firstValue(record, ['county', 'address.county', 'address.residential.county', 'residentialAddress.county'])
         || (businessOnly ? businessAddress.county : undefined),
-      postalCode: firstValue(record, ['postalCode', 'zip', 'address.zip', 'address.residential.zip', 'residentialAddress.zip'])
+      postalCode: firstValue(record, ['postalCode', 'zip', 'address.zip', 'address.postalCode']) || firstValue(residential, ['zip', 'postalCode'])
         || (businessOnly ? businessPostalCode : undefined),
       country: firstValue(record, ['country', 'address.country', 'address.residential.country', 'residentialAddress.country'])
         || (businessOnly ? businessAddress.country : undefined),
@@ -380,7 +383,37 @@
     return word;
   }
 
-  function formatForField(purpose, rawValue, field, context) {
+  function fieldApplicability(field, payload) {
+    const values = canonicalizeParticipant(payload).values;
+    if (field.applicability === 'wic-medi-cal-case') {
+      const coverage = normalize(booleanWord(values.mediCalCoverage));
+      if (coverage === 'yes') return { state: 'applicable', reason: 'The record says Medi-Cal coverage is Yes.' };
+      if (['no', 'in progress'].includes(coverage)) return { state: 'inapplicable', reason: 'This case-number field applies only when Medi-Cal coverage is Yes.' };
+      return { state: 'unknown', reason: 'Confirm Medi-Cal coverage before deciding whether a case number is needed.' };
+    }
+    if (field.applicability === 'wic-different-mailing') {
+      if (values.mailingDifferent === true) return { state: 'applicable', reason: 'The complete residential and mailing addresses differ.' };
+      if (values.mailingDifferent === false) return { state: 'inapplicable', reason: 'The complete residential and mailing addresses match.' };
+      return { state: 'unknown', reason: 'Confirm the mailing address; incomplete records cannot establish that it matches home.' };
+    }
+    return { state: 'applicable', reason: '' };
+  }
+
+  function finalControl(field) {
+    return field.type === 'signature' || /captcha|signature|submit|certif|affirm|one.time.code|password|login|payment/i.test(`${field.fieldKey} ${field.label} ${field.question}`);
+  }
+
+  function fullAddressParts(purpose, values) {
+    const mailing = ['mailingAddressLine1', 'alternateMailingAddress'].includes(purpose);
+    const business = purpose === 'businessAddressLine1';
+    return mailing
+      ? [values.mailingAddressLine1, values.mailingAddressLine2, values.mailingCity, values.mailingState, values.mailingPostalCode]
+      : business
+        ? [values.businessAddressLine1, values.businessAddressLine2, values.businessCity, values.businessState, values.businessPostalCode]
+        : [values.addressLine1, values.addressLine2, values.city, values.state, values.postalCode];
+  }
+
+  function formatForField(purpose, rawValue, field, context = {}) {
     let value = rawValue;
     let changed = false;
     let detail = 'from the client record';
@@ -445,6 +478,12 @@
       changed = true;
       detail = 'Street and apartment are combined because the form has one address box';
     }
+    if (field.addressFormat === 'full' && context.values
+      && ['addressLine1', 'mailingAddressLine1', 'businessAddressLine1', 'alternateMailingAddress'].includes(purpose)) {
+      value = fullAddressParts(purpose, context.values).filter((part) => part !== undefined && part !== null && part !== '').join(', ');
+      changed = value !== rawValue;
+      detail = 'Street, optional unit, city, state and ZIP are combined for this full-address box';
+    }
 
     if ([
       'specialNeeds', 'farmWorker', 'pregnant', 'childcare', 'unemployment', 'mailingDifferent', 'mailingSame',
@@ -454,7 +493,7 @@
       'ihssDailyLivingLimitations', 'ihssHospiceCare', 'ihssTerminalIllness', 'ihssOrganTransplant',
       'ihssSupplementalOxygen', 'ihssCancerTreatment', 'ihssDomesticServices', 'ihssPersonalCare',
       'ihssTransportation', 'ihssParamedicalCare', 'ihssOtherServices', 'pastIhss', 'canReceiveTexts',
-      'wicPostpartum', 'wicBreastfeedingInfant', 'wicFormulaInfant', 'wicChildUnderFive',
+      'mediCalCoverage', 'wicPostpartum', 'wicBreastfeedingInfant', 'wicFormulaInfant', 'wicChildUnderFive',
       'wicAppointmentInPerson', 'wicAppointmentPhone', 'wicAppointmentVideo',
     ].includes(purpose)) {
       value = booleanWord(rawValue);
@@ -526,6 +565,7 @@
       result.push({
         ...field,
         fieldKey: field.groupKey,
+        identityKey: field.groupKey,
         label: field.question || field.label,
         question: field.question || field.label,
         members: members.map(({ candidate }) => ({
@@ -645,6 +685,7 @@
         .map(([purpose]) => purpose),
     );
     const context = {
+      values: participant.values,
       hasAddressLine2: fields.some((field) => classifyField(field) === 'addressLine2'),
       addressLine2: participant.values.addressLine2,
       hasBusinessAddressLine2: fields.some((field) => classifyField(field) === 'businessAddressLine2'),
@@ -655,18 +696,42 @@
     const assignments = [];
     const gaps = [];
     const observed = [];
+    const notApplicable = [];
     const usedPurposes = new Set();
 
     for (let fieldIndex = 0; fieldIndex < fields.length; fieldIndex += 1) {
       const field = fields[fieldIndex];
+      // Final actions have their own workflow checkpoints, never ordinary answer inputs.
+      if (finalControl(field)) continue;
       const purpose = purposes[fieldIndex];
       const current = currentFieldValue(field);
       const required = Boolean(field.required);
+      const applicability = fieldApplicability(field, payload);
+      if (applicability.state === 'inapplicable') {
+        if (current) {
+          gaps.push({ fieldKey: field.fieldKey, label: displayLabel(field), question: 'Clear the answer in this inapplicable field, then rescan.',
+            reason: applicability.reason, kind: 'conditional_conflict', required: true, inputType: 'direct_entry', options: [], sensitive: Boolean(field.sensitive) });
+        } else notApplicable.push({ fieldKey: field.fieldKey, reason: applicability.reason, source: 'site-rule' });
+        continue;
+      }
+      if (applicability.state === 'unknown') {
+        gaps.push({ fieldKey: field.fieldKey, label: displayLabel(field), question: applicability.reason,
+          reason: applicability.reason, kind: 'applicability', required: true, inputType: 'direct_entry', options: [], sensitive: Boolean(field.sensitive) });
+        continue;
+      }
+
+      if (field.addressFormat === 'full' && ['addressLine1', 'mailingAddressLine1', 'businessAddressLine1', 'alternateMailingAddress'].includes(purpose)
+        && fullAddressParts(purpose, participant.values).some((part, index) => index !== 1 && (part === undefined || part === null || part === ''))) {
+        gaps.push({ fieldKey: field.fieldKey, label: displayLabel(field, purpose), purpose,
+          question: 'What is the complete address, including street, city, state and ZIP?', kind: 'incomplete_address', required: true, inputType: 'text', options: [] });
+        continue;
+      }
 
       if (!purpose) {
         if (current) {
           observed.push({
             fieldKey: field.fieldKey,
+            identityKey: field.identityKey || '',
             label: displayLabel(field),
             value: current,
             source: 'page',
@@ -716,15 +781,18 @@
         if (booleanCheckboxMatch || (current && valuesEquivalent(formatted.value, current, field))) {
           observed.push({
             fieldKey: field.fieldKey,
+            identityKey: field.identityKey || '',
             label: displayLabel(field, purpose),
             value: booleanCheckboxMatch ? (field.checked ? 'yes' : 'no') : current,
             source: 'page',
             detail: 'Already in the form and matches the client record',
+            matchesRecord: true,
             sensitive: ['ssn', 'ihssHouseholdMemberSsn', 'ein'].includes(purpose) || Boolean(field.sensitive),
           });
         } else {
           assignments.push({
             fieldKey: field.fieldKey,
+            identityKey: field.identityKey || '',
             label: displayLabel(field, purpose),
             purpose,
             value: formatted.value,
@@ -738,7 +806,7 @@
       }
 
       const decision = Boolean(field.members?.length || field.type === 'select-one' || DO_NOT_DERIVE.has(purpose));
-      if (required || decision) {
+      if (required || decision || field.applicability) {
         const input = gapInput(field);
         gaps.push({
           fieldKey: field.fieldKey,
@@ -764,6 +832,7 @@
       assignments,
       gaps: finalGaps,
       observed,
+      notApplicable,
       noFields,
       counts: {
         fields: fields.length,
@@ -781,6 +850,8 @@
     classifyField,
     compact,
     formatForField,
+    fieldApplicability,
+    finalControl,
     normalize,
     valuesEquivalent,
   };

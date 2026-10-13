@@ -47,7 +47,7 @@
   const DEFAULT_AUTOMATED_PAGES = 12;
   const MAX_SAME_PAGE_FILL_PASSES = 3;
   const MAX_PARALLEL_APPLICATIONS = 3;
-  const PAGE_AGENT_VERSION = 6;
+  const PAGE_AGENT_VERSION = 7;
   const TAB_READY_TIMEOUT_MS = 60_000;
   const NAVIGATION_TIMEOUT_MS = 60_000;
   const APPLICATION_LEASE_MS = 2 * 60 * 1000;
@@ -259,7 +259,7 @@
         normalized.value = digits.length >= 4 ? `••••${digits.slice(-4)}` : '••••';
       }
       delete normalized.sensitive;
-      byField.set(normalized.fieldKey, normalized);
+      byField.set(normalized.identityKey || normalized.fieldKey, normalized);
     });
     return [...byField.values()];
   }
@@ -425,8 +425,10 @@
       expectedHash: urlHash(probe.result.url),
     };
     const command = { ...message, routePolicy };
+    const withDocument = (response) => response?.page
+      ? { ...response, page: { ...response.page, documentId: probe.documentId } } : response;
     if (!application) {
-      return chrome.tabs.sendMessage(tab.id, command, { documentId: probe.documentId });
+      return withDocument(await chrome.tabs.sendMessage(tab.id, command, { documentId: probe.documentId }));
     }
     const response = await sendRuntime({
       type: 'EXECUTE_APPLICATION_COMMAND',
@@ -446,7 +448,7 @@
       scheduleCoordinatorSync(application.id);
       throw coordinatorStaleError(response.error);
     }
-    return response;
+    return withDocument(response);
   }
 
   function runCancelledError() {
@@ -1089,6 +1091,7 @@
     }
     if (state.agentProvider.provider === 'jev') {
       if (update.phase === 'planning') return 'Jev is classifying this page; uncertain answers will pause for confirmation…';
+      if (update.phase === 'recovering') return 'Jev is retrying unresolved mappings once…';
       if (update.phase === 'starting') return 'Connecting to Jev through the local companion…';
     }
     if (update.phase === 'starting') {
@@ -1852,7 +1855,9 @@
   }
 
   function mergeAgenticMetadata(previous, current) {
-    if (!previous) return { ...current, planCount: 1 };
+    const recoveryKeys = ['initialModelApprovedMappings', 'retryModelApprovedMappings', 'trustedHintMappings', 'retainedVerifiedMappings', 'recoveryPasses'];
+    const recoveryTotals = Object.fromEntries(recoveryKeys.map(key => [key, Number(previous?.recoveryTotals?.[key] || previous?.[key] || 0) + Number(current?.[key] || 0)]));
+    if (!previous) return { ...current, recoveryTotals, planCount: 1 };
     const before = previous.usage || {};
     const after = current.usage || {};
     const contextKnown = before.contextUsageUnits !== null
@@ -1861,6 +1866,7 @@
       && after.contextUsageUnits !== undefined;
     return {
       ...current,
+      recoveryTotals,
       planCount: Number(previous.planCount || 1) + 1,
       usage: {
         prompts: Number(before.prompts || 0) + Number(after.prompts || 0),
@@ -2455,7 +2461,9 @@
       purposeOverrides: plan.purposeOverrides,
       requirePurposeOverrides: true,
     });
-    const suggestedGaps = new Map((plan.gaps || []).map((gap) => [gap.fieldKey, gap]));
+    const inapplicable = new Set((analysis.notApplicable || []).map((field) => field.fieldKey));
+    const matched = new Set((analysis.observed || []).filter((field) => field.matchesRecord).map((field) => field.fieldKey));
+    const suggestedGaps = new Map((plan.gaps || []).filter((gap) => !inapplicable.has(gap.fieldKey) && !matched.has(gap.fieldKey)).map((gap) => [gap.fieldKey, gap]));
     const gaps = analysis.gaps.map((gap) => {
       const coveredKeys = [gap.fieldKey, ...(gap.members || []).map((member) => member.fieldKey)];
       const suggestion = coveredKeys.map((fieldKey) => suggestedGaps.get(fieldKey)).find(Boolean);
@@ -2571,7 +2579,7 @@
       error: fieldsFound === 0 && !canContinue ? 'No visible application fields or safe continuation controls were found on this page.' : '',
       provenance: provenanceForScan(previous.provenance, safeAnalysis.observed, preservePageProgress),
       blocked: preservePageProgress ? (previous.blocked || []) : [],
-      empty: preservePageProgress ? (previous.empty || []) : [],
+      empty: [],
       checkpoint: nextCheckpoint,
       completedPages: previous.completedPages || [],
       autoRun: Boolean(previous.autoRun),
@@ -2604,6 +2612,14 @@
       ...(Number.isFinite(latestAgentUsage?.apiCostUsd) ? { modelApiCostMicros: Math.round(latestAgentUsage.apiCostUsd * 1_000_000) } : {}),
       ...(Number.isFinite(latestAgentUsage?.estimatedApiCostUsd) ? { modelEstimatedApiCostMicros: Math.round(latestAgentUsage.estimatedApiCostUsd * 1_000_000) } : {}),
       ...(agentic?.provider === 'jev' ? { modelName: 'jev-1.13.0', modelReasoning: 'not-configurable', modelConfidencePercent: 90 } : {}),
+      ...(agentic?.provider === 'jev' ? {
+        modelInitialMappings: agentic.initialModelApprovedMappings || 0,
+        modelRetryMappings: agentic.retryModelApprovedMappings || 0,
+        modelRecoveryPasses: agentic.recoveryPasses || 0,
+        ruleRecoveredMappings: agentic.trustedHintMappings || 0,
+        retainedVerifiedMappings: agentic.retainedVerifiedMappings || 0,
+        inapplicableControls: agentic.inapplicableControls || 0,
+      } : {}),
       ...(Number.isFinite(latestAgentUsage?.providerReportedCostUsd)
         ? { modelProviderReportedCostMicros: Math.round(Number(latestAgentUsage.providerReportedCostUsd) * 1_000_000) }
         : {}),
@@ -2976,8 +2992,8 @@
         suppliedUnresolved = [];
         samePageFillPasses += 1;
 
-        if (current.empty.length || current.blocked.length) {
-          current.runStopReason = 'The automated run paused after filling the known values because at least one field needs a caseworker answer or direct entry.';
+        if (current.blocked.length) {
+          current.runStopReason = 'The automated run paused after filling the known values because at least one field needs direct entry.';
           if (!background) state.view = 'dashboard';
           await persist({ applicationIds: [current.id] });
           return;
@@ -3001,6 +3017,10 @@
             }
             continue;
           }
+        } else if (current.empty.length) {
+          setCheckpoint(current, 'human_input', 'Caseworker answers required', 'needs_attention');
+          await persist({ applicationIds: [current.id] });
+          return;
         }
       } else {
         suppliedAssignments = [];

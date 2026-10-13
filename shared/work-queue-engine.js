@@ -83,6 +83,12 @@
     'modelApiCostMicros',
     'modelEstimatedApiCostMicros',
     'modelConfidencePercent',
+    'modelInitialMappings',
+    'modelRetryMappings',
+    'modelRecoveryPasses',
+    'ruleRecoveredMappings',
+    'retainedVerifiedMappings',
+    'inapplicableControls',
     'modelProviderReportedCostMicros',
   ]);
   const COUNT_MAXIMUMS = {

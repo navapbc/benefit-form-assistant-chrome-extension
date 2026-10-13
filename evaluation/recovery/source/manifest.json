@@ -1,0 +1,23 @@
+{
+  "commit": "c902e39",
+  "files": {
+    "v014-planner.cjs": {
+      "originalPath": "shared/agentic-planner.js",
+      "sha256": "3ce63725c8f2e6fc5f7af82b240e2d22648d9978accddbe7c4cfe71bb03e08d4"
+    },
+    "v014-engine.cjs": {
+      "originalPath": "shared/form-engine.js",
+      "sha256": "ca53eecc49f97b6716eeabc480ce205ded36ceb802bb10d3e100b8da65990264"
+    },
+    "v014-adapters.cjs": {
+      "originalPath": "shared/site-adapters.js",
+      "sha256": "eb715fcc937dccbaf1f3fba2998fef986268da5cb27fc3cda772dca5967d1b22"
+    },
+    "v014-sidepanel.js": {
+      "originalPath": "sidepanel/sidepanel.js",
+      "sha256": "d55eaabdc4fc49f3220148bc0192c05dd82c2b91585f67bfc155f4b88c70d449",
+      "originalSha256": "f37ed42bd59eb9c42b0552eec36c8bd3aeaa7eacc84064163f9df42efad42088",
+      "excerpt": "gapFromAgent and analysisFromAgentPlan functions only"
+    }
+  }
+}

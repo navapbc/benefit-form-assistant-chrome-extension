@@ -1,0 +1,2717 @@
+{
+  "scope": "Local real-DOM WIC fixture using current product scanner/filler and authenticated Jev planner; no installed extension, live site, CAPTCHA or Submit.",
+  "attempts": [
+    {
+      "id": "browser-wic-no-same-r1",
+      "caseId": "wic-no-same",
+      "scope": "Local real-DOM WIC fixture using current product scanner/filler and authenticated Jev planner; no installed extension, live site, CAPTCHA or Submit.",
+      "model": "jev-1.13.0",
+      "reasoningEffort": null,
+      "confidenceThreshold": 0.9,
+      "at": "2026-10-13T20:09:44.835Z",
+      "wallSeconds": 8.766,
+      "correctAnswers": 17,
+      "expectedAnswers": 17,
+      "actualGaps": [],
+      "expectedGaps": [],
+      "errors": [],
+      "safeCasePass": true,
+      "completeSource": true,
+      "blockedCount": 0,
+      "verifiedWrites": 11,
+      "wholeApplicationCompletion": null,
+      "captchaCompleted": null,
+      "captchaAttempts": 0,
+      "assistanceCount": 0,
+      "usage": {
+        "prompts": 1,
+        "inputTokens": 13889,
+        "outputTokens": 5608,
+        "estimatedApiCostUsd": 0.0005833380000000001,
+        "apiCostUsd": null,
+        "providerReportedCostUsd": null
+      },
+      "scans": [
+        {
+          "metadata": {
+            "runtime": "jev-typesafe-local-companion",
+            "provider": "jev",
+            "mode": "cloud-decision-with-bounded-local-recovery",
+            "requestedModel": "jev-1.13.0",
+            "reportedModel": "jev-1.13.0",
+            "reasoningEffort": null,
+            "confidenceThreshold": 0.9,
+            "agents": [
+              "decision_classifier"
+            ],
+            "independentModelReview": false,
+            "proposedMappings": 17,
+            "approvedMappings": 17,
+            "rejectedMappings": 0,
+            "deferredControls": 0,
+            "trustedHintMappings": 0,
+            "billing": "typesafe-api-estimate-billed-unknown",
+            "usage": {
+              "prompts": 1,
+              "inputTokens": 13889,
+              "outputTokens": 5608,
+              "contextUsageUnits": null,
+              "durationMs": 377.58337503671646,
+              "apiCostUsd": null,
+              "providerReportedCostUsd": null,
+              "estimatedApiCostUsd": 0.0005833380000000001
+            },
+            "pricing": {
+              "source": "https://docs.typesafe.ai/models",
+              "checkedAt": "2026-10-07",
+              "inputUsdPerMillion": 0.042,
+              "outputUsdPerMillion": 0
+            },
+            "reviewedAt": "2026-10-13T20:09:36.520Z",
+            "summary": "Jev decisions, deterministic site recovery and verified DOM reuse are counted separately. Missing answers still pause.",
+            "initialModelApprovedMappings": 17,
+            "retryModelApprovedMappings": 0,
+            "recoveryPasses": 0,
+            "retainedVerifiedMappings": 0,
+            "inapplicableControls": 2,
+            "planningWallMs": 405
+          },
+          "approved": [
+            {
+              "fieldKey": "field:1:1",
+              "purpose": "fullName",
+              "source": "jev",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:1:2",
+              "purpose": "dateOfBirth",
+              "source": "jev",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:1:3",
+              "purpose": "addressLine1",
+              "source": "jev",
+              "confidence": 0.99
+            },
+            {
+              "fieldKey": "field:1:5",
+              "purpose": "phone",
+              "source": "jev",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:1:8",
+              "purpose": "email",
+              "source": "jev",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:1:9",
+              "purpose": "primaryLanguage",
+              "source": "jev",
+              "confidence": 0.98
+            },
+            {
+              "fieldKey": "field:1:14",
+              "purpose": "pregnant",
+              "source": "jev",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:1:15",
+              "purpose": "wicPostpartum",
+              "source": "jev",
+              "confidence": 0.98
+            },
+            {
+              "fieldKey": "field:1:16",
+              "purpose": "wicBreastfeedingInfant",
+              "source": "jev",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:1:17",
+              "purpose": "wicFormulaInfant",
+              "source": "jev",
+              "confidence": 0.94
+            },
+            {
+              "fieldKey": "field:1:18",
+              "purpose": "wicChildUnderFive",
+              "source": "jev",
+              "confidence": 0.94
+            },
+            {
+              "fieldKey": "field:1:19",
+              "purpose": "wicAppointmentInPerson",
+              "source": "jev",
+              "confidence": 0.91
+            },
+            {
+              "fieldKey": "field:1:20",
+              "purpose": "wicAppointmentPhone",
+              "source": "jev",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:1:21",
+              "purpose": "wicAppointmentVideo",
+              "source": "jev",
+              "confidence": 0.93
+            },
+            {
+              "fieldKey": "field:1:22",
+              "purpose": "wicClinic",
+              "source": "jev",
+              "confidence": 0.93
+            },
+            {
+              "fieldKey": "wic:receive-texts",
+              "purpose": "canReceiveTexts",
+              "source": "jev",
+              "confidence": 0.91
+            },
+            {
+              "fieldKey": "wic:medical",
+              "purpose": "mediCalCoverage",
+              "source": "jev",
+              "confidence": 0.92
+            }
+          ],
+          "wallMs": 409.8976249694824
+        },
+        {
+          "metadata": {
+            "runtime": "jev-typesafe-local-companion",
+            "provider": "jev",
+            "requestedModel": "jev-1.13.0",
+            "reportedModel": null,
+            "reasoningEffort": null,
+            "confidenceThreshold": 0.9,
+            "mode": "cloud-decision-with-bounded-local-recovery",
+            "agents": [],
+            "independentModelReview": false,
+            "approvedMappings": 17,
+            "rejectedMappings": 0,
+            "deferredControls": 0,
+            "initialModelApprovedMappings": 0,
+            "retryModelApprovedMappings": 0,
+            "recoveryPasses": 0,
+            "trustedHintMappings": 0,
+            "retainedVerifiedMappings": 17,
+            "inapplicableControls": 2,
+            "usage": {
+              "prompts": 0,
+              "inputTokens": 0,
+              "outputTokens": 0,
+              "contextUsageUnits": null,
+              "durationMs": 0,
+              "apiCostUsd": 0,
+              "providerReportedCostUsd": null,
+              "estimatedApiCostUsd": 0
+            },
+            "planningWallMs": 5,
+            "summary": "Jev decisions, deterministic site recovery and verified DOM reuse are counted separately. Missing answers still pause."
+          },
+          "approved": [
+            {
+              "fieldKey": "field:2:1",
+              "purpose": "fullName",
+              "source": "verified-cache",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:2:2",
+              "purpose": "dateOfBirth",
+              "source": "verified-cache",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:2:3",
+              "purpose": "addressLine1",
+              "source": "verified-cache",
+              "confidence": 0.99
+            },
+            {
+              "fieldKey": "field:2:5",
+              "purpose": "phone",
+              "source": "verified-cache",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:2:8",
+              "purpose": "email",
+              "source": "verified-cache",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:2:9",
+              "purpose": "primaryLanguage",
+              "source": "verified-cache",
+              "confidence": 0.98
+            },
+            {
+              "fieldKey": "field:2:14",
+              "purpose": "pregnant",
+              "source": "verified-cache",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:2:15",
+              "purpose": "wicPostpartum",
+              "source": "verified-cache",
+              "confidence": 0.98
+            },
+            {
+              "fieldKey": "field:2:16",
+              "purpose": "wicBreastfeedingInfant",
+              "source": "verified-cache",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:2:17",
+              "purpose": "wicFormulaInfant",
+              "source": "verified-cache",
+              "confidence": 0.94
+            },
+            {
+              "fieldKey": "field:2:18",
+              "purpose": "wicChildUnderFive",
+              "source": "verified-cache",
+              "confidence": 0.94
+            },
+            {
+              "fieldKey": "field:2:19",
+              "purpose": "wicAppointmentInPerson",
+              "source": "verified-cache",
+              "confidence": 0.91
+            },
+            {
+              "fieldKey": "field:2:20",
+              "purpose": "wicAppointmentPhone",
+              "source": "verified-cache",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:2:21",
+              "purpose": "wicAppointmentVideo",
+              "source": "verified-cache",
+              "confidence": 0.93
+            },
+            {
+              "fieldKey": "field:2:22",
+              "purpose": "wicClinic",
+              "source": "verified-cache",
+              "confidence": 0.93
+            },
+            {
+              "fieldKey": "wic:receive-texts",
+              "purpose": "canReceiveTexts",
+              "source": "verified-cache",
+              "confidence": 0.91
+            },
+            {
+              "fieldKey": "wic:medical",
+              "purpose": "mediCalCoverage",
+              "source": "verified-cache",
+              "confidence": 0.92
+            }
+          ],
+          "wallMs": 9.76245802640915
+        }
+      ]
+    },
+    {
+      "id": "browser-wic-yes-different-r1",
+      "caseId": "wic-yes-different",
+      "scope": "Local real-DOM WIC fixture using current product scanner/filler and authenticated Jev planner; no installed extension, live site, CAPTCHA or Submit.",
+      "model": "jev-1.13.0",
+      "reasoningEffort": null,
+      "confidenceThreshold": 0.9,
+      "at": "2026-10-13T20:09:55.090Z",
+      "wallSeconds": 9.74939999999851,
+      "correctAnswers": 19,
+      "expectedAnswers": 19,
+      "actualGaps": [],
+      "expectedGaps": [],
+      "errors": [],
+      "safeCasePass": true,
+      "completeSource": true,
+      "blockedCount": 0,
+      "verifiedWrites": 13,
+      "wholeApplicationCompletion": null,
+      "captchaCompleted": null,
+      "captchaAttempts": 0,
+      "assistanceCount": 0,
+      "usage": {
+        "prompts": 1,
+        "inputTokens": 15793,
+        "outputTokens": 6500,
+        "estimatedApiCostUsd": 0.000663306,
+        "apiCostUsd": null,
+        "providerReportedCostUsd": null
+      },
+      "scans": [
+        {
+          "metadata": {
+            "runtime": "jev-typesafe-local-companion",
+            "provider": "jev",
+            "mode": "cloud-decision-with-bounded-local-recovery",
+            "requestedModel": "jev-1.13.0",
+            "reportedModel": "jev-1.13.0",
+            "reasoningEffort": null,
+            "confidenceThreshold": 0.9,
+            "agents": [
+              "decision_classifier"
+            ],
+            "independentModelReview": false,
+            "proposedMappings": 19,
+            "approvedMappings": 19,
+            "rejectedMappings": 1,
+            "deferredControls": 0,
+            "trustedHintMappings": 1,
+            "billing": "typesafe-api-estimate-billed-unknown",
+            "usage": {
+              "prompts": 1,
+              "inputTokens": 15793,
+              "outputTokens": 6500,
+              "contextUsageUnits": null,
+              "durationMs": 336.2319999933243,
+              "apiCostUsd": null,
+              "providerReportedCostUsd": null,
+              "estimatedApiCostUsd": 0.000663306
+            },
+            "pricing": {
+              "source": "https://docs.typesafe.ai/models",
+              "checkedAt": "2026-10-07",
+              "inputUsdPerMillion": 0.042,
+              "outputUsdPerMillion": 0
+            },
+            "reviewedAt": "2026-10-13T20:09:45.706Z",
+            "summary": "Jev decisions, deterministic site recovery and verified DOM reuse are counted separately. Missing answers still pause.",
+            "initialModelApprovedMappings": 18,
+            "retryModelApprovedMappings": 0,
+            "recoveryPasses": 0,
+            "retainedVerifiedMappings": 0,
+            "inapplicableControls": 0,
+            "planningWallMs": 343
+          },
+          "approved": [
+            {
+              "fieldKey": "field:4:1",
+              "purpose": "fullName",
+              "source": "jev",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:4:2",
+              "purpose": "dateOfBirth",
+              "source": "jev",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:4:3",
+              "purpose": "addressLine1",
+              "source": "jev",
+              "confidence": 0.99
+            },
+            {
+              "fieldKey": "field:4:4",
+              "purpose": "alternateMailingAddress",
+              "source": "jev",
+              "confidence": 0.98
+            },
+            {
+              "fieldKey": "field:4:5",
+              "purpose": "phone",
+              "source": "jev",
+              "confidence": 0.96
+            },
+            {
+              "fieldKey": "field:4:8",
+              "purpose": "email",
+              "source": "jev",
+              "confidence": 0.98
+            },
+            {
+              "fieldKey": "field:4:9",
+              "purpose": "primaryLanguage",
+              "source": "jev",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:4:13",
+              "purpose": "mediCalCaseNumber",
+              "source": "jev",
+              "confidence": 0.91
+            },
+            {
+              "fieldKey": "field:4:14",
+              "purpose": "pregnant",
+              "source": "jev",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:4:15",
+              "purpose": "wicPostpartum",
+              "source": "jev",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:4:16",
+              "purpose": "wicBreastfeedingInfant",
+              "source": "jev",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:4:17",
+              "purpose": "wicFormulaInfant",
+              "source": "jev",
+              "confidence": 0.91
+            },
+            {
+              "fieldKey": "field:4:18",
+              "purpose": "wicChildUnderFive",
+              "source": "jev",
+              "confidence": 0.91
+            },
+            {
+              "fieldKey": "field:4:19",
+              "purpose": "wicAppointmentInPerson",
+              "source": "jev",
+              "confidence": 0.96
+            },
+            {
+              "fieldKey": "field:4:20",
+              "purpose": "wicAppointmentPhone",
+              "source": "jev",
+              "confidence": 0.95
+            },
+            {
+              "fieldKey": "field:4:21",
+              "purpose": "wicAppointmentVideo",
+              "source": "jev",
+              "confidence": 0.91
+            },
+            {
+              "fieldKey": "field:4:22",
+              "purpose": "wicClinic",
+              "source": "jev",
+              "confidence": 0.96
+            },
+            {
+              "fieldKey": "wic:receive-texts",
+              "purpose": "canReceiveTexts",
+              "source": "jev",
+              "confidence": 0.92
+            },
+            {
+              "fieldKey": "wic:medical",
+              "purpose": "mediCalCoverage",
+              "source": "site-rule",
+              "confidence": null
+            }
+          ],
+          "wallMs": 346.127749979496
+        },
+        {
+          "metadata": {
+            "runtime": "jev-typesafe-local-companion",
+            "provider": "jev",
+            "requestedModel": "jev-1.13.0",
+            "reportedModel": null,
+            "reasoningEffort": null,
+            "confidenceThreshold": 0.9,
+            "mode": "cloud-decision-with-bounded-local-recovery",
+            "agents": [],
+            "independentModelReview": false,
+            "approvedMappings": 19,
+            "rejectedMappings": 0,
+            "deferredControls": 0,
+            "initialModelApprovedMappings": 0,
+            "retryModelApprovedMappings": 0,
+            "recoveryPasses": 0,
+            "trustedHintMappings": 0,
+            "retainedVerifiedMappings": 19,
+            "inapplicableControls": 0,
+            "usage": {
+              "prompts": 0,
+              "inputTokens": 0,
+              "outputTokens": 0,
+              "contextUsageUnits": null,
+              "durationMs": 0,
+              "apiCostUsd": 0,
+              "providerReportedCostUsd": null,
+              "estimatedApiCostUsd": 0
+            },
+            "planningWallMs": 13,
+            "summary": "Jev decisions, deterministic site recovery and verified DOM reuse are counted separately. Missing answers still pause."
+          },
+          "approved": [
+            {
+              "fieldKey": "field:5:1",
+              "purpose": "fullName",
+              "source": "verified-cache",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:5:2",
+              "purpose": "dateOfBirth",
+              "source": "verified-cache",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:5:3",
+              "purpose": "addressLine1",
+              "source": "verified-cache",
+              "confidence": 0.99
+            },
+            {
+              "fieldKey": "field:5:4",
+              "purpose": "alternateMailingAddress",
+              "source": "verified-cache",
+              "confidence": 0.98
+            },
+            {
+              "fieldKey": "field:5:5",
+              "purpose": "phone",
+              "source": "verified-cache",
+              "confidence": 0.96
+            },
+            {
+              "fieldKey": "field:5:8",
+              "purpose": "email",
+              "source": "verified-cache",
+              "confidence": 0.98
+            },
+            {
+              "fieldKey": "field:5:9",
+              "purpose": "primaryLanguage",
+              "source": "verified-cache",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:5:13",
+              "purpose": "mediCalCaseNumber",
+              "source": "verified-cache",
+              "confidence": 0.91
+            },
+            {
+              "fieldKey": "field:5:14",
+              "purpose": "pregnant",
+              "source": "verified-cache",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:5:15",
+              "purpose": "wicPostpartum",
+              "source": "verified-cache",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:5:16",
+              "purpose": "wicBreastfeedingInfant",
+              "source": "verified-cache",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:5:17",
+              "purpose": "wicFormulaInfant",
+              "source": "verified-cache",
+              "confidence": 0.91
+            },
+            {
+              "fieldKey": "field:5:18",
+              "purpose": "wicChildUnderFive",
+              "source": "verified-cache",
+              "confidence": 0.91
+            },
+            {
+              "fieldKey": "field:5:19",
+              "purpose": "wicAppointmentInPerson",
+              "source": "verified-cache",
+              "confidence": 0.96
+            },
+            {
+              "fieldKey": "field:5:20",
+              "purpose": "wicAppointmentPhone",
+              "source": "verified-cache",
+              "confidence": 0.95
+            },
+            {
+              "fieldKey": "field:5:21",
+              "purpose": "wicAppointmentVideo",
+              "source": "verified-cache",
+              "confidence": 0.91
+            },
+            {
+              "fieldKey": "field:5:22",
+              "purpose": "wicClinic",
+              "source": "verified-cache",
+              "confidence": 0.96
+            },
+            {
+              "fieldKey": "wic:receive-texts",
+              "purpose": "canReceiveTexts",
+              "source": "verified-cache",
+              "confidence": 0.92
+            },
+            {
+              "fieldKey": "wic:medical",
+              "purpose": "mediCalCoverage",
+              "source": "verified-cache",
+              "confidence": null
+            }
+          ],
+          "wallMs": 14.557042002677917
+        }
+      ]
+    },
+    {
+      "id": "browser-wic-missing-case-r1",
+      "caseId": "wic-missing-case",
+      "scope": "Local real-DOM WIC fixture using current product scanner/filler and authenticated Jev planner; no installed extension, live site, CAPTCHA or Submit.",
+      "model": "jev-1.13.0",
+      "reasoningEffort": null,
+      "confidenceThreshold": 0.9,
+      "at": "2026-10-13T20:10:08.889Z",
+      "wallSeconds": 9.55980000000447,
+      "correctAnswers": 18,
+      "expectedAnswers": 18,
+      "actualGaps": [
+        "edit-if-yes"
+      ],
+      "expectedGaps": [
+        "edit-if-yes"
+      ],
+      "errors": [],
+      "safeCasePass": true,
+      "completeSource": false,
+      "blockedCount": 0,
+      "verifiedWrites": 12,
+      "wholeApplicationCompletion": null,
+      "captchaCompleted": null,
+      "captchaAttempts": 0,
+      "assistanceCount": 0,
+      "usage": {
+        "prompts": 2,
+        "inputTokens": 17114,
+        "outputTokens": 6617,
+        "estimatedApiCostUsd": 0.0007187879999999999,
+        "apiCostUsd": null,
+        "providerReportedCostUsd": null
+      },
+      "scans": [
+        {
+          "metadata": {
+            "runtime": "jev-typesafe-local-companion",
+            "provider": "jev",
+            "mode": "cloud-decision-with-bounded-local-recovery",
+            "requestedModel": "jev-1.13.0",
+            "reportedModel": "jev-1.13.0",
+            "reasoningEffort": null,
+            "confidenceThreshold": 0.9,
+            "agents": [
+              "decision_classifier"
+            ],
+            "independentModelReview": false,
+            "proposedMappings": 19,
+            "approvedMappings": 18,
+            "rejectedMappings": 1,
+            "deferredControls": 1,
+            "trustedHintMappings": 0,
+            "billing": "typesafe-api-estimate-billed-unknown",
+            "usage": {
+              "prompts": 1,
+              "inputTokens": 15387,
+              "outputTokens": 6287,
+              "contextUsageUnits": null,
+              "durationMs": 449.4368329644203,
+              "apiCostUsd": null,
+              "providerReportedCostUsd": null,
+              "estimatedApiCostUsd": 0.000646254
+            },
+            "pricing": {
+              "source": "https://docs.typesafe.ai/models",
+              "checkedAt": "2026-10-07",
+              "inputUsdPerMillion": 0.042,
+              "outputUsdPerMillion": 0
+            },
+            "reviewedAt": "2026-10-13T20:09:59.781Z",
+            "summary": "Jev decisions, deterministic site recovery and verified DOM reuse are counted separately. Missing answers still pause.",
+            "initialModelApprovedMappings": 18,
+            "retryModelApprovedMappings": 0,
+            "recoveryPasses": 0,
+            "retainedVerifiedMappings": 0,
+            "inapplicableControls": 0,
+            "planningWallMs": 454
+          },
+          "approved": [
+            {
+              "fieldKey": "field:7:1",
+              "purpose": "fullName",
+              "source": "jev",
+              "confidence": 0.98
+            },
+            {
+              "fieldKey": "field:7:2",
+              "purpose": "dateOfBirth",
+              "source": "jev",
+              "confidence": 0.93
+            },
+            {
+              "fieldKey": "field:7:3",
+              "purpose": "addressLine1",
+              "source": "jev",
+              "confidence": 0.99
+            },
+            {
+              "fieldKey": "field:7:4",
+              "purpose": "alternateMailingAddress",
+              "source": "jev",
+              "confidence": 0.99
+            },
+            {
+              "fieldKey": "field:7:5",
+              "purpose": "phone",
+              "source": "jev",
+              "confidence": 0.96
+            },
+            {
+              "fieldKey": "field:7:8",
+              "purpose": "email",
+              "source": "jev",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:7:9",
+              "purpose": "primaryLanguage",
+              "source": "jev",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:7:14",
+              "purpose": "pregnant",
+              "source": "jev",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:7:15",
+              "purpose": "wicPostpartum",
+              "source": "jev",
+              "confidence": 0.98
+            },
+            {
+              "fieldKey": "field:7:16",
+              "purpose": "wicBreastfeedingInfant",
+              "source": "jev",
+              "confidence": 0.95
+            },
+            {
+              "fieldKey": "field:7:17",
+              "purpose": "wicFormulaInfant",
+              "source": "jev",
+              "confidence": 0.93
+            },
+            {
+              "fieldKey": "field:7:18",
+              "purpose": "wicChildUnderFive",
+              "source": "jev",
+              "confidence": 0.92
+            },
+            {
+              "fieldKey": "field:7:19",
+              "purpose": "wicAppointmentInPerson",
+              "source": "jev",
+              "confidence": 0.91
+            },
+            {
+              "fieldKey": "field:7:20",
+              "purpose": "wicAppointmentPhone",
+              "source": "jev",
+              "confidence": 0.96
+            },
+            {
+              "fieldKey": "field:7:21",
+              "purpose": "wicAppointmentVideo",
+              "source": "jev",
+              "confidence": 0.95
+            },
+            {
+              "fieldKey": "field:7:22",
+              "purpose": "wicClinic",
+              "source": "jev",
+              "confidence": 0.93
+            },
+            {
+              "fieldKey": "wic:receive-texts",
+              "purpose": "canReceiveTexts",
+              "source": "jev",
+              "confidence": 0.9
+            },
+            {
+              "fieldKey": "wic:medical",
+              "purpose": "mediCalCoverage",
+              "source": "jev",
+              "confidence": 0.9
+            }
+          ],
+          "wallMs": 457.13574999570847
+        },
+        {
+          "metadata": {
+            "runtime": "jev-typesafe-local-companion",
+            "provider": "jev",
+            "mode": "cloud-decision-with-bounded-local-recovery",
+            "requestedModel": "jev-1.13.0",
+            "reportedModel": "jev-1.13.0",
+            "reasoningEffort": null,
+            "confidenceThreshold": 0.9,
+            "agents": [
+              "decision_classifier"
+            ],
+            "independentModelReview": false,
+            "proposedMappings": 1,
+            "approvedMappings": 18,
+            "rejectedMappings": 1,
+            "deferredControls": 1,
+            "trustedHintMappings": 0,
+            "billing": "typesafe-api-estimate-billed-unknown",
+            "usage": {
+              "prompts": 1,
+              "inputTokens": 1727,
+              "outputTokens": 330,
+              "contextUsageUnits": null,
+              "durationMs": 215.24574995040894,
+              "apiCostUsd": null,
+              "providerReportedCostUsd": null,
+              "estimatedApiCostUsd": 0.00007253400000000001
+            },
+            "pricing": {
+              "source": "https://docs.typesafe.ai/models",
+              "checkedAt": "2026-10-07",
+              "inputUsdPerMillion": 0.042,
+              "outputUsdPerMillion": 0
+            },
+            "reviewedAt": "2026-10-13T20:10:08.855Z",
+            "summary": "Jev decisions, deterministic site recovery and verified DOM reuse are counted separately. Missing answers still pause.",
+            "initialModelApprovedMappings": 0,
+            "retryModelApprovedMappings": 0,
+            "recoveryPasses": 0,
+            "retainedVerifiedMappings": 18,
+            "inapplicableControls": 0,
+            "planningWallMs": 227
+          },
+          "approved": [
+            {
+              "fieldKey": "field:8:1",
+              "purpose": "fullName",
+              "source": "verified-cache",
+              "confidence": 0.98
+            },
+            {
+              "fieldKey": "field:8:2",
+              "purpose": "dateOfBirth",
+              "source": "verified-cache",
+              "confidence": 0.93
+            },
+            {
+              "fieldKey": "field:8:3",
+              "purpose": "addressLine1",
+              "source": "verified-cache",
+              "confidence": 0.99
+            },
+            {
+              "fieldKey": "field:8:4",
+              "purpose": "alternateMailingAddress",
+              "source": "verified-cache",
+              "confidence": 0.99
+            },
+            {
+              "fieldKey": "field:8:5",
+              "purpose": "phone",
+              "source": "verified-cache",
+              "confidence": 0.96
+            },
+            {
+              "fieldKey": "field:8:8",
+              "purpose": "email",
+              "source": "verified-cache",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:8:9",
+              "purpose": "primaryLanguage",
+              "source": "verified-cache",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:8:14",
+              "purpose": "pregnant",
+              "source": "verified-cache",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:8:15",
+              "purpose": "wicPostpartum",
+              "source": "verified-cache",
+              "confidence": 0.98
+            },
+            {
+              "fieldKey": "field:8:16",
+              "purpose": "wicBreastfeedingInfant",
+              "source": "verified-cache",
+              "confidence": 0.95
+            },
+            {
+              "fieldKey": "field:8:17",
+              "purpose": "wicFormulaInfant",
+              "source": "verified-cache",
+              "confidence": 0.93
+            },
+            {
+              "fieldKey": "field:8:18",
+              "purpose": "wicChildUnderFive",
+              "source": "verified-cache",
+              "confidence": 0.92
+            },
+            {
+              "fieldKey": "field:8:19",
+              "purpose": "wicAppointmentInPerson",
+              "source": "verified-cache",
+              "confidence": 0.91
+            },
+            {
+              "fieldKey": "field:8:20",
+              "purpose": "wicAppointmentPhone",
+              "source": "verified-cache",
+              "confidence": 0.96
+            },
+            {
+              "fieldKey": "field:8:21",
+              "purpose": "wicAppointmentVideo",
+              "source": "verified-cache",
+              "confidence": 0.95
+            },
+            {
+              "fieldKey": "field:8:22",
+              "purpose": "wicClinic",
+              "source": "verified-cache",
+              "confidence": 0.93
+            },
+            {
+              "fieldKey": "wic:receive-texts",
+              "purpose": "canReceiveTexts",
+              "source": "verified-cache",
+              "confidence": 0.9
+            },
+            {
+              "fieldKey": "wic:medical",
+              "purpose": "mediCalCoverage",
+              "source": "verified-cache",
+              "confidence": 0.9
+            }
+          ],
+          "wallMs": 229.35858404636383
+        }
+      ]
+    },
+    {
+      "id": "browser-wic-missing-zip-r1",
+      "caseId": "wic-missing-zip",
+      "scope": "Local real-DOM WIC fixture using current product scanner/filler and authenticated Jev planner; no installed extension, live site, CAPTCHA or Submit.",
+      "model": "jev-1.13.0",
+      "reasoningEffort": null,
+      "confidenceThreshold": 0.9,
+      "at": "2026-10-13T20:10:17.693Z",
+      "wallSeconds": 8.56789999999851,
+      "correctAnswers": 16,
+      "expectedAnswers": 16,
+      "actualGaps": [
+        "edit-home-address",
+        "edit-mailing-address-if-different-from-home-address-"
+      ],
+      "expectedGaps": [
+        "edit-home-address",
+        "edit-mailing-address-if-different-from-home-address-"
+      ],
+      "errors": [],
+      "safeCasePass": true,
+      "completeSource": false,
+      "blockedCount": 0,
+      "verifiedWrites": 10,
+      "wholeApplicationCompletion": null,
+      "captchaCompleted": null,
+      "captchaAttempts": 0,
+      "assistanceCount": 0,
+      "usage": {
+        "prompts": 2,
+        "inputTokens": 14581,
+        "outputTokens": 5436,
+        "estimatedApiCostUsd": 0.0006124020000000001,
+        "apiCostUsd": null,
+        "providerReportedCostUsd": null
+      },
+      "scans": [
+        {
+          "metadata": {
+            "runtime": "jev-typesafe-local-companion",
+            "provider": "jev",
+            "mode": "cloud-decision-with-bounded-local-recovery",
+            "requestedModel": "jev-1.13.0",
+            "reportedModel": "jev-1.13.0",
+            "reasoningEffort": null,
+            "confidenceThreshold": 0.9,
+            "agents": [
+              "decision_classifier"
+            ],
+            "independentModelReview": false,
+            "proposedMappings": 17,
+            "approvedMappings": 17,
+            "rejectedMappings": 1,
+            "deferredControls": 1,
+            "trustedHintMappings": 1,
+            "billing": "typesafe-api-estimate-billed-unknown",
+            "usage": {
+              "prompts": 1,
+              "inputTokens": 12983,
+              "outputTokens": 5132,
+              "contextUsageUnits": null,
+              "durationMs": 237.2599579691887,
+              "apiCostUsd": null,
+              "providerReportedCostUsd": null,
+              "estimatedApiCostUsd": 0.0005452860000000001
+            },
+            "pricing": {
+              "source": "https://docs.typesafe.ai/models",
+              "checkedAt": "2026-10-07",
+              "inputUsdPerMillion": 0.042,
+              "outputUsdPerMillion": 0
+            },
+            "reviewedAt": "2026-10-13T20:10:09.371Z",
+            "summary": "Jev decisions, deterministic site recovery and verified DOM reuse are counted separately. Missing answers still pause.",
+            "initialModelApprovedMappings": 16,
+            "retryModelApprovedMappings": 0,
+            "recoveryPasses": 0,
+            "retainedVerifiedMappings": 0,
+            "inapplicableControls": 1,
+            "planningWallMs": 245
+          },
+          "approved": [
+            {
+              "fieldKey": "field:10:1",
+              "purpose": "fullName",
+              "source": "jev",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:10:2",
+              "purpose": "dateOfBirth",
+              "source": "jev",
+              "confidence": 0.93
+            },
+            {
+              "fieldKey": "field:10:3",
+              "purpose": "addressLine1",
+              "source": "jev",
+              "confidence": 0.98
+            },
+            {
+              "fieldKey": "field:10:5",
+              "purpose": "phone",
+              "source": "jev",
+              "confidence": 0.96
+            },
+            {
+              "fieldKey": "field:10:8",
+              "purpose": "email",
+              "source": "jev",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:10:9",
+              "purpose": "primaryLanguage",
+              "source": "jev",
+              "confidence": 0.98
+            },
+            {
+              "fieldKey": "field:10:14",
+              "purpose": "pregnant",
+              "source": "jev",
+              "confidence": 0.95
+            },
+            {
+              "fieldKey": "field:10:15",
+              "purpose": "wicPostpartum",
+              "source": "jev",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:10:16",
+              "purpose": "wicBreastfeedingInfant",
+              "source": "jev",
+              "confidence": 0.96
+            },
+            {
+              "fieldKey": "field:10:17",
+              "purpose": "wicFormulaInfant",
+              "source": "jev",
+              "confidence": 0.91
+            },
+            {
+              "fieldKey": "field:10:18",
+              "purpose": "wicChildUnderFive",
+              "source": "jev",
+              "confidence": 0.93
+            },
+            {
+              "fieldKey": "field:10:20",
+              "purpose": "wicAppointmentPhone",
+              "source": "jev",
+              "confidence": 0.95
+            },
+            {
+              "fieldKey": "field:10:21",
+              "purpose": "wicAppointmentVideo",
+              "source": "jev",
+              "confidence": 0.9
+            },
+            {
+              "fieldKey": "field:10:22",
+              "purpose": "wicClinic",
+              "source": "jev",
+              "confidence": 0.92
+            },
+            {
+              "fieldKey": "wic:receive-texts",
+              "purpose": "canReceiveTexts",
+              "source": "jev",
+              "confidence": 0.92
+            },
+            {
+              "fieldKey": "wic:medical",
+              "purpose": "mediCalCoverage",
+              "source": "jev",
+              "confidence": 0.92
+            },
+            {
+              "fieldKey": "field:10:19",
+              "purpose": "wicAppointmentInPerson",
+              "source": "site-rule",
+              "confidence": null
+            }
+          ],
+          "wallMs": 248.61562502384186
+        },
+        {
+          "metadata": {
+            "runtime": "jev-typesafe-local-companion",
+            "provider": "jev",
+            "mode": "cloud-decision-with-bounded-local-recovery",
+            "requestedModel": "jev-1.13.0",
+            "reportedModel": "jev-1.13.0",
+            "reasoningEffort": null,
+            "confidenceThreshold": 0.9,
+            "agents": [
+              "decision_classifier"
+            ],
+            "independentModelReview": false,
+            "proposedMappings": 1,
+            "approvedMappings": 17,
+            "rejectedMappings": 0,
+            "deferredControls": 1,
+            "trustedHintMappings": 0,
+            "billing": "typesafe-api-estimate-billed-unknown",
+            "usage": {
+              "prompts": 1,
+              "inputTokens": 1598,
+              "outputTokens": 304,
+              "contextUsageUnits": null,
+              "durationMs": 521.6762080192566,
+              "apiCostUsd": null,
+              "providerReportedCostUsd": null,
+              "estimatedApiCostUsd": 0.000067116
+            },
+            "pricing": {
+              "source": "https://docs.typesafe.ai/models",
+              "checkedAt": "2026-10-07",
+              "inputUsdPerMillion": 0.042,
+              "outputUsdPerMillion": 0
+            },
+            "reviewedAt": "2026-10-13T20:10:17.667Z",
+            "summary": "Jev decisions, deterministic site recovery and verified DOM reuse are counted separately. Missing answers still pause.",
+            "initialModelApprovedMappings": 1,
+            "retryModelApprovedMappings": 0,
+            "recoveryPasses": 0,
+            "retainedVerifiedMappings": 16,
+            "inapplicableControls": 1,
+            "planningWallMs": 533
+          },
+          "approved": [
+            {
+              "fieldKey": "field:11:1",
+              "purpose": "fullName",
+              "source": "verified-cache",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:11:2",
+              "purpose": "dateOfBirth",
+              "source": "verified-cache",
+              "confidence": 0.93
+            },
+            {
+              "fieldKey": "field:11:5",
+              "purpose": "phone",
+              "source": "verified-cache",
+              "confidence": 0.96
+            },
+            {
+              "fieldKey": "field:11:8",
+              "purpose": "email",
+              "source": "verified-cache",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:11:9",
+              "purpose": "primaryLanguage",
+              "source": "verified-cache",
+              "confidence": 0.98
+            },
+            {
+              "fieldKey": "field:11:14",
+              "purpose": "pregnant",
+              "source": "verified-cache",
+              "confidence": 0.95
+            },
+            {
+              "fieldKey": "field:11:15",
+              "purpose": "wicPostpartum",
+              "source": "verified-cache",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:11:16",
+              "purpose": "wicBreastfeedingInfant",
+              "source": "verified-cache",
+              "confidence": 0.96
+            },
+            {
+              "fieldKey": "field:11:17",
+              "purpose": "wicFormulaInfant",
+              "source": "verified-cache",
+              "confidence": 0.91
+            },
+            {
+              "fieldKey": "field:11:18",
+              "purpose": "wicChildUnderFive",
+              "source": "verified-cache",
+              "confidence": 0.93
+            },
+            {
+              "fieldKey": "field:11:19",
+              "purpose": "wicAppointmentInPerson",
+              "source": "verified-cache",
+              "confidence": null
+            },
+            {
+              "fieldKey": "field:11:20",
+              "purpose": "wicAppointmentPhone",
+              "source": "verified-cache",
+              "confidence": 0.95
+            },
+            {
+              "fieldKey": "field:11:21",
+              "purpose": "wicAppointmentVideo",
+              "source": "verified-cache",
+              "confidence": 0.9
+            },
+            {
+              "fieldKey": "field:11:22",
+              "purpose": "wicClinic",
+              "source": "verified-cache",
+              "confidence": 0.92
+            },
+            {
+              "fieldKey": "wic:receive-texts",
+              "purpose": "canReceiveTexts",
+              "source": "verified-cache",
+              "confidence": 0.92
+            },
+            {
+              "fieldKey": "wic:medical",
+              "purpose": "mediCalCoverage",
+              "source": "verified-cache",
+              "confidence": 0.92
+            },
+            {
+              "fieldKey": "field:11:3",
+              "purpose": "addressLine1",
+              "source": "jev",
+              "confidence": 0.98
+            }
+          ],
+          "wallMs": 534.6557079553604
+        }
+      ]
+    },
+    {
+      "id": "browser-wic-no-same-r2",
+      "caseId": "wic-no-same",
+      "scope": "Local real-DOM WIC fixture using current product scanner/filler and authenticated Jev planner; no installed extension, live site, CAPTCHA or Submit.",
+      "model": "jev-1.13.0",
+      "reasoningEffort": null,
+      "confidenceThreshold": 0.9,
+      "at": "2026-10-13T20:10:30.519Z",
+      "wallSeconds": 8.48589999999851,
+      "correctAnswers": 17,
+      "expectedAnswers": 17,
+      "actualGaps": [],
+      "expectedGaps": [],
+      "errors": [],
+      "safeCasePass": true,
+      "completeSource": true,
+      "blockedCount": 0,
+      "verifiedWrites": 11,
+      "wholeApplicationCompletion": null,
+      "captchaCompleted": null,
+      "captchaAttempts": 0,
+      "assistanceCount": 0,
+      "usage": {
+        "prompts": 1,
+        "inputTokens": 13919,
+        "outputTokens": 5608,
+        "estimatedApiCostUsd": 0.0005845980000000001,
+        "apiCostUsd": null,
+        "providerReportedCostUsd": null
+      },
+      "scans": [
+        {
+          "metadata": {
+            "runtime": "jev-typesafe-local-companion",
+            "provider": "jev",
+            "mode": "cloud-decision-with-bounded-local-recovery",
+            "requestedModel": "jev-1.13.0",
+            "reportedModel": "jev-1.13.0",
+            "reasoningEffort": null,
+            "confidenceThreshold": 0.9,
+            "agents": [
+              "decision_classifier"
+            ],
+            "independentModelReview": false,
+            "proposedMappings": 17,
+            "approvedMappings": 17,
+            "rejectedMappings": 1,
+            "deferredControls": 0,
+            "trustedHintMappings": 1,
+            "billing": "typesafe-api-estimate-billed-unknown",
+            "usage": {
+              "prompts": 1,
+              "inputTokens": 13919,
+              "outputTokens": 5608,
+              "contextUsageUnits": null,
+              "durationMs": 337.8581250309944,
+              "apiCostUsd": null,
+              "providerReportedCostUsd": null,
+              "estimatedApiCostUsd": 0.0005845980000000001
+            },
+            "pricing": {
+              "source": "https://docs.typesafe.ai/models",
+              "checkedAt": "2026-10-07",
+              "inputUsdPerMillion": 0.042,
+              "outputUsdPerMillion": 0
+            },
+            "reviewedAt": "2026-10-13T20:10:22.392Z",
+            "summary": "Jev decisions, deterministic site recovery and verified DOM reuse are counted separately. Missing answers still pause.",
+            "initialModelApprovedMappings": 16,
+            "retryModelApprovedMappings": 0,
+            "recoveryPasses": 0,
+            "retainedVerifiedMappings": 0,
+            "inapplicableControls": 2,
+            "planningWallMs": 345
+          },
+          "approved": [
+            {
+              "fieldKey": "field:13:1",
+              "purpose": "fullName",
+              "source": "jev",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:13:2",
+              "purpose": "dateOfBirth",
+              "source": "jev",
+              "confidence": 0.94
+            },
+            {
+              "fieldKey": "field:13:3",
+              "purpose": "addressLine1",
+              "source": "jev",
+              "confidence": 0.99
+            },
+            {
+              "fieldKey": "field:13:5",
+              "purpose": "phone",
+              "source": "jev",
+              "confidence": 0.96
+            },
+            {
+              "fieldKey": "field:13:8",
+              "purpose": "email",
+              "source": "jev",
+              "confidence": 0.96
+            },
+            {
+              "fieldKey": "field:13:9",
+              "purpose": "primaryLanguage",
+              "source": "jev",
+              "confidence": 0.93
+            },
+            {
+              "fieldKey": "field:13:14",
+              "purpose": "pregnant",
+              "source": "jev",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:13:15",
+              "purpose": "wicPostpartum",
+              "source": "jev",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:13:16",
+              "purpose": "wicBreastfeedingInfant",
+              "source": "jev",
+              "confidence": 0.95
+            },
+            {
+              "fieldKey": "field:13:17",
+              "purpose": "wicFormulaInfant",
+              "source": "jev",
+              "confidence": 0.94
+            },
+            {
+              "fieldKey": "field:13:18",
+              "purpose": "wicChildUnderFive",
+              "source": "jev",
+              "confidence": 0.95
+            },
+            {
+              "fieldKey": "field:13:19",
+              "purpose": "wicAppointmentInPerson",
+              "source": "jev",
+              "confidence": 0.93
+            },
+            {
+              "fieldKey": "field:13:20",
+              "purpose": "wicAppointmentPhone",
+              "source": "jev",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:13:21",
+              "purpose": "wicAppointmentVideo",
+              "source": "jev",
+              "confidence": 0.9
+            },
+            {
+              "fieldKey": "field:13:22",
+              "purpose": "wicClinic",
+              "source": "jev",
+              "confidence": 0.93
+            },
+            {
+              "fieldKey": "wic:receive-texts",
+              "purpose": "canReceiveTexts",
+              "source": "jev",
+              "confidence": 0.91
+            },
+            {
+              "fieldKey": "wic:medical",
+              "purpose": "mediCalCoverage",
+              "source": "site-rule",
+              "confidence": null
+            }
+          ],
+          "wallMs": 349.00525003671646
+        },
+        {
+          "metadata": {
+            "runtime": "jev-typesafe-local-companion",
+            "provider": "jev",
+            "requestedModel": "jev-1.13.0",
+            "reportedModel": null,
+            "reasoningEffort": null,
+            "confidenceThreshold": 0.9,
+            "mode": "cloud-decision-with-bounded-local-recovery",
+            "agents": [],
+            "independentModelReview": false,
+            "approvedMappings": 17,
+            "rejectedMappings": 0,
+            "deferredControls": 0,
+            "initialModelApprovedMappings": 0,
+            "retryModelApprovedMappings": 0,
+            "recoveryPasses": 0,
+            "trustedHintMappings": 0,
+            "retainedVerifiedMappings": 17,
+            "inapplicableControls": 2,
+            "usage": {
+              "prompts": 0,
+              "inputTokens": 0,
+              "outputTokens": 0,
+              "contextUsageUnits": null,
+              "durationMs": 0,
+              "apiCostUsd": 0,
+              "providerReportedCostUsd": null,
+              "estimatedApiCostUsd": 0
+            },
+            "planningWallMs": 6,
+            "summary": "Jev decisions, deterministic site recovery and verified DOM reuse are counted separately. Missing answers still pause."
+          },
+          "approved": [
+            {
+              "fieldKey": "field:14:1",
+              "purpose": "fullName",
+              "source": "verified-cache",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:14:2",
+              "purpose": "dateOfBirth",
+              "source": "verified-cache",
+              "confidence": 0.94
+            },
+            {
+              "fieldKey": "field:14:3",
+              "purpose": "addressLine1",
+              "source": "verified-cache",
+              "confidence": 0.99
+            },
+            {
+              "fieldKey": "field:14:5",
+              "purpose": "phone",
+              "source": "verified-cache",
+              "confidence": 0.96
+            },
+            {
+              "fieldKey": "field:14:8",
+              "purpose": "email",
+              "source": "verified-cache",
+              "confidence": 0.96
+            },
+            {
+              "fieldKey": "field:14:9",
+              "purpose": "primaryLanguage",
+              "source": "verified-cache",
+              "confidence": 0.93
+            },
+            {
+              "fieldKey": "field:14:14",
+              "purpose": "pregnant",
+              "source": "verified-cache",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:14:15",
+              "purpose": "wicPostpartum",
+              "source": "verified-cache",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:14:16",
+              "purpose": "wicBreastfeedingInfant",
+              "source": "verified-cache",
+              "confidence": 0.95
+            },
+            {
+              "fieldKey": "field:14:17",
+              "purpose": "wicFormulaInfant",
+              "source": "verified-cache",
+              "confidence": 0.94
+            },
+            {
+              "fieldKey": "field:14:18",
+              "purpose": "wicChildUnderFive",
+              "source": "verified-cache",
+              "confidence": 0.95
+            },
+            {
+              "fieldKey": "field:14:19",
+              "purpose": "wicAppointmentInPerson",
+              "source": "verified-cache",
+              "confidence": 0.93
+            },
+            {
+              "fieldKey": "field:14:20",
+              "purpose": "wicAppointmentPhone",
+              "source": "verified-cache",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:14:21",
+              "purpose": "wicAppointmentVideo",
+              "source": "verified-cache",
+              "confidence": 0.9
+            },
+            {
+              "fieldKey": "field:14:22",
+              "purpose": "wicClinic",
+              "source": "verified-cache",
+              "confidence": 0.93
+            },
+            {
+              "fieldKey": "wic:receive-texts",
+              "purpose": "canReceiveTexts",
+              "source": "verified-cache",
+              "confidence": 0.91
+            },
+            {
+              "fieldKey": "wic:medical",
+              "purpose": "mediCalCoverage",
+              "source": "verified-cache",
+              "confidence": null
+            }
+          ],
+          "wallMs": 8.2411670088768
+        }
+      ]
+    },
+    {
+      "id": "browser-wic-yes-different-r2",
+      "caseId": "wic-yes-different",
+      "scope": "Local real-DOM WIC fixture using current product scanner/filler and authenticated Jev planner; no installed extension, live site, CAPTCHA or Submit.",
+      "model": "jev-1.13.0",
+      "reasoningEffort": null,
+      "confidenceThreshold": 0.9,
+      "at": "2026-10-13T20:10:40.795Z",
+      "wallSeconds": 10.11169999999553,
+      "correctAnswers": 19,
+      "expectedAnswers": 19,
+      "actualGaps": [],
+      "expectedGaps": [],
+      "errors": [],
+      "safeCasePass": true,
+      "completeSource": true,
+      "blockedCount": 0,
+      "verifiedWrites": 13,
+      "wholeApplicationCompletion": null,
+      "captchaCompleted": null,
+      "captchaAttempts": 0,
+      "assistanceCount": 0,
+      "usage": {
+        "prompts": 1,
+        "inputTokens": 15827,
+        "outputTokens": 6500,
+        "estimatedApiCostUsd": 0.000664734,
+        "apiCostUsd": null,
+        "providerReportedCostUsd": null
+      },
+      "scans": [
+        {
+          "metadata": {
+            "runtime": "jev-typesafe-local-companion",
+            "provider": "jev",
+            "mode": "cloud-decision-with-bounded-local-recovery",
+            "requestedModel": "jev-1.13.0",
+            "reportedModel": "jev-1.13.0",
+            "reasoningEffort": null,
+            "confidenceThreshold": 0.9,
+            "agents": [
+              "decision_classifier"
+            ],
+            "independentModelReview": false,
+            "proposedMappings": 19,
+            "approvedMappings": 19,
+            "rejectedMappings": 2,
+            "deferredControls": 0,
+            "trustedHintMappings": 2,
+            "billing": "typesafe-api-estimate-billed-unknown",
+            "usage": {
+              "prompts": 1,
+              "inputTokens": 15827,
+              "outputTokens": 6500,
+              "contextUsageUnits": null,
+              "durationMs": 338.7985410094261,
+              "apiCostUsd": null,
+              "providerReportedCostUsd": null,
+              "estimatedApiCostUsd": 0.000664734
+            },
+            "pricing": {
+              "source": "https://docs.typesafe.ai/models",
+              "checkedAt": "2026-10-07",
+              "inputUsdPerMillion": 0.042,
+              "outputUsdPerMillion": 0
+            },
+            "reviewedAt": "2026-10-13T20:10:31.041Z",
+            "summary": "Jev decisions, deterministic site recovery and verified DOM reuse are counted separately. Missing answers still pause.",
+            "initialModelApprovedMappings": 17,
+            "retryModelApprovedMappings": 0,
+            "recoveryPasses": 0,
+            "retainedVerifiedMappings": 0,
+            "inapplicableControls": 0,
+            "planningWallMs": 345
+          },
+          "approved": [
+            {
+              "fieldKey": "field:16:1",
+              "purpose": "fullName",
+              "source": "jev",
+              "confidence": 0.98
+            },
+            {
+              "fieldKey": "field:16:2",
+              "purpose": "dateOfBirth",
+              "source": "jev",
+              "confidence": 0.96
+            },
+            {
+              "fieldKey": "field:16:3",
+              "purpose": "addressLine1",
+              "source": "jev",
+              "confidence": 0.99
+            },
+            {
+              "fieldKey": "field:16:4",
+              "purpose": "alternateMailingAddress",
+              "source": "jev",
+              "confidence": 0.99
+            },
+            {
+              "fieldKey": "field:16:5",
+              "purpose": "phone",
+              "source": "jev",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:16:8",
+              "purpose": "email",
+              "source": "jev",
+              "confidence": 0.99
+            },
+            {
+              "fieldKey": "field:16:9",
+              "purpose": "primaryLanguage",
+              "source": "jev",
+              "confidence": 0.99
+            },
+            {
+              "fieldKey": "field:16:13",
+              "purpose": "mediCalCaseNumber",
+              "source": "jev",
+              "confidence": 0.91
+            },
+            {
+              "fieldKey": "field:16:14",
+              "purpose": "pregnant",
+              "source": "jev",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:16:15",
+              "purpose": "wicPostpartum",
+              "source": "jev",
+              "confidence": 0.98
+            },
+            {
+              "fieldKey": "field:16:16",
+              "purpose": "wicBreastfeedingInfant",
+              "source": "jev",
+              "confidence": 0.93
+            },
+            {
+              "fieldKey": "field:16:17",
+              "purpose": "wicFormulaInfant",
+              "source": "jev",
+              "confidence": 0.92
+            },
+            {
+              "fieldKey": "field:16:18",
+              "purpose": "wicChildUnderFive",
+              "source": "jev",
+              "confidence": 0.93
+            },
+            {
+              "fieldKey": "field:16:19",
+              "purpose": "wicAppointmentInPerson",
+              "source": "jev",
+              "confidence": 0.92
+            },
+            {
+              "fieldKey": "field:16:20",
+              "purpose": "wicAppointmentPhone",
+              "source": "jev",
+              "confidence": 0.93
+            },
+            {
+              "fieldKey": "field:16:21",
+              "purpose": "wicAppointmentVideo",
+              "source": "jev",
+              "confidence": 0.91
+            },
+            {
+              "fieldKey": "field:16:22",
+              "purpose": "wicClinic",
+              "source": "jev",
+              "confidence": 0.94
+            },
+            {
+              "fieldKey": "wic:receive-texts",
+              "purpose": "canReceiveTexts",
+              "source": "site-rule",
+              "confidence": null
+            },
+            {
+              "fieldKey": "wic:medical",
+              "purpose": "mediCalCoverage",
+              "source": "site-rule",
+              "confidence": null
+            }
+          ],
+          "wallMs": 347.61045801639557
+        },
+        {
+          "metadata": {
+            "runtime": "jev-typesafe-local-companion",
+            "provider": "jev",
+            "requestedModel": "jev-1.13.0",
+            "reportedModel": null,
+            "reasoningEffort": null,
+            "confidenceThreshold": 0.9,
+            "mode": "cloud-decision-with-bounded-local-recovery",
+            "agents": [],
+            "independentModelReview": false,
+            "approvedMappings": 19,
+            "rejectedMappings": 0,
+            "deferredControls": 0,
+            "initialModelApprovedMappings": 0,
+            "retryModelApprovedMappings": 0,
+            "recoveryPasses": 0,
+            "trustedHintMappings": 0,
+            "retainedVerifiedMappings": 19,
+            "inapplicableControls": 0,
+            "usage": {
+              "prompts": 0,
+              "inputTokens": 0,
+              "outputTokens": 0,
+              "contextUsageUnits": null,
+              "durationMs": 0,
+              "apiCostUsd": 0,
+              "providerReportedCostUsd": null,
+              "estimatedApiCostUsd": 0
+            },
+            "planningWallMs": 9,
+            "summary": "Jev decisions, deterministic site recovery and verified DOM reuse are counted separately. Missing answers still pause."
+          },
+          "approved": [
+            {
+              "fieldKey": "field:17:1",
+              "purpose": "fullName",
+              "source": "verified-cache",
+              "confidence": 0.98
+            },
+            {
+              "fieldKey": "field:17:2",
+              "purpose": "dateOfBirth",
+              "source": "verified-cache",
+              "confidence": 0.96
+            },
+            {
+              "fieldKey": "field:17:3",
+              "purpose": "addressLine1",
+              "source": "verified-cache",
+              "confidence": 0.99
+            },
+            {
+              "fieldKey": "field:17:4",
+              "purpose": "alternateMailingAddress",
+              "source": "verified-cache",
+              "confidence": 0.99
+            },
+            {
+              "fieldKey": "field:17:5",
+              "purpose": "phone",
+              "source": "verified-cache",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:17:8",
+              "purpose": "email",
+              "source": "verified-cache",
+              "confidence": 0.99
+            },
+            {
+              "fieldKey": "field:17:9",
+              "purpose": "primaryLanguage",
+              "source": "verified-cache",
+              "confidence": 0.99
+            },
+            {
+              "fieldKey": "field:17:13",
+              "purpose": "mediCalCaseNumber",
+              "source": "verified-cache",
+              "confidence": 0.91
+            },
+            {
+              "fieldKey": "field:17:14",
+              "purpose": "pregnant",
+              "source": "verified-cache",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:17:15",
+              "purpose": "wicPostpartum",
+              "source": "verified-cache",
+              "confidence": 0.98
+            },
+            {
+              "fieldKey": "field:17:16",
+              "purpose": "wicBreastfeedingInfant",
+              "source": "verified-cache",
+              "confidence": 0.93
+            },
+            {
+              "fieldKey": "field:17:17",
+              "purpose": "wicFormulaInfant",
+              "source": "verified-cache",
+              "confidence": 0.92
+            },
+            {
+              "fieldKey": "field:17:18",
+              "purpose": "wicChildUnderFive",
+              "source": "verified-cache",
+              "confidence": 0.93
+            },
+            {
+              "fieldKey": "field:17:19",
+              "purpose": "wicAppointmentInPerson",
+              "source": "verified-cache",
+              "confidence": 0.92
+            },
+            {
+              "fieldKey": "field:17:20",
+              "purpose": "wicAppointmentPhone",
+              "source": "verified-cache",
+              "confidence": 0.93
+            },
+            {
+              "fieldKey": "field:17:21",
+              "purpose": "wicAppointmentVideo",
+              "source": "verified-cache",
+              "confidence": 0.91
+            },
+            {
+              "fieldKey": "field:17:22",
+              "purpose": "wicClinic",
+              "source": "verified-cache",
+              "confidence": 0.94
+            },
+            {
+              "fieldKey": "wic:receive-texts",
+              "purpose": "canReceiveTexts",
+              "source": "verified-cache",
+              "confidence": null
+            },
+            {
+              "fieldKey": "wic:medical",
+              "purpose": "mediCalCoverage",
+              "source": "verified-cache",
+              "confidence": null
+            }
+          ],
+          "wallMs": 11.97304105758667
+        }
+      ]
+    },
+    {
+      "id": "browser-wic-missing-case-r2",
+      "caseId": "wic-missing-case",
+      "scope": "Local real-DOM WIC fixture using current product scanner/filler and authenticated Jev planner; no installed extension, live site, CAPTCHA or Submit.",
+      "model": "jev-1.13.0",
+      "reasoningEffort": null,
+      "confidenceThreshold": 0.9,
+      "at": "2026-10-13T20:10:54.025Z",
+      "wallSeconds": 9.22120000000298,
+      "correctAnswers": 18,
+      "expectedAnswers": 18,
+      "actualGaps": [
+        "edit-if-yes"
+      ],
+      "expectedGaps": [
+        "edit-if-yes"
+      ],
+      "errors": [],
+      "safeCasePass": true,
+      "completeSource": false,
+      "blockedCount": 0,
+      "verifiedWrites": 12,
+      "wholeApplicationCompletion": null,
+      "captchaCompleted": null,
+      "captchaAttempts": 0,
+      "assistanceCount": 0,
+      "usage": {
+        "prompts": 2,
+        "inputTokens": 17150,
+        "outputTokens": 6617,
+        "estimatedApiCostUsd": 0.0007203,
+        "apiCostUsd": null,
+        "providerReportedCostUsd": null
+      },
+      "scans": [
+        {
+          "metadata": {
+            "runtime": "jev-typesafe-local-companion",
+            "provider": "jev",
+            "mode": "cloud-decision-with-bounded-local-recovery",
+            "requestedModel": "jev-1.13.0",
+            "reportedModel": "jev-1.13.0",
+            "reasoningEffort": null,
+            "confidenceThreshold": 0.9,
+            "agents": [
+              "decision_classifier"
+            ],
+            "independentModelReview": false,
+            "proposedMappings": 19,
+            "approvedMappings": 18,
+            "rejectedMappings": 2,
+            "deferredControls": 1,
+            "trustedHintMappings": 1,
+            "billing": "typesafe-api-estimate-billed-unknown",
+            "usage": {
+              "prompts": 1,
+              "inputTokens": 15421,
+              "outputTokens": 6287,
+              "contextUsageUnits": null,
+              "durationMs": 400.3975419998169,
+              "apiCostUsd": null,
+              "providerReportedCostUsd": null,
+              "estimatedApiCostUsd": 0.000647682
+            },
+            "pricing": {
+              "source": "https://docs.typesafe.ai/models",
+              "checkedAt": "2026-10-07",
+              "inputUsdPerMillion": 0.042,
+              "outputUsdPerMillion": 0
+            },
+            "reviewedAt": "2026-10-13T20:10:45.220Z",
+            "summary": "Jev decisions, deterministic site recovery and verified DOM reuse are counted separately. Missing answers still pause.",
+            "initialModelApprovedMappings": 17,
+            "retryModelApprovedMappings": 0,
+            "recoveryPasses": 0,
+            "retainedVerifiedMappings": 0,
+            "inapplicableControls": 0,
+            "planningWallMs": 412
+          },
+          "approved": [
+            {
+              "fieldKey": "field:19:1",
+              "purpose": "fullName",
+              "source": "jev",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:19:2",
+              "purpose": "dateOfBirth",
+              "source": "jev",
+              "confidence": 0.94
+            },
+            {
+              "fieldKey": "field:19:3",
+              "purpose": "addressLine1",
+              "source": "jev",
+              "confidence": 0.98
+            },
+            {
+              "fieldKey": "field:19:4",
+              "purpose": "alternateMailingAddress",
+              "source": "jev",
+              "confidence": 0.99
+            },
+            {
+              "fieldKey": "field:19:5",
+              "purpose": "phone",
+              "source": "jev",
+              "confidence": 0.96
+            },
+            {
+              "fieldKey": "field:19:8",
+              "purpose": "email",
+              "source": "jev",
+              "confidence": 0.99
+            },
+            {
+              "fieldKey": "field:19:9",
+              "purpose": "primaryLanguage",
+              "source": "jev",
+              "confidence": 0.95
+            },
+            {
+              "fieldKey": "field:19:14",
+              "purpose": "pregnant",
+              "source": "jev",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:19:15",
+              "purpose": "wicPostpartum",
+              "source": "jev",
+              "confidence": 0.98
+            },
+            {
+              "fieldKey": "field:19:16",
+              "purpose": "wicBreastfeedingInfant",
+              "source": "jev",
+              "confidence": 0.96
+            },
+            {
+              "fieldKey": "field:19:17",
+              "purpose": "wicFormulaInfant",
+              "source": "jev",
+              "confidence": 0.94
+            },
+            {
+              "fieldKey": "field:19:18",
+              "purpose": "wicChildUnderFive",
+              "source": "jev",
+              "confidence": 0.91
+            },
+            {
+              "fieldKey": "field:19:19",
+              "purpose": "wicAppointmentInPerson",
+              "source": "jev",
+              "confidence": 0.91
+            },
+            {
+              "fieldKey": "field:19:20",
+              "purpose": "wicAppointmentPhone",
+              "source": "jev",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:19:21",
+              "purpose": "wicAppointmentVideo",
+              "source": "jev",
+              "confidence": 0.93
+            },
+            {
+              "fieldKey": "field:19:22",
+              "purpose": "wicClinic",
+              "source": "jev",
+              "confidence": 0.94
+            },
+            {
+              "fieldKey": "wic:receive-texts",
+              "purpose": "canReceiveTexts",
+              "source": "jev",
+              "confidence": 0.9
+            },
+            {
+              "fieldKey": "wic:medical",
+              "purpose": "mediCalCoverage",
+              "source": "site-rule",
+              "confidence": null
+            }
+          ],
+          "wallMs": 414.9100839495659
+        },
+        {
+          "metadata": {
+            "runtime": "jev-typesafe-local-companion",
+            "provider": "jev",
+            "mode": "cloud-decision-with-bounded-local-recovery",
+            "requestedModel": "jev-1.13.0",
+            "reportedModel": "jev-1.13.0",
+            "reasoningEffort": null,
+            "confidenceThreshold": 0.9,
+            "agents": [
+              "decision_classifier"
+            ],
+            "independentModelReview": false,
+            "proposedMappings": 1,
+            "approvedMappings": 18,
+            "rejectedMappings": 1,
+            "deferredControls": 1,
+            "trustedHintMappings": 0,
+            "billing": "typesafe-api-estimate-billed-unknown",
+            "usage": {
+              "prompts": 1,
+              "inputTokens": 1729,
+              "outputTokens": 330,
+              "contextUsageUnits": null,
+              "durationMs": 315.7766669988632,
+              "apiCostUsd": null,
+              "providerReportedCostUsd": null,
+              "estimatedApiCostUsd": 0.00007261800000000002
+            },
+            "pricing": {
+              "source": "https://docs.typesafe.ai/models",
+              "checkedAt": "2026-10-07",
+              "inputUsdPerMillion": 0.042,
+              "outputUsdPerMillion": 0
+            },
+            "reviewedAt": "2026-10-13T20:10:53.994Z",
+            "summary": "Jev decisions, deterministic site recovery and verified DOM reuse are counted separately. Missing answers still pause.",
+            "initialModelApprovedMappings": 0,
+            "retryModelApprovedMappings": 0,
+            "recoveryPasses": 0,
+            "retainedVerifiedMappings": 18,
+            "inapplicableControls": 0,
+            "planningWallMs": 323
+          },
+          "approved": [
+            {
+              "fieldKey": "field:20:1",
+              "purpose": "fullName",
+              "source": "verified-cache",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:20:2",
+              "purpose": "dateOfBirth",
+              "source": "verified-cache",
+              "confidence": 0.94
+            },
+            {
+              "fieldKey": "field:20:3",
+              "purpose": "addressLine1",
+              "source": "verified-cache",
+              "confidence": 0.98
+            },
+            {
+              "fieldKey": "field:20:4",
+              "purpose": "alternateMailingAddress",
+              "source": "verified-cache",
+              "confidence": 0.99
+            },
+            {
+              "fieldKey": "field:20:5",
+              "purpose": "phone",
+              "source": "verified-cache",
+              "confidence": 0.96
+            },
+            {
+              "fieldKey": "field:20:8",
+              "purpose": "email",
+              "source": "verified-cache",
+              "confidence": 0.99
+            },
+            {
+              "fieldKey": "field:20:9",
+              "purpose": "primaryLanguage",
+              "source": "verified-cache",
+              "confidence": 0.95
+            },
+            {
+              "fieldKey": "field:20:14",
+              "purpose": "pregnant",
+              "source": "verified-cache",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:20:15",
+              "purpose": "wicPostpartum",
+              "source": "verified-cache",
+              "confidence": 0.98
+            },
+            {
+              "fieldKey": "field:20:16",
+              "purpose": "wicBreastfeedingInfant",
+              "source": "verified-cache",
+              "confidence": 0.96
+            },
+            {
+              "fieldKey": "field:20:17",
+              "purpose": "wicFormulaInfant",
+              "source": "verified-cache",
+              "confidence": 0.94
+            },
+            {
+              "fieldKey": "field:20:18",
+              "purpose": "wicChildUnderFive",
+              "source": "verified-cache",
+              "confidence": 0.91
+            },
+            {
+              "fieldKey": "field:20:19",
+              "purpose": "wicAppointmentInPerson",
+              "source": "verified-cache",
+              "confidence": 0.91
+            },
+            {
+              "fieldKey": "field:20:20",
+              "purpose": "wicAppointmentPhone",
+              "source": "verified-cache",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:20:21",
+              "purpose": "wicAppointmentVideo",
+              "source": "verified-cache",
+              "confidence": 0.93
+            },
+            {
+              "fieldKey": "field:20:22",
+              "purpose": "wicClinic",
+              "source": "verified-cache",
+              "confidence": 0.94
+            },
+            {
+              "fieldKey": "wic:receive-texts",
+              "purpose": "canReceiveTexts",
+              "source": "verified-cache",
+              "confidence": 0.9
+            },
+            {
+              "fieldKey": "wic:medical",
+              "purpose": "mediCalCoverage",
+              "source": "verified-cache",
+              "confidence": null
+            }
+          ],
+          "wallMs": 324.5632500052452
+        }
+      ]
+    },
+    {
+      "id": "browser-wic-missing-zip-r2",
+      "caseId": "wic-missing-zip",
+      "scope": "Local real-DOM WIC fixture using current product scanner/filler and authenticated Jev planner; no installed extension, live site, CAPTCHA or Submit.",
+      "model": "jev-1.13.0",
+      "reasoningEffort": null,
+      "confidenceThreshold": 0.9,
+      "at": "2026-10-13T20:11:02.757Z",
+      "wallSeconds": 8.15170000000298,
+      "correctAnswers": 16,
+      "expectedAnswers": 16,
+      "actualGaps": [
+        "edit-home-address",
+        "edit-mailing-address-if-different-from-home-address-"
+      ],
+      "expectedGaps": [
+        "edit-home-address",
+        "edit-mailing-address-if-different-from-home-address-"
+      ],
+      "errors": [],
+      "safeCasePass": true,
+      "completeSource": false,
+      "blockedCount": 0,
+      "verifiedWrites": 10,
+      "wholeApplicationCompletion": null,
+      "captchaCompleted": null,
+      "captchaAttempts": 0,
+      "assistanceCount": 0,
+      "usage": {
+        "prompts": 2,
+        "inputTokens": 14581,
+        "outputTokens": 5436,
+        "estimatedApiCostUsd": 0.0006124020000000001,
+        "apiCostUsd": null,
+        "providerReportedCostUsd": null
+      },
+      "scans": [
+        {
+          "metadata": {
+            "runtime": "jev-typesafe-local-companion",
+            "provider": "jev",
+            "mode": "cloud-decision-with-bounded-local-recovery",
+            "requestedModel": "jev-1.13.0",
+            "reportedModel": "jev-1.13.0",
+            "reasoningEffort": null,
+            "confidenceThreshold": 0.9,
+            "agents": [
+              "decision_classifier"
+            ],
+            "independentModelReview": false,
+            "proposedMappings": 17,
+            "approvedMappings": 17,
+            "rejectedMappings": 1,
+            "deferredControls": 1,
+            "trustedHintMappings": 1,
+            "billing": "typesafe-api-estimate-billed-unknown",
+            "usage": {
+              "prompts": 1,
+              "inputTokens": 12983,
+              "outputTokens": 5132,
+              "contextUsageUnits": null,
+              "durationMs": 266.90420800447464,
+              "apiCostUsd": null,
+              "providerReportedCostUsd": null,
+              "estimatedApiCostUsd": 0.0005452860000000001
+            },
+            "pricing": {
+              "source": "https://docs.typesafe.ai/models",
+              "checkedAt": "2026-10-07",
+              "inputUsdPerMillion": 0.042,
+              "outputUsdPerMillion": 0
+            },
+            "reviewedAt": "2026-10-13T20:10:54.902Z",
+            "summary": "Jev decisions, deterministic site recovery and verified DOM reuse are counted separately. Missing answers still pause.",
+            "initialModelApprovedMappings": 16,
+            "retryModelApprovedMappings": 0,
+            "recoveryPasses": 0,
+            "retainedVerifiedMappings": 0,
+            "inapplicableControls": 1,
+            "planningWallMs": 272
+          },
+          "approved": [
+            {
+              "fieldKey": "field:22:1",
+              "purpose": "fullName",
+              "source": "jev",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:22:2",
+              "purpose": "dateOfBirth",
+              "source": "jev",
+              "confidence": 0.94
+            },
+            {
+              "fieldKey": "field:22:3",
+              "purpose": "addressLine1",
+              "source": "jev",
+              "confidence": 0.98
+            },
+            {
+              "fieldKey": "field:22:5",
+              "purpose": "phone",
+              "source": "jev",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:22:8",
+              "purpose": "email",
+              "source": "jev",
+              "confidence": 0.96
+            },
+            {
+              "fieldKey": "field:22:9",
+              "purpose": "primaryLanguage",
+              "source": "jev",
+              "confidence": 0.98
+            },
+            {
+              "fieldKey": "field:22:14",
+              "purpose": "pregnant",
+              "source": "jev",
+              "confidence": 0.96
+            },
+            {
+              "fieldKey": "field:22:15",
+              "purpose": "wicPostpartum",
+              "source": "jev",
+              "confidence": 0.96
+            },
+            {
+              "fieldKey": "field:22:16",
+              "purpose": "wicBreastfeedingInfant",
+              "source": "jev",
+              "confidence": 0.93
+            },
+            {
+              "fieldKey": "field:22:17",
+              "purpose": "wicFormulaInfant",
+              "source": "jev",
+              "confidence": 0.91
+            },
+            {
+              "fieldKey": "field:22:18",
+              "purpose": "wicChildUnderFive",
+              "source": "jev",
+              "confidence": 0.92
+            },
+            {
+              "fieldKey": "field:22:19",
+              "purpose": "wicAppointmentInPerson",
+              "source": "jev",
+              "confidence": 0.92
+            },
+            {
+              "fieldKey": "field:22:20",
+              "purpose": "wicAppointmentPhone",
+              "source": "jev",
+              "confidence": 0.95
+            },
+            {
+              "fieldKey": "field:22:22",
+              "purpose": "wicClinic",
+              "source": "jev",
+              "confidence": 0.93
+            },
+            {
+              "fieldKey": "wic:receive-texts",
+              "purpose": "canReceiveTexts",
+              "source": "jev",
+              "confidence": 0.91
+            },
+            {
+              "fieldKey": "wic:medical",
+              "purpose": "mediCalCoverage",
+              "source": "jev",
+              "confidence": 0.9
+            },
+            {
+              "fieldKey": "field:22:21",
+              "purpose": "wicAppointmentVideo",
+              "source": "site-rule",
+              "confidence": null
+            }
+          ],
+          "wallMs": 273.4377909898758
+        },
+        {
+          "metadata": {
+            "runtime": "jev-typesafe-local-companion",
+            "provider": "jev",
+            "mode": "cloud-decision-with-bounded-local-recovery",
+            "requestedModel": "jev-1.13.0",
+            "reportedModel": "jev-1.13.0",
+            "reasoningEffort": null,
+            "confidenceThreshold": 0.9,
+            "agents": [
+              "decision_classifier"
+            ],
+            "independentModelReview": false,
+            "proposedMappings": 1,
+            "approvedMappings": 17,
+            "rejectedMappings": 0,
+            "deferredControls": 1,
+            "trustedHintMappings": 0,
+            "billing": "typesafe-api-estimate-billed-unknown",
+            "usage": {
+              "prompts": 1,
+              "inputTokens": 1598,
+              "outputTokens": 304,
+              "contextUsageUnits": null,
+              "durationMs": 321.75383299589157,
+              "apiCostUsd": null,
+              "providerReportedCostUsd": null,
+              "estimatedApiCostUsd": 0.000067116
+            },
+            "pricing": {
+              "source": "https://docs.typesafe.ai/models",
+              "checkedAt": "2026-10-07",
+              "inputUsdPerMillion": 0.042,
+              "outputUsdPerMillion": 0
+            },
+            "reviewedAt": "2026-10-13T20:11:02.715Z",
+            "summary": "Jev decisions, deterministic site recovery and verified DOM reuse are counted separately. Missing answers still pause.",
+            "initialModelApprovedMappings": 1,
+            "retryModelApprovedMappings": 0,
+            "recoveryPasses": 0,
+            "retainedVerifiedMappings": 16,
+            "inapplicableControls": 1,
+            "planningWallMs": 329
+          },
+          "approved": [
+            {
+              "fieldKey": "field:23:1",
+              "purpose": "fullName",
+              "source": "verified-cache",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:23:2",
+              "purpose": "dateOfBirth",
+              "source": "verified-cache",
+              "confidence": 0.94
+            },
+            {
+              "fieldKey": "field:23:5",
+              "purpose": "phone",
+              "source": "verified-cache",
+              "confidence": 0.97
+            },
+            {
+              "fieldKey": "field:23:8",
+              "purpose": "email",
+              "source": "verified-cache",
+              "confidence": 0.96
+            },
+            {
+              "fieldKey": "field:23:9",
+              "purpose": "primaryLanguage",
+              "source": "verified-cache",
+              "confidence": 0.98
+            },
+            {
+              "fieldKey": "field:23:14",
+              "purpose": "pregnant",
+              "source": "verified-cache",
+              "confidence": 0.96
+            },
+            {
+              "fieldKey": "field:23:15",
+              "purpose": "wicPostpartum",
+              "source": "verified-cache",
+              "confidence": 0.96
+            },
+            {
+              "fieldKey": "field:23:16",
+              "purpose": "wicBreastfeedingInfant",
+              "source": "verified-cache",
+              "confidence": 0.93
+            },
+            {
+              "fieldKey": "field:23:17",
+              "purpose": "wicFormulaInfant",
+              "source": "verified-cache",
+              "confidence": 0.91
+            },
+            {
+              "fieldKey": "field:23:18",
+              "purpose": "wicChildUnderFive",
+              "source": "verified-cache",
+              "confidence": 0.92
+            },
+            {
+              "fieldKey": "field:23:19",
+              "purpose": "wicAppointmentInPerson",
+              "source": "verified-cache",
+              "confidence": 0.92
+            },
+            {
+              "fieldKey": "field:23:20",
+              "purpose": "wicAppointmentPhone",
+              "source": "verified-cache",
+              "confidence": 0.95
+            },
+            {
+              "fieldKey": "field:23:21",
+              "purpose": "wicAppointmentVideo",
+              "source": "verified-cache",
+              "confidence": null
+            },
+            {
+              "fieldKey": "field:23:22",
+              "purpose": "wicClinic",
+              "source": "verified-cache",
+              "confidence": 0.93
+            },
+            {
+              "fieldKey": "wic:receive-texts",
+              "purpose": "canReceiveTexts",
+              "source": "verified-cache",
+              "confidence": 0.91
+            },
+            {
+              "fieldKey": "wic:medical",
+              "purpose": "mediCalCoverage",
+              "source": "verified-cache",
+              "confidence": 0.9
+            },
+            {
+              "fieldKey": "field:23:3",
+              "purpose": "addressLine1",
+              "source": "jev",
+              "confidence": 0.98
+            }
+          ],
+          "wallMs": 330.7244170308113
+        }
+      ]
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 # Test report
 
-Date: 2026-09-25
+Date: 2026-10-13
 
 ## Automated checks
 
@@ -11,7 +11,20 @@ npm run check
 npm test
 ```
 
-The 161-test suite exercises the three-agent planner, shared Nava planner gateway, subscription companion, mapping, parsing, connector, queue, recovery, recertification scheduling/readiness/authorization, exact IHSS/WIC adapters, and BenefitsCal navigation logic; deterministically tests exclusive client sessions, per-application revisions and leases, sibling-safe partial persistence during an in-flight command, revoke/command ordering, tab closure, connector invalidation, versioned page-agent readiness, per-application progress, Codex token parsing, aggregate model metrics, directly analyzed known-site path policy, and the guarded BenefitsCal overview fallback. It also checks safety invariants around the no-submit boundary, bounded fill batches, document-bound messaging, allowlisted continuation, conditional rescans, semantic checkbox choices, repeated-entity abstention, OTP/CAPTCHA checkpoints, provider grouping/current routes, explicit recertification dates, session-only follow-up notes, client opt-in, and the passive 28-field fixture. A VM harness runs the real content-agent fill path and confirms that benign help text stays valid while a delayed 900 ms value reversion or asynchronous invalid state is blocked. The suite does not replace end-to-end live-site validation, real notification delivery, or real parallel-tab validation.
+The 210-test suite exercises the three-agent planner, shared Nava planner gateway, subscription companion, mapping, parsing, connector, queue, recovery, recertification scheduling/readiness/authorization, exact IHSS/WIC adapters, and BenefitsCal navigation logic; deterministically tests exclusive client sessions, per-application revisions and leases, sibling-safe partial persistence during an in-flight command, revoke/command ordering, tab closure, connector invalidation, versioned page-agent readiness, per-application progress, Codex token parsing, aggregate model metrics, directly analyzed known-site path policy, and the guarded BenefitsCal overview fallback. It also checks safety invariants around the no-submit boundary, bounded fill batches, document-bound messaging, allowlisted continuation, conditional rescans, semantic checkbox choices, repeated-entity abstention, OTP/CAPTCHA checkpoints, provider grouping/current routes, explicit recertification dates, session-only follow-up notes, client opt-in, and the passive 28-field fixture. New v0.15 cases cover conditional WIC fields, complete and incomplete composite addresses, bounded Jev retry, verified rescan reuse, cache invalidation, duplicate DOM identifiers, final controls, and person/entity identifier abstention. A VM harness runs the real content-agent fill path and confirms that benign help text stays valid while a delayed 900 ms value reversion or asynchronous invalid state is blocked. The suite does not replace end-to-end live-site validation, real notification delivery, or real parallel-tab validation.
+
+## Version 0.15.0 Jev recovery validation
+
+The v0.15 batch compares the frozen v0.14 planner with a retry-only variant and the complete recovery path. It made 36 real Jev jobs across six synthetic diagnostic cases and then ran eight WIC trials through a real browser DOM using the production scanner, writer and readback path.
+
+| Evidence | Result | Time | Usage and cost |
+|---|---|---:|---|
+| Controlled v0.14 baseline | 0/12 safe; 70 false questions | 0.527 s median planner time | 296,588 input / 117,428 output; $0.012457 estimated total |
+| Controlled v0.15 retry only | 7/12 safe; 4 false questions | 0.663 s median | 189,551 / 65,555; $0.007961 total |
+| Controlled v0.15 default | **10/12 safe; 1 false question** | **0.409 s median** | 159,816 / 58,502; $0.006712 total |
+| Real-browser WIC fixture | **8/8 safe; zero incorrect answers or unexpected questions** | **8.994 s median** | 122,854 / 48,322; $0.005160 total |
+
+The default passed every WIC and IHSS diagnostic case. Both CalFresh diagnostic repeats still failed the `Stable housing` to homelessness `No` transformation; one also varied on county confidence. Complete WIC fixture records reached final review, while incomplete records paused only on the expected missing fields. There were no operator answer repairs. No CAPTCHA or Submit action was present. [Full methods, per-run metrics and error attribution](JEV_RECOVERY_V015.md).
 
 ### Version 0.9.4 agentic, WIC-correctness, recovery, and human-checkpoint regression
 

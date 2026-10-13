@@ -55,7 +55,7 @@ test('extension uses Jev companion without Nano and revalidates hostile mappings
     return { ok: true, json: async () => ({ ok: true, plan: { purposeOverrides: { first: 'firstName', income: 'firstName', captcha: 'firstName' }, approved: [{ fieldKey: 'first', purpose: 'firstName', confidence: 1 }, { fieldKey: 'income', purpose: 'firstName', confidence: 0.3 }, { fieldKey: 'captcha', purpose: 'firstName', confidence: 1 }], gaps: [], metadata: { reportedModel: 'jev-1.13.0' } } }) };
   });
   const p = await planner.plan({ engine, page: { domain: 'example.test' }, participant: { firstName: 'PrivateSourceName' }, rawFields: [{ fieldKey: 'first', type: 'text', label: 'First name for PrivateSourceName', required: true }, { fieldKey: 'income', type: 'text', label: 'Monthly income', required: true }, { fieldKey: 'captcha', label: 'CAPTCHA', required: true }] });
-  assert.equal(sent.length, 1); assert.doesNotMatch(JSON.stringify(sent), /PrivateSourceName/);
+  assert.equal(sent.length, 2); assert.deepEqual(sent[1].fields.map(f => f.fieldKey), ['income']); assert.doesNotMatch(JSON.stringify(sent), /PrivateSourceName/);
   assert.deepEqual(p.purposeOverrides, { first: 'firstName' });
   assert.deepEqual(p.gaps.map((g) => g.fieldKey), ['income']);
   assert.equal(planner.runtimeInfo().provider, 'jev');

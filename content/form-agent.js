@@ -1,7 +1,7 @@
 (function installPageAgent() {
   'use strict';
 
-  const PAGE_AGENT_VERSION = 6;
+  const PAGE_AGENT_VERSION = 7;
   if (globalThis.__NAVA_FORM_FILLER_AGENT__?.version === PAGE_AGENT_VERSION) return;
   globalThis.__NAVA_FORM_FILLER_AGENT__ = { version: PAGE_AGENT_VERSION };
 
@@ -429,6 +429,8 @@
     fieldMap.clear();
     groupMap.clear();
     const elements = [...document.querySelectorAll('input, select, textarea')];
+    const idCounts = new Map();
+    elements.forEach(element => { if (element.id) idCounts.set(element.id, (idCounts.get(element.id) || 0) + 1); });
     const descriptions = [];
 
     elements.forEach((element, index) => {
@@ -477,6 +479,7 @@
 
       descriptions.push({
         fieldKey,
+        identityKey: element.id && idCounts.get(element.id) === 1 ? `id:${element.id}` : '',
         groupKey,
         tag: element.tagName.toLowerCase(),
         type: describedType,
@@ -486,6 +489,8 @@
         optionLabel,
         question,
         purpose: policy.purpose || '',
+        applicability: policy.applicability || '',
+        addressFormat: policy.addressFormat || '',
         decisionGroupKey: String(policy.decisionGroupKey || ''),
         decisionGroupQuestion: cleanText(policy.decisionGroupQuestion || ''),
         unmapped: policy.unmapped === true,

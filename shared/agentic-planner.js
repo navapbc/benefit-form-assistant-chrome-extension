@@ -118,6 +118,7 @@ schema-constrained data.`,
   let runtimeOverride = null;
   let bridgeFetchOverride = null;
   let providerConfig = { kind: 'chrome-local' };
+  const jevMemory = new Map();
 
   function normalizeBridgeEndpoint(value) {
     let parsed;
@@ -380,7 +381,9 @@ schema-constrained data.`,
     const groups = new Map();
     const singles = [];
     const groupCounts = new Map();
+    const idCounts = new Map();
     (rawFields || []).forEach((field) => {
+      if (field.id) idCounts.set(field.id, (idCounts.get(field.id) || 0) + 1);
       if (!field.groupKey) return;
       groupCounts.set(field.groupKey, (groupCounts.get(field.groupKey) || 0) + 1);
     });
@@ -388,6 +391,9 @@ schema-constrained data.`,
       const singletonGroup = field.groupKey && groupCounts.get(field.groupKey) === 1;
       const safe = {
         fieldKey: compactText(singletonGroup ? field.fieldKey : (field.groupKey || field.fieldKey), 180),
+        identityKey: compactText(!singletonGroup && field.groupKey ? field.groupKey :
+          Object.prototype.hasOwnProperty.call(field, 'identityKey') ? (field.identityKey || field.fieldKey) :
+            field.id && idCounts.get(field.id) === 1 ? field.id : field.fieldKey, 180),
         type: compactText(field.type, 40),
         label: compactText(field.label),
         question: compactText(field.question),
@@ -600,33 +606,153 @@ schema-constrained data.`,
     };
   }
 
-  async function plan({ engine, page, rawFields, participant, onProgress } = {}) {
-    if (!engine?.canonicalizeParticipant || !engine?.buildAnalysis) throw new Error('The form engine is unavailable.');
-    if (providerConfig.kind === 'local-cli' && providerConfig.provider === 'jev') {
-      await prepare({ onProgress });
-      const fields = redactSourceValues(engine, participant, groupedInventory(rawFields));
-      const sources = sourceInventory(engine, participant);
-      onProgress?.({ phase: 'planning', agents: ['decision_classifier'], runtime: 'jev' });
-      const result = await bridgeRequest('/v1/decision-plan', { method: 'POST', body: JSON.stringify({ domain: compactText(page?.domain, 160), fields, sources, threshold: 0.9 }) });
-      if (!result.plan || result.plan.metadata?.reportedModel !== 'jev-1.13.0') throw new Error('The companion did not return the pinned Jev plan. No form values were changed.');
-      const available = new Set(sources.map((s) => s.purpose));
-      const safe = { ...result.plan, purposeOverrides: {}, approved: [], gaps: [], rejected: [...(result.plan.rejected || [])] };
-      fields.forEach((f) => {
-        if (/captcha|signature|submit|certif|affirm|one.time.code|password|login|payment/i.test(`${f.fieldKey} ${f.label} ${f.question}`)) return;
-        const purpose = result.plan.purposeOverrides?.[f.fieldKey];
-        const approval = result.plan.approved?.find((a) => a.fieldKey === f.fieldKey && a.purpose === purpose);
-        const scopedIdentifier = purpose === 'ssn' && /other|another|household member|spouse|child|employer/i.test(`${f.label} ${f.question}`);
-        if (available.has(purpose) && approval && typeof approval.confidence === 'number' && Number.isFinite(approval.confidence) && approval.confidence >= 0.9 && approval.confidence <= 1 && !scopedIdentifier && (!f.purposeHint || purpose === f.purposeHint)) {
-          safe.purposeOverrides[f.fieldKey] = purpose;
-          safe.approved.push(approval);
-        } else {
-          const gap = result.plan.gaps?.find((g) => g.fieldKey === f.fieldKey);
-          if (f.required || f.purposeHint || ['checkbox','radio','select-one'].includes(f.type) || gap) safe.gaps.push({ fieldKey: f.fieldKey, question: f.question || f.label || 'What answer belongs here?', reason: 'Confirm the uncertain or missing answer before filling.' });
-          if (purpose) safe.rejected.push({ fieldKey: f.fieldKey, reason: 'The extension rejected an unsupported or low-confidence mapping.' });
+  function trustedSiteInventory(page, rawFields) {
+    const adapters = root.NavaSiteAdapters || (typeof require === 'function' ? require('./site-adapters.js') : null);
+    let url;
+    try { url = new URL(page?.url); } catch { return rawFields || []; }
+    return (rawFields || []).map((field) => ({ ...field,
+      ...adapters?.fieldPolicy?.(url.hostname, url.pathname, field) }));
+  }
+
+  async function fingerprint(value) {
+    const subtle = root.crypto?.subtle || (typeof require === 'function' ? require('node:crypto').webcrypto.subtle : null);
+    if (!subtle) return null;
+    const digest = await subtle.digest('SHA-256', new TextEncoder().encode(JSON.stringify(value)));
+    return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, '0')).join('');
+  }
+
+  function zeroJevUsage() {
+    return { prompts: 0, inputTokens: 0, outputTokens: 0, contextUsageUnits: null, durationMs: 0,
+      apiCostUsd: 0, providerReportedCostUsd: null, estimatedApiCostUsd: 0 };
+  }
+
+  function addJevUsage(before, after = {}) {
+    const sumKnown = (key) => Number.isFinite(before[key]) && Number.isFinite(after[key]) ? before[key] + after[key] : null;
+    return { ...before, prompts: before.prompts + Number(after.prompts || 0), durationMs: before.durationMs + Number(after.durationMs || 0),
+      inputTokens: sumKnown('inputTokens'), outputTokens: sumKnown('outputTokens'), apiCostUsd: sumKnown('apiCostUsd'),
+      providerReportedCostUsd: sumKnown('providerReportedCostUsd'), estimatedApiCostUsd: sumKnown('estimatedApiCostUsd') };
+  }
+
+  async function planWithJev({ engine, page, rawFields, participant, onProgress, jevRecovery = {} }) {
+    const start = Date.now();
+    const policyFields = trustedSiteInventory(page, rawFields);
+    const fields = redactSourceValues(engine, participant, groupedInventory(policyFields));
+    const sources = sourceInventory(engine, participant);
+    const available = new Set(sources.map((source) => source.purpose));
+    const finalField = (field) => /captcha|signature|submit|certif|affirm|one.time.code|password|login|payment/i.test(`${field.fieldKey} ${field.label} ${field.question}`);
+    const scopedIdentifier = (field) => /other|another|household member|spouse|child|employer/i.test(`${field.label} ${field.question}`)
+      && /ssn|social security/i.test(`${field.label} ${field.question}`);
+    const rawFor = (key) => policyFields.find((field) => field.fieldKey === key || field.groupKey === key);
+    const applicability = new Map(fields.map((field) => [field.fieldKey, engine.fieldApplicability?.(rawFor(field.fieldKey) || {}, participant) || { state: 'applicable' }]));
+    const safe = { purposeOverrides: {}, approved: [], gaps: [], rejected: [], deferred: [], notApplicable: [] };
+    const approve = (field, purpose, approval) => {
+      safe.purposeOverrides[field.fieldKey] = purpose;
+      safe.approved.push({ ...approval, fieldKey: field.fieldKey, purpose });
+    };
+    const scope = page?.url && page?.documentId && jevRecovery.retainVerified !== false
+      ? await fingerprint([page.url, page.documentId, engine.canonicalizeParticipant(participant).values]) : null;
+    const fieldHashes = new Map(await Promise.all(fields.map(async ({ alreadyFilled, fieldKey, ...field }) => [field.identityKey, await fingerprint([
+      field, policyFields.filter(raw => raw.fieldKey === fieldKey || raw.groupKey === fieldKey).map(raw => ({
+        type: raw.type, id: raw.id, name: raw.name, required: raw.required, maxLength: raw.maxLength, pattern: raw.pattern,
+        purpose: raw.purpose, applicability: raw.applicability, addressFormat: raw.addressFormat,
+        optionValue: ['radio', 'checkbox'].includes(raw.type) ? raw.optionValue : undefined, options: raw.options,
+      })),
+    ])])));
+    const previous = scope ? jevMemory.get(scope) : null;
+    let retained = 0, trusted = 0, initialApproved = 0, retryApproved = 0, retries = 0;
+    if (previous && Date.now() - previous.at < 300_000) {
+      const candidateOverrides = Object.fromEntries(fields.filter(field => previous.entries.has(field.identityKey))
+        .map(field => [field.fieldKey, previous.entries.get(field.identityKey).purpose]));
+      const matches = engine.buildAnalysis(policyFields, participant, { purposeOverrides: candidateOverrides, requirePurposeOverrides: true });
+      const verified = new Set(matches.observed.filter((item) => item.matchesRecord === true).map((item) => item.fieldKey));
+      fields.forEach((field) => {
+        const approval = previous.entries.get(field.identityKey);
+        if (verified.has(field.fieldKey) && approval && available.has(approval.purpose) && !scopedIdentifier(field)
+          && !finalField(field) && applicability.get(field.fieldKey)?.state === 'applicable'
+          && (!field.purposeHint || field.purposeHint === approval.purpose) && previous.fieldHashes.get(field.identityKey) === fieldHashes.get(field.identityKey)) {
+          approve(field, approval.purpose, { ...approval, source: 'verified-cache', originalSource: approval.originalSource || approval.source });
+          retained += 1;
         }
       });
-      safe.metadata = { ...result.plan.metadata, approvedMappings: safe.approved.length, rejectedMappings: safe.rejected.length };
-      return safe;
+    }
+    const eligible = fields.filter((field) => {
+      if (finalField(field)) return false;
+      const status = applicability.get(field.fieldKey);
+      if (status.state === 'inapplicable') { safe.notApplicable.push({ fieldKey: field.fieldKey, reason: status.reason, source: 'site-rule' }); return false; }
+      return status.state === 'applicable' && !safe.purposeOverrides[field.fieldKey];
+    });
+    let usage = zeroJevUsage(), metadata = {};
+    const retryable = new Set();
+    const classify = async (pending, retry) => {
+      if (!pending.length) return;
+      onProgress?.({ phase: retry ? 'recovering' : 'planning', agents: ['decision_classifier'], runtime: 'jev' });
+      const result = await bridgeRequest('/v1/decision-plan', { method: 'POST', body: JSON.stringify({ domain: compactText(page?.domain, 160), fields: pending, sources, threshold: 0.9 }) });
+      if (!result.plan || result.plan.metadata?.reportedModel !== 'jev-1.13.0') throw new Error('The companion did not return the pinned Jev plan. No form values were changed.');
+      metadata = result.plan.metadata;
+      usage = addJevUsage(usage, metadata.usage);
+      (result.plan.deferred || []).forEach((key) => { if (pending.some((field) => field.fieldKey === key)) retryable.add(key); });
+      safe.rejected.push(...(result.plan.rejected || []).filter((item) => pending.some((field) => field.fieldKey === item.fieldKey)));
+      pending.forEach((field) => {
+        const purpose = result.plan.purposeOverrides?.[field.fieldKey];
+        const approval = result.plan.approved?.find((item) => item.fieldKey === field.fieldKey && item.purpose === purpose);
+        if (available.has(purpose) && approval && Number.isFinite(approval.confidence) && approval.confidence >= 0.9 && approval.confidence <= 1
+          && !scopedIdentifier(field) && (!field.purposeHint || purpose === field.purposeHint)) {
+          approve(field, purpose, { ...approval, source: retry ? 'jev-retry' : 'jev' });
+          if (retry) retryApproved += 1; else initialApproved += 1;
+        } else if (purpose) {
+          retryable.add(field.fieldKey);
+          safe.rejected.push({ fieldKey: field.fieldKey, reason: 'The extension rejected an unsupported, conflicting or low-confidence mapping.', pass: retry ? 'retry' : 'initial' });
+        }
+      });
+    };
+    if (eligible.length) { await prepare({ onProgress }); await classify(eligible, false); }
+    // A versioned adapter is a deterministic playbook. Its recovery is never credited to Jev.
+    if (jevRecovery.trustedHints !== false) {
+      let url;
+      try { url = new URL(page?.url); } catch {}
+      const adapters = root.NavaSiteAdapters || (typeof require === 'function' ? require('./site-adapters.js') : null);
+      eligible.forEach((field) => {
+        const raw = rawFor(field.fieldKey);
+        const policy = url && adapters?.fieldPolicy?.(url.hostname, url.pathname, raw || {});
+        if (!safe.purposeOverrides[field.fieldKey] && policy?.purpose && policy.purpose === field.purposeHint
+          && available.has(policy.purpose) && !scopedIdentifier(field)) {
+          approve(field, policy.purpose, { source: 'site-rule', confidence: null, policy: 'site-adapter-v0.15', reason: 'Exact site adapter and an available source purpose; local deterministic recovery.' });
+          trusted += 1;
+        }
+      });
+    }
+    const retryFields = eligible.filter((field) => !safe.purposeOverrides[field.fieldKey] && retryable.has(field.fieldKey) && !scopedIdentifier(field)
+      && (!field.purposeHint || available.has(field.purposeHint)));
+    // One smaller-inventory retry. Missing answers and entity-scope conflicts cannot be fixed by looping.
+    if (retryFields.length && jevRecovery.retry !== false) { retries = 1; await classify(retryFields, true); }
+    fields.forEach((field) => {
+      if (finalField(field) || safe.purposeOverrides[field.fieldKey] || applicability.get(field.fieldKey)?.state === 'inapplicable') return;
+      if (field.required || field.purposeHint || ['checkbox', 'radio', 'select-one'].includes(field.type) || applicability.get(field.fieldKey)?.state === 'unknown') {
+        safe.gaps.push({ fieldKey: field.fieldKey, question: applicability.get(field.fieldKey)?.state === 'unknown'
+          ? applicability.get(field.fieldKey).reason : (field.question || field.label || 'What answer belongs here?'), reason: 'No verified source mapping after bounded recovery.' });
+        safe.deferred.push(field.fieldKey);
+      }
+    });
+    if (scope) {
+      const entries = new Map(safe.approved.map(approval => [fields.find(field => field.fieldKey === approval.fieldKey).identityKey, approval]));
+      jevMemory.set(scope, { at: Date.now(), entries, fieldHashes });
+      while (jevMemory.size > 16) jevMemory.delete(jevMemory.keys().next().value);
+    }
+    safe.metadata = { ...metadata, runtime: 'jev-typesafe-local-companion', provider: 'jev', requestedModel: 'jev-1.13.0',
+      reportedModel: usage.prompts ? 'jev-1.13.0' : null, reasoningEffort: null, confidenceThreshold: 0.9,
+      mode: 'cloud-decision-with-bounded-local-recovery', agents: usage.prompts ? ['decision_classifier'] : [], independentModelReview: false,
+      approvedMappings: safe.approved.length, rejectedMappings: safe.rejected.length, deferredControls: safe.deferred.length,
+      initialModelApprovedMappings: initialApproved, retryModelApprovedMappings: retryApproved, recoveryPasses: retries,
+      trustedHintMappings: trusted, retainedVerifiedMappings: retained, inapplicableControls: safe.notApplicable.length,
+      usage, planningWallMs: Date.now() - start, summary: 'Jev decisions, deterministic site recovery and verified DOM reuse are counted separately. Missing answers still pause.' };
+    return safe;
+  }
+
+  async function plan({ engine, page, rawFields, participant, onProgress, jevRecovery } = {}) {
+    if (!engine?.canonicalizeParticipant || !engine?.buildAnalysis) throw new Error('The form engine is unavailable.');
+    if (providerConfig.kind === 'local-cli' && providerConfig.provider === 'jev') {
+      return planWithJev({ engine, page, rawFields, participant, onProgress, jevRecovery });
+
     }
     const gateway = await gatewayConfig();
     if (gateway) return planThroughGateway({ engine, page, rawFields, participant, onProgress }, gateway);
@@ -713,6 +839,7 @@ schema-constrained data.`,
   }
 
   function reset() {
+    jevMemory.clear();
     if (sessions) Object.values(sessions).forEach((session) => session?.destroy?.());
     sessions = null;
     preparingPromise = null;

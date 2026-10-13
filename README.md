@@ -2,9 +2,30 @@
 
 An experimental Chrome extension that helps a caseworker prepare benefit forms, review missing answers, and verify the values it fills. **The caseworker reviews and submits. The extension never submits an application.**
 
-Version **0.14.0** · Nava Labs tester release · October 8, 2026
+Version **0.15.0** · Nava Labs tester release · October 13, 2026
 
 ## Test results
+
+**Latest v0.15 Jev recovery batch · October 13:** all **8/8 real-browser WIC fixture trials were safe**, with no incorrect answers, unexpected questions, blocked writes, or operator answer repairs. Complete synthetic records reached final review; incomplete records paused on exactly the missing case number or address data. Median end-to-end fixture time was **8.994 seconds** and median estimated Jev cost was **$0.000638 per trial**.
+
+| Controlled Jev variant | Safe cases / 12 | Median planner time | False questions | Calls | Input / output tokens | Median estimated cost |
+|---|---:|---:|---:|---:|---:|---:|
+| Frozen v0.14 baseline | 0/12 | 0.527 s | 70 | 24 | 296,588 / 117,428 | $0.001303 |
+| v0.15 retry only | 7/12 | 0.663 s | 4 | 38 | 189,551 / 65,555 | $0.000688 |
+| v0.15 default | **10/12** | **0.409 s** | **1** | 24 | 159,816 / 58,502 | **$0.000602** |
+
+The controlled comparison used real `jev-1.13.0` calls on six frozen inventories, twice each. The default passed all eight WIC cases and both IHSS diagnostic cases; both CalFresh diagnostic repeats still failed a housing-status transformation, with one additional county-confidence variation. The improvement is a **system result**: Jev performs most first-pass classifications, exact WIC rules handle up to two fields, and source/document-scoped DOM verification safely reuses mappings on rescan. Retry alone improved quality but used more calls and did not match the complete recovery path.
+
+![Jev v0.15 safe-case rate and false questions](docs/assets/jev-recovery-quality-v015.svg)
+
+![Jev v0.15 planning speed and estimated cost](docs/assets/jev-recovery-efficiency-v015.svg)
+
+**[Read every v0.15 trial, error attribution, speed, token and cost metric](docs/JEV_RECOVERY_V015.md)** · [controlled JSON](evaluation/results/jev-recovery-v015.json) · [browser JSON](evaluation/results/jev-recovery-browser-v015.json)
+
+The browser fixture uses the production scanner/filler and real Jev API against a local WIC DOM; it does not attest the installed extension or live government site. No CAPTCHA appeared in this batch, Jev has no image adapter here, and Submit was disabled.
+
+<details>
+<summary>Earlier installed v0.14 batch and cross-runtime evidence</summary>
 
 **Latest installed v14 batch · October 9:** four fresh WIC form runs, **0/4 correct completions**, zero operator answer repairs. The follow-up adds **three native CAPTCHA attempts: two accepted checkboxes, zero live image calls**, and **36 fresh saved-image classifications**. One workflow reached final review after viewport assistance, but its answers were still incorrect. [Fresh CAPTCHA comparison, exact errors, speed and cost](docs/CAPTCHA_OCT9.md).
 
@@ -142,7 +163,7 @@ These repeats cover **one unique image**, not general CAPTCHA accuracy. Saved-im
 
 The two Jev checkbox decisions took 0.241 s and 0.124 s, with **$0.000050904 total input-token price estimate** and unknown billed cost. Nano decisions took 8.02 s and 2.20 s. CLI/Eve used subscription access; device, subscription, relay and review costs were not allocated. This benchmark does not measure cost per completed application.
 
-**Extension status:** v0.14 adds a native, opt-in reCAPTCHA actuator: one authorization covers the checkbox and up to three static image rounds. October 9 established two visible native checkbox acceptances, with viewport assistance and no image inference. October 7 successes remain external-relay results. Live native image solving and correct application completion remain unverified. The Codex browser tool's external policy is outside this repository.
+**Extension status:** v0.15 retains the native, opt-in reCAPTCHA actuator added in v0.14: one authorization covers the checkbox and up to three static image rounds. October 9 established two visible native checkbox acceptances, with viewport assistance and no image inference. October 7 successes remain external-relay results. Live native image solving and correct application completion remain unverified. The Codex browser tool's external policy is outside this repository.
 
 ![CAPTCHA image comparison on one common grid](docs/assets/captcha-image-accuracy.svg)
 
@@ -153,6 +174,8 @@ The two Jev checkbox decisions took 0.241 s and 0.124 s, with **$0.000050904 tot
 [All 14 action and browser trials](evaluation/results/captcha-oct7-actions.json) · [Every image answer and failure](evaluation/results/captcha-oct7-images.json) · [Summary counts](evaluation/results/captcha-oct7-summary.json) · [Reproduce the pilot](evaluation/captcha/README.md)
 
 The separate October 5 chat trial (GPT-6.1 Sol Extra High) accepted one checkbox without images; it is retained as historical evidence and excluded from the new two-repeat matrix. [Historical summary](evaluation/results/captcha-summary.json)
+
+</details>
 
 [Read the findings and limitations](docs/BENEFIT_SITE_EVALUATION.md) · [Inspect all measured result tables](evaluation/results/README.md) · [Run the frozen benchmark](evaluation/controlled-planning/README.md)
 
@@ -177,7 +200,7 @@ The IHSS charts are one historical run per runtime. Readback coverage measures p
 - Tracks several applications, pauses and resumes checkpoints, and exports a value-free activity log.
 - Shows a prototype recertification workspace for upcoming renewals, updates, and client authorization.
 
-**What remains unfinished:** no saved live-site trial correctly completed the application. One October 9 workflow reached final review with viewport assistance but retained address/applicability errors. Address completeness, missing decisions, and long BenefitsCal flows need work. Native CAPTCHA automation has two verified checkbox acceptances; live native image solving is untested. One-time codes, unsupported challenges and final submission require a person. Eve remains a separate form-planning harness and is now an optional image classifier for the native actuator. Jev's two installed WIC executions filled known values but stopped at unnecessary questions. [Current error details](docs/BENCHMARK_ERRORS.md).
+**What remains unfinished:** no saved live-site trial correctly completed the application. v0.15 removes the known WIC address/applicability errors in controlled and browser-fixture tests, but the installed extension and live WIC site still need a fresh attested run. Long BenefitsCal flows and a CalFresh housing-status transformation remain unresolved. Native CAPTCHA automation has two verified checkbox acceptances; live native image solving is untested. One-time codes, unsupported challenges and final submission require a person. Eve remains a separate form-planning harness and an optional image classifier for the native actuator. [Current error details](docs/BENCHMARK_ERRORS.md).
 
 Read [the current testing writeup](docs/BENEFIT_SITE_EVALUATION.md), or [the developer guide](DEVELOPER_GUIDE.md).
 
@@ -195,7 +218,7 @@ Use desktop Chrome 138+ and fictional data. No production database or paid API k
 
 If the model is unavailable, the extension reports an error. For the subscription CLI or Jev alternatives, follow [the companion setup](model-bridge/README.md). To explore just the interface without installing or running AI, open `http://127.0.0.1:4173/sidepanel/index.html?preview=1&demo=1`; this preview simulates results and is not a model test.
 
-## Native CAPTCHA automation · v0.14
+## Native CAPTCHA automation · v0.15
 
 All form runtimes share the same deterministic checkbox executor; a checkbox click needs no model request. It is a browser mechanism, not evidence that each model can solve an image.
 

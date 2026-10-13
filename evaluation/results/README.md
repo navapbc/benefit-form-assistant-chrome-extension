@@ -1,6 +1,9 @@
 # Reviewed evaluation results
 
-These tables support the October 9 writeup without publishing applicant values or raw live-site artifacts.
+These tables support the October 13 writeup without publishing applicant values or raw live-site artifacts.
+
+- **[v0.15 Jev controlled comparison](jev-recovery-v015.json):** 36 real API jobs: frozen v0.14 baseline, retry-only recovery, and the default exact-rule/verified-reuse path across six cases and two repeats. It retains every case's correctness, expected/actual gaps, error codes, timing, token usage, estimated cost and decision provenance.
+- **[v0.15 Jev real-browser WIC fixture](jev-recovery-browser-v015.json):** eight trials through the production scanner, writer/readback path and authenticated Jev planner. All eight were safe; incomplete records paused on exactly the expected fields. No live site, CAPTCHA or Submit action was involved. [Readable report](../../docs/JEV_RECOVERY_V015.md).
 
 - **[Error occurrence provenance](benchmark-error-occurrences.json):** 72 reviewed source-linked observations across F01–F09 and C01–C11. Each retains the exact source JSON pointer/hash, requested and reported model, runtime, reasoning or unknown, batch/date, repeat, stage, observed error and time/cost basis. Derived lookup IDs distinguish reused native trial IDs. [Readable catalog](../../docs/BENCHMARK_ERRORS.md#exact-run-provenance). Rebuild with `python3 evaluation/build-error-provenance.py` from the repository root.
 
