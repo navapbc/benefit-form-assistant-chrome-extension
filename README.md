@@ -6,23 +6,6 @@ An experimental Chrome extension for preparing benefit applications from one cli
 
 Current tester build: **v0.16.0**, October 19, 2026. This combines the extension work from both repositories; historical test results retain their original build labels.
 
-## What is included?
-
-| Feature | What you can do | How to try it |
-|---|---|---|
-| **Local AI with Gemini Nano** | Plan form answers on the device, with **$0 model API charge**. Compatible hardware/downloads and device costs still apply. | Select Nano in **Model runtime**, then enable it. |
-| **Codex, Claude and Jev options** | Compare alternative form planners through a paired local companion. | [Choose an approach](#choose-a-form-filling-approach). |
-| **Document uploader** | Extract proposed fields from documents/images, inspect their sources, and review conflicts before import. | Choose **Read a document**; [supported files and steps](docs/FEATURE_GUIDE.md#document-upload-and-review). |
-| **Self-service connector setup** | Select a data provider, test a configured service, review field mappings, and retrieve a record. | Use **Data source → Connect**; [try the fictional connector](docs/FEATURE_GUIDE.md#organization-database-connector). A real provider needs its own authorized backend adapter. |
-| **Several applications from one record** | Fill WIC, IHSS and BenefitsCal, with separate tabs/progress and up to three concurrent runs. | Select programs on the application screen; CalFresh/Medi-Cal/CalWORKs share one BenefitsCal application. |
-| **Questions, review and evidence** | Answer missing facts, inspect written values and source evidence, and export an activity log. | Open the application's questions/review actions; a verified write still needs an answer-correctness check. |
-| **Pause, resume and handoff** | Pause a run, record why it needs help, and assign/accept a handoff within the browser profile. | Use **Pause or hand off** on an application card. |
-| **Renewals / recertification** | Review a caseload's upcoming renewals, data readiness, outreach drafts and client authorization. | Open **Recertification status**; [try the workflow](docs/FEATURE_GUIDE.md#renewals-and-recertification). Requires caseload data; outreach is not automatically sent. |
-| **CAPTCHA attempts** | Opt into a bounded attempt at a supported challenge and see whether it actually continues. | [Current evidence and limits](#can-it-get-past-captcha-without-a-person). |
-| **Optional shared API and participant questions** | Send redacted planning requests to a configured service and request a client-question link. | [API relationship and setup](docs/FEATURE_GUIDE.md#shared-planner-api-and-participant-links). The server and participant page live separately. |
-
-[Feature guide: setup, test steps and limits for each feature](docs/FEATURE_GUIDE.md). It also identifies what needs design review and engineering hardening.
-
 This is a working prototype with unresolved live-site failures. **The current extension leaves certification, signatures, and final submission to a person.** Reliable preparation of multiple real forms without repeated human help is the testing goal; it has not been demonstrated yet.
 
 ## Try it in 10 minutes
@@ -40,6 +23,23 @@ Allow extra time if Chrome needs to download its on-device model. You need deskt
 **Want an AI agent to handle installation?** Give it the [copyable setup request](docs/TESTER_GUIDE.md#ask-an-ai-agent-to-set-it-up). The [tester guide](docs/TESTER_GUIDE.md) also covers IHSS, BenefitsCal, multiple applications, and how to report a failure.
 
 Use fictional test records on the real forms; do not file a test application. The bundled sample may not answer every program's questions—record those genuine missing answers rather than inventing them. A local practice form is available as a setup check, but passing it is not evidence that a real site works.
+
+## What is included?
+
+| Feature | What you can do | How to try it |
+|---|---|---|
+| **Local AI with Gemini Nano** | Plan form answers on the device, with **$0 model API charge**. Compatible hardware/downloads and device costs still apply. | Select Nano in **Model runtime**, then enable it. |
+| **Codex, Claude and Jev options** | Compare alternative form planners through a paired local companion. | [Choose an approach](#choose-a-form-filling-approach). |
+| **Document uploader** | Extract proposed fields from documents/images, inspect their sources, and review conflicts before import. | Choose **Read a document**; [supported files and steps](docs/FEATURE_GUIDE.md#document-upload-and-review). |
+| **Self-service connector setup** | Select a data provider, test a configured service, review field mappings, and retrieve a record. | Use **Data source → Connect**; [try the fictional connector](docs/FEATURE_GUIDE.md#organization-database-connector). A real provider needs its own authorized backend adapter. |
+| **Several applications from one record** | Fill WIC, IHSS and BenefitsCal, with separate tabs/progress and up to three concurrent runs. | Select programs on the application screen; CalFresh/Medi-Cal/CalWORKs share one BenefitsCal application. |
+| **Questions, review and evidence** | Answer missing facts, inspect written values and source evidence, and export an activity log. | Open the application's questions/review actions; a verified write still needs an answer-correctness check. |
+| **Pause, resume and handoff** | Pause a run, record why it needs help, and assign/accept a handoff within the browser profile. | Use **Pause or hand off** on an application card. |
+| **Renewals / recertification** | Review a caseload's upcoming renewals, data readiness, outreach drafts and client authorization. | Open **Recertification status**; [try the workflow](docs/FEATURE_GUIDE.md#renewals-and-recertification). Requires caseload data; outreach is not automatically sent. |
+| **CAPTCHA attempts** | Opt into a bounded attempt at a supported challenge and see whether it actually continues. | [Current evidence and limits](#can-it-get-past-captcha-without-a-person). |
+| **Optional shared API and participant questions** | Send redacted planning requests to a configured service and request a client-question link. | [API relationship and setup](docs/FEATURE_GUIDE.md#shared-planner-api-and-participant-links). The server and participant page live separately. |
+
+[Feature guide: setup, test steps and limits for each feature](docs/FEATURE_GUIDE.md). It also identifies what needs design review and engineering hardening.
 
 ## Choose a form-filling approach
 
