@@ -5,6 +5,7 @@
   "description": "Local-first Chrome side-panel prototype for Nava's form-completion protocol.",
   "scripts": {
     "check": "node scripts/check-syntax.mjs",
+    "check:docs": "node scripts/check-doc-links.mjs",
     "connector:mock": "node connector-service/mock-server.mjs",
     "model:bridge": "node model-bridge/server.mjs",
     "model:jev": "node model-bridge/start-jev.mjs",
