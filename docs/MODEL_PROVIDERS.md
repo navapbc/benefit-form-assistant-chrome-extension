@@ -41,3 +41,40 @@ The localhost companion is intended for internal development and evaluation. A p
 This branch can also send that inventory to the Nava API. On the start screen, enter the API address and a tenant key. Those are saved as `navaApiBase` and `navaApiToken`. Optional `navaPlanModel` is one of `claude-opus-4-7`, `claude-opus-4-8`, `claude-sonnet-4-6`, `gpt-5.1`, or `gpt-5-mini`. When those keys are set, planning calls `POST /v1/plan` and Chrome's on-device model is not downloaded. If the API has a TypeSafe key, Jev decides the confident missing fields first and the generative model only sees the rest. Filling still happens in the caseworker's tab. On the questions screen, "Send these questions to the client" posts those questions to the API and copies back a participant link. The request does not include values. The extension checks every returned mapping again before a DOM write. Do not put an Anthropic, OpenAI, or TypeSafe key in the extension.
 
 References: [Using Codex with a ChatGPT plan](https://help.openai.com/en/articles/11369540-using-codex-with-your-chatgpt-plan), [Claude Code setup and authentication](https://code.claude.com/docs/en/getting-started), [Claude Code CLI structured output](https://code.claude.com/docs/en/cli-usage), and [Chrome Prompt API](https://developer.chrome.com/docs/ai/prompt-api).
+
+
+## Shared API configuration safeguards
+
+Enter an approved **HTTPS origin**, for example `https://api.example.com`, with
+no path, query, fragment, or embedded credentials. HTTP requires an explicit
+**Allow HTTP on localhost for development** choice and accepts only loopback
+hosts. Previously saved remote HTTP settings must be replaced before they can
+be used. The extension validates saved settings again when sending a request.
+This transport check does not establish that a host is Nava-managed; a managed
+host allowlist and organization login remain deployment decisions.
+
+Changing API origins requires pasting a key for the new service; the extension
+will not silently reuse the previous origin's saved key. **Disconnect and remove
+saved tenant key** removes the API origin, key, model preference, and development
+HTTP choice from this Chrome profile. The tenant key is still stored locally
+while connected; this change does not implement short-lived credentials or
+server-side revocation. Revoke exposed keys through the service administrator.
+Pause active application runs before changing settings.
+
+Shared planning and participant-link requests reject redirects, omit cookies,
+and have a 30-second limit per request, including response parsing. Pause
+cancels an active application's shared plan; Home or Back cancels its
+participant-link request. A request that already reached the server may still
+have created a household or application; cancellation cannot roll back server
+work. Server response bodies and transport error details are not echoed into
+the UI. Synthetic tests cover these controls; installed-browser and deployed
+service validation remain necessary.
+
+When shared API settings are present, they take precedence over Nano, Codex,
+and Claude form planning. The runtime status labels this path **Shared planner
+API configured**. Jev's explicitly selected local companion remains separate.
+Disconnect the API to return to the selected local planner.
+
+An isolated test harness may inject `NAVA_PLAN_GATEWAY` programmatically.
+Disconnect removes Chrome's saved configuration; the harness remains responsible
+for removing its own explicit override.

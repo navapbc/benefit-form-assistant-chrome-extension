@@ -35,6 +35,7 @@
     workerId: globalThis.crypto?.randomUUID?.() || `panel-${Date.now()}-${Math.random().toString(36).slice(2)}`,
     agentRuntime: { status: previewMode ? 'preview' : 'checking', message: '' },
     plannerBase: '',
+    plannerAllowLoopbackHttp: false,
     agentProvider: { kind: 'chrome-local' },
     recertifications: [],
     recertificationWorkspace: {},
@@ -58,6 +59,7 @@
   const activeRunTokens = new Map();
   let sessionGeneration = 0;
   let uiGeneration = 0;
+  let uiAbort = new AbortController();
   let persistChain = Promise.resolve();
   let coordinatorMutationDepth = 0;
   let coordinatorSyncPending = false;
@@ -477,6 +479,8 @@
   }
 
   function cancelPendingUiWork() {
+    uiAbort.abort();
+    uiAbort = new AbortController();
     uiGeneration += 1;
     return uiGeneration;
   }
@@ -506,6 +510,7 @@
       sessionEpoch: state.sessionEpoch,
       applicationGeneration: Number(application.controlGeneration || 0),
       uiBound,
+      abort: new AbortController(),
       cancelled: false,
       settled,
       resolveSettled,
@@ -556,7 +561,10 @@
     captchaAuthorizations.delete(application.id);
     activeRunTokens.get(application.id)?.captchaAbort?.abort();
     const token = activeRunTokens.get(application.id);
-    if (token) token.cancelled = true;
+    if (token) {
+      token.cancelled = true;
+      token.abort?.abort();
+    }
     if (!previewMode && application.tabId && application.lease?.holder === state.workerId) {
       void chrome.tabs.sendMessage(application.tabId, { type: 'NAVA_CANCEL' }).catch(() => {});
     }
@@ -586,6 +594,7 @@
       }
       else {
         token.cancelled = true;
+        token.abort?.abort();
       }
     });
     for (const application of applications) {
@@ -1114,7 +1123,7 @@
         state.agentRuntime = {
           status: 'ready',
           shared: true,
-          message: 'Planning runs on the shared Nava API. Jev decides the confident missing fields. Filling still happens in this tab.',
+          message: `Planning runs on the shared API at ${gateway.base}. Filling still happens in this tab.`,
         };
         return { status: 'ready', agents: ['field_mapper', 'gap_analyst', 'form_reviewer'] };
       }
@@ -1194,10 +1203,10 @@
     const info = agentPlanner?.runtimeInfo?.() || { kind: 'chrome-local', title: 'Chrome on-device AI', detail: '' };
     const selectedProvider = state.agentProvider.kind === 'local-cli' ? state.agentProvider.provider : 'chrome-local';
     const companion = state.agentProvider.kind === 'local-cli';
-    const title = ready ? `${info.title} ready` : unavailable ? `${info.title} unavailable` : 'Agentic AI required';
+    const title = ready ? (state.agentRuntime.shared ? 'Shared planner API configured' : `${info.title} ready`) : unavailable ? `${info.title} unavailable` : 'Agentic AI required';
     const detail = ready
       ? (state.agentRuntime.shared
-        ? 'Field mapping and missing-field decisions run on the shared Nava API. Jev handles the confident ones when the API has a TypeSafe key. Filling still happens in this tab, and client values stay out of the planning prompt.'
+        ? `${state.agentRuntime.message} Saved API settings override Nano/Codex/Claude planning; Jev keeps its paired companion. Client values stay out of planning prompts.`
         : `${info.detail}${info.provider === 'jev' ? ' Confidence threshold: 0.90. No independent model reviewer.' : ' The field mapper, gap analyst, and independent reviewer remain separate model calls.'}`)
       : unavailable
         ? (state.agentRuntime.message || (companion
@@ -1444,13 +1453,15 @@
         <div class="field">
           <label for="nava-api-base">Shared planner API</label>
           <input id="nava-api-base" name="navaApiBase" type="url" inputmode="url" autocomplete="off" placeholder="https://api.example.com" value="${escapeHtml(state.plannerBase || '')}">
-          <p class="field-hint">${configured ? 'A tenant key is already saved on this device. Paste a new one only to replace it.' : 'Paste the API address and a tenant key so planning uses the same engine as the Nava API. The key stays in this browser.'}</p>
+          <p class="field-hint">${configured ? 'A tenant key is saved on this device. Changing the API origin requires a new key.' : 'Enter an approved HTTPS API origin and tenant key. The key is saved on this device until disconnected.'}</p>
         </div>
         <div class="field">
           <label for="nava-api-token">Tenant API key</label>
           <input id="nava-api-token" name="navaApiToken" type="password" autocomplete="off" placeholder="${configured ? 'Saved' : 'nava_…'}">
         </div>
+        <label class="field-hint"><input id="nava-api-loopback" type="checkbox" ${state.plannerAllowLoopbackHttp ? 'checked' : ''}> Allow HTTP on localhost for development</label>
         <button class="secondary-button" type="button" data-action="save-planner">Use the shared planner</button>
+        ${configured ? '<button class="secondary-button" type="button" data-action="disconnect-planner">Disconnect and remove saved tenant key</button>' : ''}
       </form></details>`;
   }
 
@@ -2491,6 +2502,7 @@
     expectedCommandLocation = '',
     preservePageProgress = false,
   } = {}) {
+    const planningSignal = runToken?.abort?.signal || uiAbort.signal;
     if (uiToken !== null) assertUiGeneration(uiToken);
     if (!quiet) setBusy('Checking this form and its required fields…');
     const requestedApplication = applicationId ? state.apps.find((item) => item.id === applicationId) : null;
@@ -2540,12 +2552,15 @@
         page: response.page,
         rawFields: response.fields,
         participant,
+        signal: planningSignal,
         onProgress(update) {
           const message = agentProgressMessage(update);
           if (progressApplication) setApplicationProgress(progressApplication, message);
           else setBusy(message);
         },
       });
+      if (uiToken !== null) assertUiGeneration(uiToken);
+      assertApplicationRun(requestedApplication || previous, runToken);
       plannedAnalysis = analysisFromAgentPlan(response, participant, plan);
       agentic = mergeAgenticMetadata(previous.agentic, plan.metadata);
       latestAgentUsage = plan.metadata.usage || null;
@@ -3361,7 +3376,7 @@
    * client can answer. Values stay in this tab. The request sends questions
    * only, and the audit log on the API records that an application was added.
    */
-  async function mintClientLink(application) {
+  async function mintClientLink(application, { signal = uiAbort.signal } = {}) {
     const gateway = await agentPlanner.gatewayConfig();
     if (!gateway) throw new Error('Save the shared planner API address and a tenant key first.');
     const programIds = clientLinkPrograms(application.programIds);
@@ -3378,30 +3393,16 @@
         .slice(0, 20),
     })).filter((gap) => gap.fieldKey && gap.question);
     if (!questions.length) throw new Error('This page has no questions to send.');
-    const base = gateway.endpoint.replace(/\/v1\/plan$/, '');
-    const headers = {
-      authorization: `Bearer ${gateway.token}`,
-      'content-type': 'application/json',
-    };
-    async function post(path, body) {
-      const response = await fetch(`${base}${path}`, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(body),
-      });
-      const payload = await response.json().catch(() => ({}));
-      if (!response.ok || payload.ok === false) {
-        throw new Error(payload.error || `The API returned ${response.status}.`);
-      }
-      return payload;
-    }
+    const post = (path, body) => agentPlanner.gatewayRequest(gateway, path, body, { signal });
     const household = await post('/v1/households', { externalRef: `extension-${application.id}` });
+    if (!household.household?.id) throw new Error('The shared API did not return a household.');
     const created = await post('/v1/applications', {
       householdId: household.household.id,
       programIds,
       questions,
     });
-    const share = await post(`/v1/applications/${created.application.id}/share`, {
+    if (!created.application?.id) throw new Error('The shared API did not return an application.');
+    const share = await post(`/v1/applications/${encodeURIComponent(created.application.id)}/share`, {
       createdBy: 'extension-caseworker',
     });
     application.clientLink = share.url;
@@ -3450,24 +3451,27 @@
     const action = button.dataset.action;
     let uiToken = initialUiGeneration;
     state.error = '';
-    if (action === 'save-planner') {
-      const baseInput = document.getElementById('nava-api-base');
-      const tokenInput = document.getElementById('nava-api-token');
-      const base = String(baseInput?.value || '').trim();
-      const token = String(tokenInput?.value || '').trim();
-      let origin = '';
-      try {
-        origin = new URL(base).origin;
-      } catch {
-        throw new Error('Enter the full API address, including https.');
+    if (action === 'save-planner' || action === 'disconnect-planner') {
+      if (activeRunTokens.size) throw new Error('Pause active application runs before changing the shared API.');
+      if (action === 'disconnect-planner') {
+        await agentPlanner.clearGatewayConfig();
+        state.plannerBase = '';
+        state.plannerAllowLoopbackHttp = false;
+        agentPlanner.reset();
+        state.agentRuntime = { status: 'checking', message: '' };
+      } else {
+        const config = await agentPlanner.saveGatewayConfig({
+          base: document.getElementById('nava-api-base')?.value,
+          token: document.getElementById('nava-api-token')?.value,
+          allowLoopbackHttp: document.getElementById('nava-api-loopback')?.checked === true,
+        });
+        state.plannerBase = config.base;
+        state.plannerAllowLoopbackHttp = config.allowLoopbackHttp;
+        state.agentRuntime = { status: 'checking', message: '' };
+        await prepareAgentRuntime();
       }
-      if (!token && !state.plannerBase) throw new Error('Paste a tenant API key.');
-      const stored = { navaApiBase: origin };
-      if (token) stored.navaApiToken = token;
-      await chrome.storage.local.set(stored);
-      state.plannerBase = origin;
-      await prepareAgentRuntime();
       assertUiGeneration(uiToken);
+      render();
     }
     if (action === 'client-link') {
       const application = state.apps.find((item) => item.id === state.currentAppId);
@@ -3596,6 +3600,7 @@
       await clearAssistantState();
     }
     if (action === 'back-dashboard') {
+      uiToken = cancelPendingUiWork();
       state.handoffApplicationId = null;
       state.view = 'dashboard';
     }
@@ -4315,8 +4320,9 @@
       await restoreConnector();
       await restore();
       if (!previewMode && chrome.storage?.local?.get) {
-        const stored = await chrome.storage.local.get(['navaApiBase']);
+        const stored = await chrome.storage.local.get(['navaApiBase', 'navaApiAllowLoopbackHttp']);
         state.plannerBase = String(stored?.navaApiBase || '');
+        state.plannerAllowLoopbackHttp = stored?.navaApiAllowLoopbackHttp === true;
       }
       await restoreAgentProvider();
       state.activeTab = await getActiveTab();
