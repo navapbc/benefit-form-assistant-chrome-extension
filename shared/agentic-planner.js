@@ -119,6 +119,110 @@ schema-constrained data.`,
   let bridgeFetchOverride = null;
   let providerConfig = { kind: 'chrome-local' };
   const jevMemory = new Map();
+  const GATEWAY_STORAGE_KEYS = ['navaApiBase', 'navaApiToken', 'navaPlanModel', 'navaApiAllowLoopbackHttp'];
+  const pendingGatewayRequests = new Set();
+  const GATEWAY_TIMEOUT_MS = 30_000;
+
+  function normalizeGatewayBase(value, { allowLoopbackHttp = false } = {}) {
+    let url;
+    try { url = new URL(String(value || '').trim()); }
+    catch { throw new Error('Enter a valid shared API origin, such as https://api.example.com.'); }
+    if (url.username || url.password) throw new Error('Do not put credentials in the shared API address.');
+    const loopback = ['localhost', '127.0.0.1', '[::1]'].includes(url.hostname);
+    if (url.protocol !== 'https:' && !(allowLoopbackHttp === true && loopback && url.protocol === 'http:')) {
+      throw new Error('Use HTTPS for the shared API. HTTP is allowed only for an explicitly enabled loopback development server.');
+    }
+    if (url.pathname !== '/' || url.search || url.hash) {
+      throw new Error('Enter only the shared API origin, without a path, query, or fragment.');
+    }
+    return url.origin;
+  }
+
+  function normalizeGatewayConfig(input) {
+    let url;
+    try { url = new URL(String(input?.endpoint || '')); }
+    catch { throw new Error('The saved shared API address is invalid. Update or disconnect it.'); }
+    if (url.pathname !== '/v1/plan' || url.search || url.hash || url.username || url.password) {
+      throw new Error('The saved shared API address is invalid. Update or disconnect it.');
+    }
+    const base = normalizeGatewayBase(url.origin, input);
+    const token = String(input.token || '').trim();
+    if (!token || token.length > 4096 || /\s/.test(token)) throw new Error('Paste a valid tenant API key.');
+    return { base, endpoint: `${base}/v1/plan`, token, model: input.model, allowLoopbackHttp: input.allowLoopbackHttp === true };
+  }
+
+  function cancelGatewayRequests() {
+    pendingGatewayRequests.forEach((controller) => controller.abort());
+  }
+
+  async function saveGatewayConfig({ base, token, allowLoopbackHttp = false } = {}) {
+    const origin = normalizeGatewayBase(base, { allowLoopbackHttp });
+    const storage = root.chrome?.storage?.local;
+    if (!storage?.get || !storage?.set) throw new Error('Shared API settings are unavailable in this browser.');
+    const current = await storage.get(GATEWAY_STORAGE_KEYS);
+    // Never send an existing key to a newly entered service origin.
+    const suppliedToken = String(token || '').trim();
+    if (!suppliedToken && origin !== current.navaApiBase) throw new Error('Paste a tenant API key when changing the shared API address.');
+    const config = normalizeGatewayConfig({ endpoint: `${origin}/v1/plan`, token: suppliedToken || current.navaApiToken, allowLoopbackHttp });
+    cancelGatewayRequests();
+    await storage.set({ navaApiBase: origin, navaApiToken: config.token, navaApiAllowLoopbackHttp: config.allowLoopbackHttp });
+    return config;
+  }
+
+  async function clearGatewayConfig() {
+    cancelGatewayRequests();
+    const storage = root.chrome?.storage?.local;
+    if (!storage?.remove) throw new Error('Shared API settings are unavailable in this browser.');
+    await storage.remove(GATEWAY_STORAGE_KEYS);
+  }
+
+  async function gatewayRequest(input, path, body, { signal, timeoutMs = GATEWAY_TIMEOUT_MS } = {}) {
+    const gateway = normalizeGatewayConfig(input);
+    if (!/^\/v1\/(?:plan|households|applications(?:\/[^/?#]+\/share)?)$/.test(path)) {
+      throw new Error('Unsupported shared API operation.');
+    }
+    const controller = new AbortController();
+    let timedOut = false;
+    let timeout;
+    const forwardAbort = () => controller.abort();
+    const stopped = new Promise((_resolve, reject) => {
+      controller.signal.addEventListener('abort', () => {
+        reject(new Error(timedOut ? 'The shared API did not respond within the request time limit. Try again.' : 'The shared API request was cancelled.'));
+      }, { once: true });
+    });
+    pendingGatewayRequests.add(controller);
+    signal?.addEventListener('abort', forwardAbort, { once: true });
+    if (signal?.aborted) controller.abort();
+    timeout = setTimeout(() => { timedOut = true; controller.abort(); }, Math.max(1, Math.min(timeoutMs, GATEWAY_TIMEOUT_MS)));
+    const request = async () => {
+      if (controller.signal.aborted) return stopped;
+      let response;
+      try {
+        response = await root.fetch(`${gateway.base}${path}`, {
+          method: 'POST', redirect: 'error', credentials: 'omit', cache: 'no-store', signal: controller.signal,
+          headers: { 'content-type': 'application/json', authorization: `Bearer ${gateway.token}` },
+          body: JSON.stringify(body),
+        });
+      } catch {
+        throw new Error('The shared API could not be reached. Check its address and connection, then try again.');
+      }
+      if (response.status === 401 || response.status === 403) throw new Error('The shared API rejected the saved tenant key. Update the key or disconnect the API.');
+      if (response.status === 429) throw new Error('The shared API request limit was reached. Try again later.');
+      if (!response.ok) throw new Error('The shared API could not complete this request. Try again or contact the service administrator.');
+      let payload;
+      try { payload = await response.json(); }
+      catch { throw new Error('The shared API returned an invalid response.'); }
+      if (!payload || typeof payload !== 'object' || Array.isArray(payload) || payload.ok === false) throw new Error('The shared API returned an invalid response.');
+      if (controller.signal.aborted) return stopped;
+      return payload;
+    };
+    try { return await Promise.race([stopped, request()]); }
+    finally {
+      clearTimeout(timeout);
+      signal?.removeEventListener('abort', forwardAbort);
+      pendingGatewayRequests.delete(controller);
+    }
+  }
 
   function normalizeBridgeEndpoint(value) {
     let parsed;
@@ -536,14 +640,15 @@ schema-constrained data.`,
   }
 
   async function gatewayConfig() {
-    if (root.NAVA_PLAN_GATEWAY?.endpoint && root.NAVA_PLAN_GATEWAY?.token) return root.NAVA_PLAN_GATEWAY;
+    if (root.NAVA_PLAN_GATEWAY?.endpoint && root.NAVA_PLAN_GATEWAY?.token) return normalizeGatewayConfig(root.NAVA_PLAN_GATEWAY);
     const storage = root.chrome?.storage?.local;
     if (!storage?.get) return null;
-    const stored = await storage.get(['navaApiBase', 'navaApiToken', 'navaPlanModel']);
-    const base = String(stored?.navaApiBase || '').replace(/\/$/, '');
+    const stored = await storage.get(GATEWAY_STORAGE_KEYS);
+    const base = String(stored?.navaApiBase || '');
     const token = String(stored?.navaApiToken || '');
     if (!base || !token) return null;
-    return { endpoint: `${base}/v1/plan`, token, model: stored.navaPlanModel || undefined };
+    const origin = normalizeGatewayBase(base, { allowLoopbackHttp: stored.navaApiAllowLoopbackHttp === true });
+    return normalizeGatewayConfig({ endpoint: `${origin}/v1/plan`, token, model: stored.navaPlanModel || undefined, allowLoopbackHttp: stored.navaApiAllowLoopbackHttp === true });
   }
 
   function clampGatewayPlan(plan, fields, sources, allowedPurposes) {
@@ -573,23 +678,13 @@ schema-constrained data.`,
     const fields = redactSourceValues(args.engine, args.participant, groupedInventory(args.rawFields));
     const sources = sourceInventory(args.engine, args.participant);
     args.onProgress?.({ phase: 'planning', agents: ROLE_NAMES, runtime: 'nava-api' });
-    const response = await fetch(gateway.endpoint, {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-        authorization: `Bearer ${gateway.token}`,
-      },
-      body: JSON.stringify({
-        model: gateway.model,
-        page: { domain: compactText(args.page?.domain, 160) },
-        fields,
-        sources,
-      }),
-    });
-    const body = await response.json().catch(() => null);
-    if (!response.ok || !body?.ok || !body.plan) {
-      throw new Error(body?.error || 'The shared planner did not return a plan. No form values were changed.');
-    }
+    const body = await gatewayRequest(gateway, '/v1/plan', {
+      model: gateway.model,
+      page: { domain: compactText(args.page?.domain, 160) },
+      fields,
+      sources,
+    }, { signal: args.signal });
+    if (!body.ok || !body.plan) throw new Error('The shared planner did not return a plan. No form values were changed.');
     const clamped = clampGatewayPlan(
       body.plan,
       fields,
@@ -748,14 +843,14 @@ schema-constrained data.`,
     return safe;
   }
 
-  async function plan({ engine, page, rawFields, participant, onProgress, jevRecovery } = {}) {
+  async function plan({ engine, page, rawFields, participant, onProgress, jevRecovery, signal } = {}) {
     if (!engine?.canonicalizeParticipant || !engine?.buildAnalysis) throw new Error('The form engine is unavailable.');
     if (providerConfig.kind === 'local-cli' && providerConfig.provider === 'jev') {
       return planWithJev({ engine, page, rawFields, participant, onProgress, jevRecovery });
 
     }
     const gateway = await gatewayConfig();
-    if (gateway) return planThroughGateway({ engine, page, rawFields, participant, onProgress }, gateway);
+    if (gateway) return planThroughGateway({ engine, page, rawFields, participant, onProgress, signal }, gateway);
     await prepare({ onProgress });
     const fields = redactSourceValues(engine, participant, groupedInventory(rawFields));
     const sources = sourceInventory(engine, participant);
@@ -839,6 +934,7 @@ schema-constrained data.`,
   }
 
   function reset() {
+    cancelGatewayRequests();
     jevMemory.clear();
     if (sessions) Object.values(sessions).forEach((session) => session?.destroy?.());
     sessions = null;
@@ -861,6 +957,10 @@ schema-constrained data.`,
     availability,
     configure,
     gatewayConfig,
+    gatewayRequest,
+    normalizeGatewayBase,
+    saveGatewayConfig,
+    clearGatewayConfig,
     groupedInventory,
     plan,
     prepare,
