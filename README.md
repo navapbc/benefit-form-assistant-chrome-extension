@@ -238,6 +238,8 @@ The authorization ends after the attempt, page/document change, Pause, session c
 
 ## Testing this sprint
 
+[Current gaps and engineering handoff](docs/PRODUCTION_GAPS.md) maps v0.15's data/runtime architecture, prioritized hardening gates, and practical local setup.
+
 [The tester guide](docs/TESTER_GUIDE.md) gives repeatable tasks, expected behavior, known issues, and a findings template. Start with the local fixture; live government sites should use only approved synthetic test data and stop before any submission.
 
 ## Product demo
