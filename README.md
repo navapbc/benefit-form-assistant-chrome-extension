@@ -4,7 +4,7 @@ An experimental Chrome extension for preparing benefit applications from one cli
 
 **Start here:** [Set it up](#try-it-in-10-minutes) · [Feature guide](docs/FEATURE_GUIDE.md) · [Try it on real sites](docs/TESTER_GUIDE.md) · [Test results](docs/TEST_RESULTS.md) · [Engineering review plan](docs/PRODUCTION_GAPS.md)
 
-Current tester build: **v0.16.0**, October 19, 2026. This combines the extension work from both repositories; historical test results retain their original build labels.
+Current tester build: **[v0.16.0](docs/RELEASE_NOTES_v0.16.md)**, October 19, 2026. This combines the extension work from both repositories; historical test results retain their original build labels.
 
 This is a working prototype with unresolved live-site failures. **The current extension leaves certification, signatures, and final submission to a person.** Reliable preparation of multiple real forms without repeated human help is the testing goal; it has not been demonstrated yet.
 
