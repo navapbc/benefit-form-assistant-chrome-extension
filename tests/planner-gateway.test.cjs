@@ -139,25 +139,25 @@ test('disconnect aborts pending requests, removes the token and all API preferen
   assert.equal(await planner.gatewayConfig(), null);
 });
 
-const fs = require('node:fs');
-const path = require('node:path');
-const vm = require('node:vm');
-const panel = fs.readFileSync(path.join(__dirname, '../sidepanel/sidepanel.js'), 'utf8');
-function section(start, end) {
-  const from = panel.indexOf(start);
-  const to = panel.indexOf(end, from + start.length);
-  assert.ok(from >= 0 && to > from);
-  return panel.slice(from, to);
-}
+const runControlModule = require('../sidepanel/run-control.js');
+const agentRuntimeModule = require('../sidepanel/agent-runtime.js');
+const applicationActionsModule = require('../sidepanel/actions-applications.js');
+const uiDispatchModule = require('../sidepanel/ui-dispatch.js');
+
 function clientLinkContext(extra = {}) {
-  const context = {
-    uiAbort: new AbortController(), uiGeneration: 0, agentPlanner: planner,
-    AbortController, persist: async () => {}, ...extra,
-  };
-  const source = section('function clientLinkPrograms', 'async function exportAuditLog');
-  const cancel = section('function cancelPendingUiWork', 'function assertUiGeneration');
-  vm.runInNewContext(`${source}\n${cancel}\nresult = { mintClientLink, cancelPendingUiWork };`, context);
-  return context;
+  const state = extra.state || { apps: [], view: 'questions' };
+  const runs = runControlModule.create({ state, previewMode: true, checkpoint: () => ({}),
+    revokeApplicationRun: async () => {}, onCancelAll() {} });
+  const runtime = agentRuntimeModule.create({ state, previewMode: false, agentPlanner: planner,
+    currentUiSignal: runs.currentUiSignal, persist: extra.persist || (async () => {}) });
+  const applicationActions = applicationActionsModule.create({ state, ...uiDispatchModule.handlerContract(state), cancelPendingUiWork: runs.cancelPendingUiWork });
+  const empty = { AGENT_CLICK_ACTIONS: [], AGENT_SUBMIT_ACTIONS: [], AGENT_CHANGE_HANDLERS: [],
+    RECERTIFICATION_CLICK_ACTIONS: [], RECERTIFICATION_SUBMIT_ACTIONS: [], INTAKE_CLICK_ACTIONS: [], INTAKE_SUBMIT_ACTIONS: [],
+    CONNECTOR_CLICK_ACTIONS: [], CONNECTOR_SUBMIT_ACTIONS: [], CONNECTOR_CHANGE_HANDLERS: [] };
+  const dispatch = uiDispatchModule.create({ state, render() {},
+    assertUiGeneration: runs.assertUiGeneration, currentUiGeneration: runs.currentUiGeneration,
+    agentActions: empty, recertificationActions: empty, intakeActions: empty, connectorActions: empty, applicationActions });
+  return { result: { ...runtime, ...runs }, click: dispatch.onClick, state };
 }
 const application = () => ({ id: 'synthetic-workflow', programIds: ['wic'],
   participant: { firstName: 'PrivateClientValue' },
@@ -200,23 +200,24 @@ test('returning home aborts a participant-link workflow before a later request o
 
 test('Pause aborts its pending gateway plan through the application run signal', async () => {
   globalThis.fetch = async () => new Promise(() => {});
-  const token = { cancelled: false, abort: new AbortController() };
+  const app = application();
+  const context = clientLinkContext({ state: { apps: [app], sessionEpoch: 1 } });
+  const token = await context.result.beginApplicationRun(app);
   const pending = planner.gatewayRequest(gateway, '/v1/plan', {}, { signal: token.abort.signal });
-  const context = { captchaAuthorizations: new Set(), activeRunTokens: new Map([['synthetic-workflow', token]]), previewMode: true };
-  vm.runInNewContext(`${section('function cancelApplicationRun', 'function cancelAllRuns')}\nresult = cancelApplicationRun;`, context);
-  context.result({ id: 'synthetic-workflow' });
+  context.result.cancelApplicationRun(app);
   await assert.rejects(pending, /cancelled/);
   assert.equal(token.cancelled, true);
+  assert.equal(context.result.runActive(app.id), false);
+  assert.equal(context.result.isRunning(app.id), true, 'old run retains ownership until settled');
+  context.result.endApplicationRun(app, token);
 });
-
 
 test('Back from questions aborts sharing through the actual click handler', async () => {
   settings({ navaApiBase: 'https://api.example.test', navaApiToken: 'fake-key' });
   let started;
   const requested = new Promise((resolve) => { started = resolve; });
   globalThis.fetch = async () => { started(); return new Promise(() => {}); };
-  const context = clientLinkContext({ state: { apps: [], view: 'questions' }, render: () => {}, assertUiGeneration: () => {} });
-  vm.runInNewContext(`${section('async function onClick', 'async function onSubmit')}\nclick = onClick;`, context);
+  const context = clientLinkContext({ state: { apps: [], view: 'questions' } });
   const pending = context.result.mintClientLink(application());
   await requested;
   await context.click({ dataset: { action: 'back-dashboard' } });
