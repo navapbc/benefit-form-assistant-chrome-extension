@@ -1,5 +1,7 @@
 # CAPTCHA speed and cost for every retained run
 
+> Start with the [plain-language CAPTCHA outcome](TEST_RESULTS.md#captcha-can-it-check-the-box-and-keep-going): installed live checkbox accepted **2/3 with page-positioning help**; correct unassisted form continuation is not demonstrated. This page retains the detailed historical methods and measurements.
+
 The ledger covers all 14 October 7 action trials, all 21 image trials, the October 5 historical trial, the batch of eight CLI startup failures, four October 8 product-adapter image calls, four MIME-validation failures, two native browser fixture attempts, 36 fresh October 9 product classifications and three installed native attempts. Failures and missing results stay in the denominator. **Unknown means unmeasured, not zero.**
 
 Runtime elapsed time includes setup and the model request. The older Nano image harness exposes separate prompt time; the new product adapter records whole-call duration. Browser observation intervals include relay orchestration and waiting. End-to-end journey time was not measured, and these noncontiguous phases cannot be added into a complete application duration.
