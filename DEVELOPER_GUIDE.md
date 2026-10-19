@@ -1,6 +1,24 @@
-# Nava Form-Filling Assistant — Chrome prototype
+# Developer guide
 
-This guide preserves the v0.11 implementation notes. For v0.12 installation, tester tasks, current quality limits, and updated results, start with [README.md](README.md) and [the latest writeup](docs/BENEFIT_SITE_EVALUATION.md).
+## Current code map — v0.16
+
+The extension now combines the modular legacy implementation with the newer Jev, native CAPTCHA and shared-planner safeguards. Follow the [contribution and validation workflow](CONTRIBUTING.md) before changing it.
+
+| Area | Entry point and modules |
+|---|---|
+| Background coordination | `background.js`; `background/client-session.js`, `application-runs.js`, `connector-client.js`, `coordinator-rules.js`; native challenge service in `background/captcha-service.mjs`. |
+| Page scan and execution | `content/form-agent.js`; `page-dom.js`, `field-inventory.js`, `navigation-gate.js`, `value-writers.js`; native challenge adapter in `content/captcha-agent.js`. |
+| Field meaning and values | `shared/form-engine.js`; `form-purposes.js`, `participant-record.js`, `field-values.js`; known-site rules in `site-adapters.js`. |
+| Form planning and API | `shared/agentic-planner.js`; `planner-inventory.js`, `planner-runtime.js`; CLI/TypeSafe transport in `model-bridge/`. |
+| Panel composition | `sidepanel/sidepanel.js`; `view-*.js`, `actions-*.js`, application runner, runtime, scan, coordination, and run-control modules. `sidepanel/index.html` defines browser load order. |
+| Documents and OCR | `sidepanel/document-parser.js`, `document-readers.js`, `ocr-engine.js`. |
+| Queue and renewals | `shared/work-queue-engine.js`, `recertification-engine.js`; panel renewal views/actions and caseload modules. |
+
+A file's name is not proof it is wired into Chrome. Preserve the manifest, background imports, panel load order and dynamic page-injection tests when moving modules.
+
+## Historical implementation notes — v0.11
+
+The implementation notes below are historical v0.11 material. Use [README.md](README.md), the [feature guide](docs/FEATURE_GUIDE.md), [engineering review plan](docs/PRODUCTION_GAPS.md), and [current result overview](docs/TEST_RESULTS.md) for the v0.16 handoff.
 
 This is a loadable Manifest V3 Chrome extension that adapts Foad's `form-completion` skill to Jillian's side-panel design.
 

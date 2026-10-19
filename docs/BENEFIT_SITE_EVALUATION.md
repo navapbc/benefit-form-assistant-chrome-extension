@@ -1,5 +1,7 @@
 # Benefit form filling: promising planning results, unfinished live quality
 
+> For the current reader-friendly overview, use [results by real site and approach](TEST_RESULTS.md). This October 9 report retains the historical technical detail; later local v0.15 tests are separate from live-site results.
+
 Nava Labs · Updated October 9, 2026 · [Reviewed result tables](../evaluation/results/README.md)
 
 **New installed v0.14 WIC batch:** four actually executed form runs, no manual answer repair and 0/4 correct completions. Nano took 243.3 s to CAPTCHA with 16/17 correct answers. Jev took 8.39 / 8.45 s to blocking questions, with 15/17 each and $0.001547616 estimated API cost per repeat. Codex default took 116.5 s to CAPTCHA, with 16/17 plus an unnecessary conditional mailing-address fill. Its actual form model/reasoning is unspecified, so the model-price estimate remains unknown despite measured tokens. The later follow-up recorded three native CAPTCHA attempts, two accepted checkboxes, zero live image calls and 36 fresh saved-image classifications. One CLI-default workflow reached final review with viewport assistance, but its answers were still incorrect. Nano's 243.3 s is **4:03** with **$0 API cost**; Jev's 8.4 s is **0:08**; this installed CLI-default run's 116.5 s is **1:57**. [Fresh CAPTCHA results and all exact errors](CAPTCHA_OCT9.md). [Full per-run timing, tokens, cost and exact errors](INSTALLED_V014_BATCH.md) · [Shareable error catalog](BENCHMARK_ERRORS.md).

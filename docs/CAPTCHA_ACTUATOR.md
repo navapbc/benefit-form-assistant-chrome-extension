@@ -1,5 +1,7 @@
 # Native CAPTCHA actuator · v0.14
 
+> Start with the [plain-language CAPTCHA outcome](TEST_RESULTS.md#captcha-can-it-check-the-box-and-keep-going): installed live checkbox accepted **2/3 with page-positioning help**; correct unassisted form continuation is not demonstrated. This page retains the detailed historical methods and measurements.
+
 The extension can now attempt supported reCAPTCHA controls without a Codex browser relay. One explicit opt-in covers one bounded attempt, including up to three static image rounds. A caseworker can enable it before starting an application run, or at an existing CAPTCHA checkpoint. It never activates application Submit.
 
 This is experimental. October 9 installed testing recorded **two accepted WIC checkbox states in three native attempts**, with viewport assistance and zero image calls. Live native image solving remains unverified; providers may reject synthetic DOM events. Earlier October 7 successes used an external browser relay and remain labeled that way. [Current native receipts, image accuracy, speed/cost and continuation limits](CAPTCHA_OCT9.md).

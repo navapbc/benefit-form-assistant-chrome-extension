@@ -1,5 +1,7 @@
 # Fresh CAPTCHA tests · October 9
 
+> Start with the [plain-language CAPTCHA outcome](TEST_RESULTS.md#captcha-can-it-check-the-box-and-keep-going): installed live checkbox accepted **2/3 with page-positioning help**; correct unassisted form continuation is not demonstrated. This page retains the detailed historical methods and measurements.
+
 **36 fresh image classifications and three installed native attempts are retained.** The shared native executor visibly accepted two WIC checkboxes, in **2.494 s and 1.882 s**, with **zero image-model calls and $0 marginal API cost**. The initial offscreen attempt handed off in 0.031 s; both accepted attempts followed operator viewport preparation. Application Submit stayed untouched.
 
 **One post-CAPTCHA workflow reached final review; neither correctly completed the form.** The Codex-origin workflow reached `ready_for_review` 39.105 s after acceptance, but still had an incomplete home address and an unnecessary mailing fill. The Nano-origin page continued with the globally configured CLI default, then stopped at `navigation_unknown` 75.357 s after acceptance. This is not a Nano-only completion. Exact underlying CLI continuation model/effort were not recorded.

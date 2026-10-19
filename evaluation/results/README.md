@@ -1,6 +1,10 @@
 # Reviewed evaluation results
 
-These tables support the October 13 writeup without publishing applicant values or raw live-site artifacts.
+Start with the [plain-language results by real site and approach](../../docs/TEST_RESULTS.md). These retained receipts support that overview; no new live trials were run for the October 19 documentation review.
+
+For installed live forms, read the [October 9 WIC ledger](installed-v014-oct9.json), [October 5 WIC/BenefitsCal history](live-summary.json), and [earlier IHSS benchmark](../model-benchmark/runs.json). For CAPTCHA, the [installed attempts](captcha-native-oct9.json) are distinct from [external-browser-helper trials](captcha-oct7-actions.json) and [saved-image classifications](captcha-three-crops-oct9.json).
+
+The detailed tables below preserve methods, failures and unknowns without publishing applicant values or raw live-site artifacts.
 
 - **[v0.15 Jev controlled comparison](jev-recovery-v015.json):** 36 real API jobs: frozen v0.14 baseline, retry-only recovery, and the default exact-rule/verified-reuse path across six cases and two repeats. It retains every case's correctness, expected/actual gaps, error codes, timing, token usage, estimated cost and decision provenance.
 - **[v0.15 Jev real-browser WIC fixture](jev-recovery-browser-v015.json):** eight trials through the production scanner, writer/readback path and authenticated Jev planner. All eight were safe; incomplete records paused on exactly the expected fields. No live site, CAPTCHA or Submit action was involved. [Readable report](../../docs/JEV_RECOVERY_V015.md).

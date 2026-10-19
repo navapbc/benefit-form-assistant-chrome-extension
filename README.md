@@ -1,256 +1,96 @@
-# Nava Benefit Form Assistant Chrome Extension
+# Nava Form-Filling Assistant
 
-An experimental Chrome extension that helps a caseworker prepare benefit forms, review missing answers, and verify the values it fills. **The caseworker reviews and submits. The extension never submits an application.**
+An experimental Chrome extension for preparing benefit applications from one client record. It fills forms, asks for missing information, and helps a caseworker review the answers across several applications.
 
-Version **0.15.0** · Nava Labs tester release · October 13, 2026
+**Start here:** [Set it up](#try-it-in-10-minutes) · [Feature guide](docs/FEATURE_GUIDE.md) · [Try it on real sites](docs/TESTER_GUIDE.md) · [Test results](docs/TEST_RESULTS.md) · [Engineering review plan](docs/PRODUCTION_GAPS.md)
 
-## Test results
+Current tester build: **[v0.16.0](docs/RELEASE_NOTES_v0.16.md)**, October 19, 2026. This combines the extension work from both repositories; historical test results retain their original build labels.
 
-**Latest v0.15 Jev recovery batch · October 13:** all **8/8 real-browser WIC fixture trials were safe**, with no incorrect answers, unexpected questions, blocked writes, or operator answer repairs. Complete synthetic records reached final review; incomplete records paused on exactly the missing case number or address data. Median end-to-end fixture time was **8.994 seconds** and median estimated Jev cost was **$0.000638 per trial**.
-
-| Controlled Jev variant | Safe cases / 12 | Median planner time | False questions | Calls | Input / output tokens | Median estimated cost |
-|---|---:|---:|---:|---:|---:|---:|
-| Frozen v0.14 baseline | 0/12 | 0.527 s | 70 | 24 | 296,588 / 117,428 | $0.001303 |
-| v0.15 retry only | 7/12 | 0.663 s | 4 | 38 | 189,551 / 65,555 | $0.000688 |
-| v0.15 default | **10/12** | **0.409 s** | **1** | 24 | 159,816 / 58,502 | **$0.000602** |
-
-The controlled comparison used real `jev-1.13.0` calls on six frozen inventories, twice each. The default passed all eight WIC cases and both IHSS diagnostic cases; both CalFresh diagnostic repeats still failed a housing-status transformation, with one additional county-confidence variation. The improvement is a **system result**: Jev performs most first-pass classifications, exact WIC rules handle up to two fields, and source/document-scoped DOM verification safely reuses mappings on rescan. Retry alone improved quality but used more calls and did not match the complete recovery path.
-
-![Jev v0.15 safe-case rate and false questions](docs/assets/jev-recovery-quality-v015.svg)
-
-![Jev v0.15 planning speed and estimated cost](docs/assets/jev-recovery-efficiency-v015.svg)
-
-**[Read every v0.15 trial, error attribution, speed, token and cost metric](docs/JEV_RECOVERY_V015.md)** · [controlled JSON](evaluation/results/jev-recovery-v015.json) · [browser JSON](evaluation/results/jev-recovery-browser-v015.json)
-
-The browser fixture uses the production scanner/filler and real Jev API against a local WIC DOM; it does not attest the installed extension or live government site. No CAPTCHA appeared in this batch, Jev has no image adapter here, and Submit was disabled.
-
-<details>
-<summary>Earlier installed v0.14 batch and cross-runtime evidence</summary>
-
-**Latest installed v14 batch · October 9:** four fresh WIC form runs, **0/4 correct completions**, zero operator answer repairs. The follow-up adds **three native CAPTCHA attempts: two accepted checkboxes, zero live image calls**, and **36 fresh saved-image classifications**. One workflow reached final review after viewport assistance, but its answers were still incorrect. [Fresh CAPTCHA comparison, exact errors, speed and cost](docs/CAPTCHA_OCT9.md).
-
-| Installed form run | Time to stopped checkpoint¹ | Correct / 17 | API cost basis |
-|---|---:|---:|---|
-| Nano · repeat 1 | 243.3 s · **4:03** | 16/17 | **$0 API cost** |
-| Jev 1.13.0 · repeat 1 | 8.39 s · **0:08** | 15/17 | ~$0.00155 estimated |
-| Jev 1.13.0 · repeat 2 | 8.45 s · **0:08** | 15/17 | ~$0.00155 estimated |
-| Codex CLI default · repeat 1 | 116.5 s · **1:57** | 16/17 | $0 direct API-key charge; model-price estimate unknown |
-
-Nano/Codex stopped at CAPTCHA in these original form receipts; Jev stopped at questions. Device, operating and billed/subscription allocation costs are unmeasured. Jev’s exact published-rate estimate is $0.001547616 per repeat.
-
-<details>
-<summary>Prompt and token usage for these four form runs</summary>
-
-| Run | Prompts | Usage |
-|---|---:|---|
-| Nano 1 · Chrome-managed version/effort | 9 | 23,718 context units; API tokens unavailable |
-| Jev 1 | 2 | 36,848 input / 15,762 output tokens |
-| Jev 2 | 2 | 36,848 input / 15,763 output tokens |
-| CLI default 1 · model/effort unspecified | 9 | 178,677 input / 3,638 output tokens |
-
-</details>
-
-¹ Rounded to the nearest second. For comparison, **76 seconds is 1:16**; it is not the duration of this installed Codex WIC run. Planner-subset timings elsewhere measure different work.
-
-These are **times to a stopped workflow**, not successful completion speeds. All four omit city/state/ZIP from Home Address. Jev leaves Medi-Cal unanswered and asks two not-applicable questions; Codex also fills the conditional mailing-address box unnecessarily, outside the 17-answer denominator. v14's Codex form route does not specify model/reasoning, so it is not attributed to this chat's model. [Full new run details and stage timings](docs/INSTALLED_V014_BATCH.md) · **[Error catalog and reproduction steps](docs/BENCHMARK_ERRORS.md)** · [JSON](evaluation/results/installed-v014-oct9.json) · [CSV](evaluation/results/installed-v014-oct9.csv).
-
-**Jev integration scope:** these runs use `jev-1.13.0` for purpose classification plus local validation/filling at confidence 0.90. They do **not** reproduce a hybrid Eve + generative-model + Jev agent with recovery. Eve was tested separately with Sol Low; the Jev extension path has no generative fallback. A score here measures this extension integration, not Jev’s intrinsic intelligence or another system’s quality.
-
-**Jev is the fastest observed installed form runtime in this small batch; overall quality is unresolved.** Its two runs stop at questions with 15/17 correct answers. Nano and CLI default each score 16/17 but still leave an incorrect address. None has a measured cost or time per correctly completed application. The runner already loops; [targeted applicability and rescan recovery](docs/INSTALLED_V014_BATCH.md#can-a-better-harness-keep-jev-moving) could address Jev's false questions, but has not yet been tested. The [error catalog now identifies every cited run's runtime, requested/reported model, reasoning, scope and evidence](docs/BENCHMARK_ERRORS.md#exact-run-provenance), including explicit unknowns.
-
-**Live application quality remains unfinished: 0/8 October 5 workflows reached unassisted final review.** The newer tests below measure field planning only, using frozen controls and fictional records. They do not show complete government applications.
-
-| Tested configuration | WIC planning | IHSS subset | CalFresh subset | WIC median time | WIC model-price estimate¹ |
-|---|---:|---:|---:|---:|---:|
-| Codex CLI · GPT-6.1 Sol Low | 2/2 | 2/2 | 0/2 | 48.8 s | $0.1123–$0.1370 |
-| Codex CLI · GPT-6.1 Sol Extra High | 2/2 | 2/2 | 1/2 | 72.5 s | $0.1231–$0.1478 |
-| Codex CLI · GPT-6 Luna Low | 2/2 | 2/2 | 1/2 | 28.1 s | $0.0048–$0.0059 |
-| Codex CLI · GPT-6 Luna Extra High | 2/2 | 2/2 | 1/2 | 41.6 s | $0.0058–$0.0070 |
-| Eve 0.71.2 · GPT-6.1 Sol Low | 2/2 | 2/2 | 2/2 | 37.6 s | $0.0370–$0.0427 |
-| Jev 1.13.0 · decision stage | 2/2 | 0/2 | 2/2 | 0.343 s | $0.000607 |
-
-Passed / attempted, with two repeats per case. CLI/Eve use three planning role calls per attempt; Jev uses one choice-classification request. Prompts, task contracts and provider routes differ: this is a system comparison, not an isolated model or harness speed ratio. Requested CLI/Eve models are recorded; only Jev returned a provider-resolved model ID.
-
-¹ CLI/Eve prices are hypothetical API scenarios; those runs used subscription access. Jev prices use measured input tokens and [TypeSafe's published rate](https://docs.typesafe.ai/models); the six Jev calls total about **$0.00213 estimated**, with no invoice verified. Total operating cost and cost per completed application remain unknown.
-
-![Jev quality and response time across three cases](docs/assets/jev-planning-results.svg)
-
-The original classifier-only Jev pilot missed a required IHSS question after low-confidence deferral. Version 0.13 adds explicit missing-answer questions, a protected Jev companion and a selectable extension runtime. Its transport/planner tests are below; October 9 now adds two actual installed WIC executions, both blocked by unnecessary questions before CAPTCHA.
-
-### Gemini Nano and playbook results
-
-**Live Nano WIC:** 15/17 and 16/17 answers matched before help. They reached 17/17 only after **2 and 3 operator answer interventions**, respectively. Journeys took 21.7 and 28.5 minutes, including waiting and help; both paused at CAPTCHA. Historical IHSS verified 32/44 visible controls, which measures persisted writes rather than answer correctness. Both CalFresh attempts encountered runtime/false-gap/recovery failures and have no complete quality score. Nano has no per-token API charge; device and operating costs were not measured.
-
-The separate local WIC experiment ran the same frozen 17-answer task twice per variant:
-
-| Configuration | AI calls per attempt | Repeat 1 | Repeat 2 | Local wall time, repeats 1 / 2 |
-|---|---:|---|---|---:|
-| Gemini Nano · original three-role planner | 3 | 16/17 | 16/17 | 69.2 s / 81.2 s |
-| Deterministic JavaScript site playbook | 0 | 17/17 | 17/17 | 3.1 ms / 1.2 ms |
-| Gemini Nano · compact guided playbook | 1 | 17/17 | **Invalid JSON; fill never started** | 8.7 s / 16.0 s |
-
-These are local source-agreement scores after DOM readback, not complete government applications. The fast demo uses **JavaScript rules, not a shell script**. No evidence establishes that Foad's Scribe generated it. The guided variant changes call count, prompt size, output format and address composition together; it is not a prompt-only A/B test. One faster success and one parsing failure do not establish reliability. Chrome's exact Nano model version and reasoning setting were not exposed in the recorded runs. [All six playbook attempts](evaluation/results/nano-playbook-summary.json) · [All live metrics](evaluation/results/live-summary.json)
-
-### Jev through the extension planner · October 7
-
-| Prompt / integration batch | WIC | IHSS subset | CalFresh subset | Calls | DOM execution |
-|---|---:|---:|---:|---:|---|
-| First integration prompt | 0/2 | 2/2 | 2/2 | 6 | Not tested |
-| Explicit field identifiers and hints · current v0.13 | 1/2 | 2/2 | 0/2 | 6 | Not tested |
-
-Both batches used the actual extension planner, authenticated loopback companion and real `jev-1.13.0` API at confidence **0.90**. No operator repaired an answer. All attempts are retained, including the first batch. Jev exposes no configurable reasoning effort here; confidence is a decision threshold, not a reasoning setting. Required low-confidence classifications become caseworker questions. That repaired the silent IHSS omission, but the current batch deferred WIC clinic/text/Medi-Cal and CalFresh housing/county controls. No incorrect approved mappings were observed. Changing the prompt did not consistently improve quality.
-
-The current batch's API durations were 0.133–0.268 seconds; planner wall time was 0.136–1.330 seconds, with startup health checking in the first attempt. The six calls cost **about $0.00228 at published input-token rates**, with billed cost unknown. These tests do not exercise live-site navigation, composite address accuracy, or final review. [First batch](evaluation/results/jev-extension-planning-initial.json) · [Current batch](evaluation/results/jev-extension-planning.json)
-
-### Which model clicked through CAPTCHA?
-
-**October 9 native results: 2 accepted / 3 attempts.** The initial offscreen attempt handed off in 0.031 s. After operator viewport preparation, the shared native executor accepted checkboxes in **2.494 s and 1.882 s**, with **zero image-model calls and $0 API cost**. Nano and Sol Low were configured as image fallbacks but never called; these are executor successes, not model image-solving wins. One subsequent CLI-default workflow reached final review with an incomplete address and an unnecessary mailing fill; another stalled. Jev's form runs stopped before CAPTCHA. [Three exact native receipts and continuation results](docs/CAPTCHA_OCT9.md#installed-native-attempts-and-form-continuation).
-
-**Fresh image comparison: three saved grids, two repeats each.** All configurations made six calls through the product image adapters. These answers were not submitted to live challenges.
-
-| Requested image configuration | Exact tile sets / 6 | Wrong sets | Handoffs | Median call time |
-|---|---:|---:|---:|---:|
-| Codex CLI · GPT-6.1 Sol Low | **4/6** | 2 | 0 | 8.339 s |
-| Codex CLI · GPT-6.1 Sol Extra High | **4/6** | 0 | 2 | 15.596 s |
-| Codex CLI · GPT-6 Luna Low | 2/6 | 4 | 0 | 4.825 s |
-| Codex CLI · GPT-6 Luna Extra High | 1/6 | 2 | 3 | 6.787 s |
-| Eve 0.71.2 · GPT-6.1 Sol Low | 3/6 | 1 | 2 | 6.672 s |
-| Gemini Nano · managed version/effort | 0/6 | 5 | 1 | 2.396 s |
-| Jev 1.13.0 | Not tested: no image adapter | — | — | — |
-
-![Fresh product image results and median response times](docs/assets/captcha-three-grid-quality.svg)
-
-**Nano API cost is $0.** CLI/Eve used subscription access, with $0 direct API-key charges; measured tokens support hypothetical API-price scenarios, not invoices. The [complete new report](docs/CAPTCHA_OCT9.md) includes every expected/returned tile set, missed/extra tiles, model/effort, seconds, tokens and price estimate. Handoffs stay in the denominator; their motive is unknown. Three images do not establish general reliability. Earlier live image-solving evidence remains below.
-
-**October 8 adapter smoke tests:** four mechanical browser-fixture checks passed. The new product image adapters also ran twice on the same saved grid:
-
-| Product image adapter · requested GPT-6.1 Sol Low | Exact tile sets | Elapsed time, repeat 1 / 2 | API-price scenario, repeat 1 / 2¹ |
-|---|---:|---:|---:|
-| Codex CLI | 2/2 | 10.260 s / 6.877 s | $0.039452–$0.049055 / $0.031930–$0.039780 |
-| Eve 0.71.2 | 2/2 | 5.160 s / 3.305 s | $0.006074–$0.007528 / $0.006074–$0.007528 |
-
-¹ Subscription runs: $0 direct API-key charges; billed, subscription allocation and operating cost unknown. Eve’s scenario assumes no cached input because cache counters were not retained. This is **one unique image**, classification only, with different framework envelopes and sequential order. Four initial MIME-validation failures were rejected before inference and are retained in the [full speed/cost table](docs/CAPTCHA_RUN_METRICS.md). [Native setup and limits](docs/CAPTCHA_ACTUATOR.md).
-
-![Product image adapter speed and cost](docs/assets/captcha-adapter-speed-cost.svg)
-
-**October 7: 14 live WIC attempts, 12 confirmed accepted and 2 inconclusive because capture or challenge preparation took too long.** All 14 model decisions chose the correct checkbox action. A shared Codex browser relay performed the clicks; the tested runtimes had no native browser tools. The application was empty and Submit stayed untouched.
-
-| Requested runtime / setting | Accepted / browser attempts | Image sessions completed | Inconclusive |
-|---|---:|---:|---:|
-| Gemini Nano · Chrome-managed version/effort | 2/2 | 0 encountered | 0 |
-| Jev 1.13.0 · confidence 0.90, no reasoning control | 2/2 | 0 encountered | 0 |
-| Eve 0.71.2 · GPT-6.1 Sol Low | 2/2 | 0 encountered | 0 |
-| Codex CLI · GPT-6.1 Sol Low | 1/2 | 0 encountered | 1 |
-| Codex CLI · GPT-6.1 Sol Extra High | 1/2 | 0 completed; 1 expired | 1 |
-| Codex CLI · GPT-6 Luna Low | 2/2 | **1 completed, first answer accepted** | 0 |
-| Codex CLI · GPT-6 Luna Extra High | 2/2 | **1 completed after a rejected answer** | 0 |
-
-Luna Low selected four bridge tiles correctly. Luna Extra High's 4×4 traffic-light selection received **“Please try again”**; its bicycle follow-up was accepted. These are two completed image sessions and three submitted image answers, of which two were accepted. Shared browser history, sequential order and different challenge types prevent a fair live model ranking. CLI model identities are requested flags, not provider-resolved attestations.
-
-A separate comparison used the **same captured 3×3 traffic-light grid twice per configuration**, with manually reviewed matching tiles 1, 8 and 9:
-
-| Image classifier | Exact matching tile sets / repeats | Response time, repeats 1 / 2 |
-|---|---:|---:|
-| Codex CLI · GPT-6.1 Sol Low | 2/2 | 6.75 s / 5.21 s |
-| Codex CLI · GPT-6.1 Sol Extra High | 2/2 | 13.95 s / 18.32 s |
-| Codex CLI · GPT-6 Luna Low | 1/2; second missed one tile | 4.59 s / 4.82 s |
-| Codex CLI · GPT-6 Luna Extra High | 1/2; second refused | 7.69 s / 6.01 s |
-| Gemini Nano · Chrome managed | **0/2; selected all nine tiles both times** | 11.84 s / 6.16 s |
-| Eve · GPT-6.1 Sol Low · corrected attachment setup | 1 correct set; 1 absent structured result | 10.95 s / 3.10 s |
-| Jev 1.13.0 | Image input not tested on the text/JSON route | — |
-
-These repeats cover **one unique image**, not general CAPTCHA accuracy. Saved-image answers were not submitted to that expired challenge. Nano's successful ordinary-shape image checks did not transfer to this grid. Eve's first six attachment trials timed out. After correcting the image task contract, exporting an in-memory staging environment and restarting the service, one repeat returned the correct set; the other returned no structured result. Its missing result has no recorded reason and is not labeled a refusal. All eight Eve attempts and CLI startup failures are retained.
-
-The two Jev checkbox decisions took 0.241 s and 0.124 s, with **$0.000050904 total input-token price estimate** and unknown billed cost. Nano decisions took 8.02 s and 2.20 s. CLI/Eve used subscription access; device, subscription, relay and review costs were not allocated. This benchmark does not measure cost per completed application.
-
-**Extension status:** v0.15 retains the native, opt-in reCAPTCHA actuator added in v0.14: one authorization covers the checkbox and up to three static image rounds. October 9 established two visible native checkbox acceptances, with viewport assistance and no image inference. October 7 successes remain external-relay results. Live native image solving and correct application completion remain unverified. The Codex browser tool's external policy is outside this repository.
-
-![CAPTCHA image comparison on one common grid](docs/assets/captcha-image-accuracy.svg)
-
-![CAPTCHA decision speed and API-price estimates](docs/assets/captcha-speed-cost.svg)
-
-**Speed and cost for every run:** [all individual attempts, failures and unknowns](docs/CAPTCHA_RUN_METRICS.md) · [machine-readable metrics](evaluation/results/captcha-run-metrics.json). Runtime time includes startup; pure model time and browser observation intervals are separate where recorded. Cost estimates are not invoices; billed and total operating costs are unknown. Untimed historical/startup attempts remain explicitly unknown.
-
-[All 14 action and browser trials](evaluation/results/captcha-oct7-actions.json) · [Every image answer and failure](evaluation/results/captcha-oct7-images.json) · [Summary counts](evaluation/results/captcha-oct7-summary.json) · [Reproduce the pilot](evaluation/captcha/README.md)
-
-The separate October 5 chat trial (GPT-6.1 Sol Extra High) accepted one checkbox without images; it is retained as historical evidence and excluded from the new two-repeat matrix. [Historical summary](evaluation/results/captcha-summary.json)
-
-</details>
-
-[Read the findings and limitations](docs/BENEFIT_SITE_EVALUATION.md) · [Inspect all measured result tables](evaluation/results/README.md) · [Run the frozen benchmark](evaluation/controlled-planning/README.md)
-
-<details>
-<summary>More charts: WIC planning speed and historical IHSS completeness</summary>
-
-![WIC CLI and Eve planning time](docs/assets/wic-planning-speed.svg)
-
-![Historical IHSS visible-control coverage](docs/assets/ihss-visible-coverage.svg)
-
-![Historical IHSS model time](docs/assets/ihss-model-time.svg)
-
-The IHSS charts are one historical run per runtime. Readback coverage measures persisted writes, not correct answers or complete applications; the historical CLI model was not captured.
-
-</details>
-
-## What it does today
-
-- Imports a client record from labeled JSON, a reviewed document, or a configured read-only organization connector. Bundled records are fictional.
-- Uses a mapper, gap analyst, and reviewer to plan field assignments. Gemini Nano runs on the device; optional Codex and Claude CLIs use a paired local companion. Experimental Jev classifies field purposes through that companion, with local validation and explicit questions for uncertain answers.
-- Fills approved values, reads them back, asks for missing answers, and follows approved Next/Continue steps. Known-site adapters cover Riverside WIC, Riverside IHSS, and parts of BenefitsCal.
-- Tracks several applications, pauses and resumes checkpoints, and exports a value-free activity log.
-- Shows a prototype recertification workspace for upcoming renewals, updates, and client authorization.
-
-**What remains unfinished:** no saved live-site trial correctly completed the application. v0.15 removes the known WIC address/applicability errors in controlled and browser-fixture tests, but the installed extension and live WIC site still need a fresh attested run. Long BenefitsCal flows and a CalFresh housing-status transformation remain unresolved. Native CAPTCHA automation has two verified checkbox acceptances; live native image solving is untested. One-time codes, unsupported challenges and final submission require a person. Eve remains a separate form-planning harness and an optional image classifier for the native actuator. [Current error details](docs/BENCHMARK_ERRORS.md).
-
-Read [the current testing writeup](docs/BENEFIT_SITE_EVALUATION.md), or [the developer guide](DEVELOPER_GUIDE.md).
+This is a working prototype with unresolved live-site failures. **The current extension leaves certification, signatures, and final submission to a person.** Reliable preparation of multiple real forms without repeated human help is the testing goal; it has not been demonstrated yet.
 
 ## Try it in 10 minutes
 
-Use desktop Chrome 138+ and fictional data. No production database or paid API key is required for the local fixture. Gemini Nano still needs a supported device and an available Chrome built-in AI runtime; enabling it may download a model.
+Allow extra time if Chrome needs to download its on-device model. You need desktop **Chrome 138 or newer**; Nano also needs a compatible device. The extension does not need a production database to try it.
 
-1. Download this repository with **Code → Download ZIP**, unzip it, or clone it. Select the folder containing `manifest.json` when installing.
-2. Open `chrome://extensions`, turn on **Developer mode**, choose **Load unpacked**, and select that folder.
-3. In a terminal inside the folder, run `python3 -m http.server 4173 --bind 127.0.0.1`.
-4. Open `http://127.0.0.1:4173/demo/extensive-application.html?step=1&reset=1`.
-5. Click the extension icon. Keep Gemini Nano under **Model runtime** and choose **Enable agentic AI**.
-6. Choose **Paste client JSON → Use a fictional sample record → Continue**. Choose **Analyze this form**, then continue.
-7. Review questions and every filled value. Verify the runner stops before certification and Submit. Export the activity log from the dashboard.
+1. Download this repo with **Code → Download ZIP** and unzip it, or clone it. Find the folder containing `manifest.json`.
+2. Open `chrome://extensions`, turn on **Developer mode**, select **Load unpacked**, and choose that folder. Confirm version **0.16.0**. Refresh any form tabs already open.
+3. Open the [real Riverside WIC form](https://www.ruhealth.org/appointments/apply-4-wic-form) and click the extension icon. Keep the side panel open during the run.
+4. Open **Model runtime**. For the simplest setup, select **Chrome on-device Gemini Nano**, save with **Use this model runtime**, and choose **Enable agentic AI** when shown. If Nano is unavailable, use the [Codex or Claude companion setup](model-bridge/README.md).
+5. Choose **Paste client JSON → Use a fictional sample record → Continue**. Review the source record. On the application-selection screen, check **Analyze this form** for the open page.
+6. Choose **Continue** to start: **the run begins automatically**. Watch the form and panel; check the complete address, conditional questions, and program choices. If it pauses and offers **Fill through application**, use that to continue after reviewing the stop. Stop before certification or submission.
+7. Record whether it reached final review correctly, where it stopped, and every time you had to help. Choose **Export activity log** from the dashboard.
 
-If the model is unavailable, the extension reports an error. For the subscription CLI or Jev alternatives, follow [the companion setup](model-bridge/README.md). To explore just the interface without installing or running AI, open `http://127.0.0.1:4173/sidepanel/index.html?preview=1&demo=1`; this preview simulates results and is not a model test.
+**Want an AI agent to handle installation?** Give it the [copyable setup request](docs/TESTER_GUIDE.md#ask-an-ai-agent-to-set-it-up). The [tester guide](docs/TESTER_GUIDE.md) also covers IHSS, BenefitsCal, multiple applications, and how to report a failure.
 
-## Native CAPTCHA automation · v0.15
+Use fictional test records on the real forms; do not file a test application. The bundled sample may not answer every program's questions—record those genuine missing answers rather than inventing them. A local practice form is available as a setup check, but passing it is not evidence that a real site works.
 
-All form runtimes share the same deterministic checkbox executor; a checkbox click needs no model request. It is a browser mechanism, not evidence that each model can solve an image.
+## What is included?
 
-| Runtime | Checkbox executor | Static 3×3 / 4×4 image classification |
+| Feature | What you can do | How to try it |
 |---|---|---|
-| Gemini Nano | Shared native executor | On-device Prompt API; latest three-grid exact sets 0/6 |
-| Codex CLI | Shared native executor | Cropped image + constrained tile indexes; model and Low/Extra High selectable |
-| Eve | Shared native executor | Optional loopback image agent, GPT-6.1 Sol Low |
-| Jev 1.13.0 | Shared native executor | Current text/JSON route has no image adapter; choose a separate image runtime |
-| Claude CLI | Shared native executor | Image adapter not implemented here; choose a separate image runtime |
+| **Local AI with Gemini Nano** | Plan form answers on the device, with **$0 model API charge**. Compatible hardware/downloads and device costs still apply. | Select Nano in **Model runtime**, then enable it. |
+| **Codex, Claude and Jev options** | Compare alternative form planners through a paired local companion. | [Choose an approach](#choose-a-form-filling-approach). |
+| **Document uploader** | Extract proposed fields from documents/images, inspect their sources, and review conflicts before import. | Choose **Read a document**; [supported files and steps](docs/FEATURE_GUIDE.md#document-upload-and-review). |
+| **Self-service connector setup** | Select a data provider, test a configured service, review field mappings, and retrieve a record. | Use **Data source → Connect**; [try the fictional connector](docs/FEATURE_GUIDE.md#organization-database-connector). A real provider needs its own authorized backend adapter. |
+| **Several applications from one record** | Fill WIC, IHSS and BenefitsCal, with separate tabs/progress and up to three concurrent runs. | Select programs on the application screen; CalFresh/Medi-Cal/CalWORKs share one BenefitsCal application. |
+| **Questions, review and evidence** | Answer missing facts, inspect written values and source evidence, and export an activity log. | Open the application's questions/review actions; a verified write still needs an answer-correctness check. |
+| **Pause, resume and handoff** | Pause a run, record why it needs help, and assign/accept a handoff within the browser profile. | Use **Pause or hand off** on an application card. |
+| **Renewals / recertification** | Review a caseload's upcoming renewals, data readiness, outreach drafts and client authorization. | Open **Recertification status**; [try the workflow](docs/FEATURE_GUIDE.md#renewals-and-recertification). Requires caseload data; outreach is not automatically sent. |
+| **CAPTCHA attempts** | Opt into a bounded attempt at a supported challenge and see whether it actually continues. | [Current evidence and limits](#can-it-get-past-captcha-without-a-person). |
+| **Optional shared API and participant questions** | Send redacted planning requests to a configured service and request a client-question link. | [API relationship and setup](docs/FEATURE_GUIDE.md#shared-planner-api-and-participant-links). The server and participant page live separately. |
 
-Open an application card’s **CAPTCHA automation** disclosure and enable **Allow one CAPTCHA attempt during this run** before **Fill through application**. The runner can then try the checkbox and follow-ups without a new prompt at that checkpoint. At an existing CAPTCHA checkpoint, choose **Authorize and try CAPTCHA** once. **Model runtime → CAPTCHA images** selects the image classifier; Codex/Eve need the paired companion. [Companion setup](model-bridge/README.md#native-captcha-images--v014).
+[Feature guide: setup, test steps and limits for each feature](docs/FEATURE_GUIDE.md). It also identifies what needs design review and engineering hardening.
 
-The authorization ends after the attempt, page/document change, Pause, session change, or a three-minute expiry. Only recognized reCAPTCHA controls are executable; images are cropped to the visible grid. The actuator observes visible checkbox acceptance and never reads/writes CAPTCHA tokens or clicks application Submit. Dynamic replacement grids, audio, hCaptcha, Turnstile, hidden/multiple widgets and unsupported layouts hand off. Provider rejection and model refusal also remain visible failures.
+## Choose a form-filling approach
 
-**Verification:** the actual frame adapter passed four deterministic browser-fixture checks in both browser-fixture repeats (**5.4 / 6.4 ms**), with zero model calls and $0 direct API-key charge. This is mechanical execution on a simulation, not live CAPTCHA accuracy, complete application speed, or installed Chrome verification. To reproduce, use the local server above and open `http://127.0.0.1:4173/demo/captcha-fixture.html`; run the self-test once from a reset fixture. [Native implementation and test scope](docs/CAPTCHA_ACTUATOR.md).
+| Approach | How to use it | What it is for |
+|---|---|---|
+| **Gemini Nano** | Select it in the extension; Chrome supplies the model on supported devices. | On-device form planning. No separate model API key. |
+| **Codex CLI** | Sign in to Codex, run the local companion, then pair it in **Model runtime**. | Form planning using the signed-in Codex account. |
+| **Claude CLI** | Sign in to Claude Code, run the same companion, then pair it. | Form planning using the signed-in Claude account. |
+| **Jev** | Run the companion with authorized TypeSafe access, then select Jev. | Experimental field-purpose classification with local rules and validation. |
+| **Eve** | Separate evaluation setup; optional CAPTCHA-image integration. | Tested as a planning harness. It is **not a selectable form planner** in this extension. |
+| **Shared planner API** | Requires a separately provided service and tenant configuration. | Integration path; no hosted service or production connector is bundled here. |
 
-## Testing this sprint
+[Companion setup](model-bridge/README.md) · [Runtime and data-flow details](docs/MODEL_PROVIDERS.md). Subscription calls consume the signed-in plan's allowance. When a shared API is configured, it takes precedence over Nano/Codex/Claude; use a fresh test profile to avoid testing an unintended configuration.
 
-[Current gaps and engineering handoff](docs/PRODUCTION_GAPS.md) maps v0.15's data/runtime architecture, prioritized hardening gates, and practical local setup.
+## How well does it work on real sites?
 
-[The tester guide](docs/TESTER_GUIDE.md) gives repeatable tasks, expected behavior, known issues, and a findings template. Start with the local fixture; live government sites should use only approved synthetic test data and stop before any submission.
+**No retained test has demonstrated a correct, unassisted journey through a complete real application to final review.** The most recent installed-extension form tests were on the real Riverside WIC site on October 9, using v0.14 and fictional records:
 
-## Product demo
+| Approach | Correct answers | Correct and ready for final review without help? | What stopped it? |
+|---|---:|---|---|
+| Gemini Nano | 16/17 in one run | **No** | Incomplete home address; stopped at CAPTCHA. |
+| Codex CLI | 16/17 in one run, plus an unnecessary mailing-address fill | **No** | Address/conditional-answer errors; stopped at CAPTCHA. |
+| Jev | 15/17 in each of two runs | **No** | Incomplete address, unanswered Medi-Cal choice, and unnecessary questions. |
+| Claude CLI | No comparable installed live-site result retained | **Not established** | Needs a real-site test. |
+| Eve | No comparable installed-extension result retained | **Not established** | Separate planning experiments do not establish installed form performance. |
 
-[Watch the recorded demo (MP4)](docs/assets/nava-form-filling-assistant-demo.mp4)
+Historical IHSS and BenefitsCal attempts also left incomplete answers or stopped early. **Neither v0.15 nor this consolidated v0.16 build has a retained complete installed/live-site retest.** Its newer 8/8 WIC result came from a local copy of the form; it is useful regression evidence, not a live-site success rate.
 
-![Demo preview](docs/assets/nava-form-filling-demo.gif)
+[Results by site, approach, date, and test type](docs/TEST_RESULTS.md) include the IHSS/BenefitsCal history, separate planning comparisons across Codex/Eve/Jev, and Nano's local playbook experiments. Failed and assisted attempts stay visible. Timings to a failure are not successful-application speeds.
 
-This recording shows an earlier local fixture build. It illustrates the workflow, not current model speed or successful completion of a government application.
+## Can it get past CAPTCHA without a person?
 
-## Development and evaluation
+**Not reliably demonstrated.** In the latest installed-extension WIC test, the checkbox was accepted in **2 of 3 attempts**, both after a person positioned the page. No image challenge was solved in those attempts. One later continuation reached final review with wrong answers; the other stalled.
+
+The extension uses the same checkbox-clicking code regardless of the selected form planner; those two successes did not compare models. Earlier tests that used a separate browser-control tool and tests that only answered saved CAPTCHA images are listed separately in the [plain-language CAPTCHA results](docs/TEST_RESULTS.md#captcha-can-it-check-the-box-and-keep-going).
+
+For this sprint, record simple outcomes on the real site: **checkbox accepted: yes/no; image challenge appeared: yes/no; passed it: yes/no; continued without help: yes/no; application correct at final review: yes/no.** A challenge that was not encountered is “not tested.”
+
+## What should we test next?
+
+**Real sites first:** WIC, IHSS, then BenefitsCal, followed by two applications running together. Check the full answers and all assistance, not just whether values appeared in fields. Use a short local check only to diagnose setup problems.
+
+- [Testing guide](docs/TESTER_GUIDE.md): simple setup, real-site tasks, design questions, and a results template.
+- [Engineering review plan and production gaps](docs/PRODUCTION_GAPS.md): what to verify, what to fix first, and remaining integration work.
+- [Detailed evidence index](evaluation/results/README.md): dated reports and machine-readable receipts.
+
+## Demo and development
+
+[Watch the recorded demo](docs/assets/nava-form-filling-assistant-demo.mp4) · [Developer guide](DEVELOPER_GUIDE.md) · [Contribution and release workflow](CONTRIBUTING.md)
+
+The demo shows an earlier local practice build. It illustrates the workflow and does not establish current real-site accuracy.
 
 ```sh
 npm ci
@@ -258,6 +98,4 @@ npm run check
 npm test
 ```
 
-The runnable [controlled evaluation harness](evaluation/controlled-planning/README.md) and [reviewed result tables](evaluation/results/README.md) distinguish planning quality, DOM execution, and full journeys. [Protected Jev access](docs/JEV_TEST_ACCESS.md) documents the completed API pilot and protected rerun instructions.
-
-This Nava organization repository preserves the history of [the original prototype](https://github.com/gobrando/nava-form-filling-assistant-chrome-extension), starting from `0a015b446a709095c9f0ebac9638f483cc67f8a1`. The public release branches from the already-public prototype; new raw live-site audits and private API source snapshots are excluded. This is a research prototype, not a production benefit service.
+This Nava repository preserves the history of [the original prototype](https://github.com/gobrando/nava-form-filling-assistant-chrome-extension). It is a research prototype, not a production benefit service. No production Apricot adapter or participant database is included.
