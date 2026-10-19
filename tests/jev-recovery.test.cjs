@@ -143,3 +143,28 @@ test('duplicate DOM IDs fall back to scan-specific command identities instead of
   ]);
   assert.deepEqual(inventory.map(field => field.identityKey), ['field:1:1', 'field:1:2']);
 });
+
+test('the Jev path uses identifying-value redaction without marking the selected category option', async () => {
+  const sent = bridge(() => null);
+  await planner.plan({ engine, page: { domain: 'example.test' }, participant: {
+    firstName: 'Celeste', preferredContact: 'Email',
+  }, rawFields: [{ fieldKey: 'contact', type: 'select-one', label: 'How should we contact Celeste?',
+    required: true, options: [{ label: 'Email' }, { label: 'Phone' }, { label: 'Mail' }] }] });
+  assert.equal(sent.length, 2);
+  assert.doesNotMatch(JSON.stringify(sent), /Celeste/);
+  assert.equal(sent[0].fields[0].label, 'How should we contact [source value]?');
+  assert.deepEqual(sent[0].fields[0].options, ['Email', 'Phone', 'Mail']);
+});
+
+test('changing the paired runtime clears previously verified Jev mappings', async () => {
+  const sent = bridge(f => ({ purpose: f.purposeHint, confidence: 1 }));
+  await planner.plan({ engine, page, rawFields: [field('edit-name')], participant: person });
+  const filled = [field('edit-name', { value: 'Synthetic Applicant' })];
+  await planner.plan({ engine, page, rawFields: filled, participant: person });
+  assert.equal(sent.length, 1, 'verified mapping was reused before changing the runtime');
+  planner.configure({ kind: 'local-cli', provider: 'codex', endpoint: 'http://127.0.0.1:4174', token: 'test-pairing-token-24-characters' });
+  planner.configure({ kind: 'local-cli', provider: 'jev', endpoint: 'http://127.0.0.1:4174', token: 'test-pairing-token-24-characters' });
+  const afterChange = await planner.plan({ engine, page, rawFields: filled, participant: person });
+  assert.equal(sent.length, 2, 'new runtime must classify rather than inherit the prior verified cache');
+  assert.equal(afterChange.metadata.retainedVerifiedMappings, 0);
+});
