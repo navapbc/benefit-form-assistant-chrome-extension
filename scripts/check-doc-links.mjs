@@ -10,6 +10,8 @@ const documents = [
   'docs/README.md',
   'docs/RECENT_CHANGES.md',
   'docs/TODO.md',
+  'docs/archive/RELEASE_NOTES_v0.14.md',
+  'docs/archive/RELEASE_NOTES_v0.15.md',
   'docs/FEATURE_GUIDE.md',
   'docs/TESTER_GUIDE.md',
   'docs/PRODUCTION_GAPS.md',
