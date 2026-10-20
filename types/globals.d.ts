@@ -1,3 +1,4 @@
+/// <reference types="chrome" />
 // Namespaces the classic scripts publish on globalThis (root.NavaX = api); typed loosely until the scripts become modules.
 declare var NavaAgentActions: any;
 declare var NavaAgentRuntime: any;
@@ -53,3 +54,10 @@ declare var NavaScanAnalysis: any;
 declare var NavaSiteAdapters: any;
 declare var NavaUiDispatch: any;
 declare var NavaWorkQueueEngine: any;
+
+// The stored application state has no declared schema, so reads are loosely typed rather than `unknown`.
+declare namespace chrome.storage {
+  interface StorageArea {
+    get(keys?: string | string[] | { [key: string]: any } | null): Promise<{ [key: string]: any }>;
+  }
+}

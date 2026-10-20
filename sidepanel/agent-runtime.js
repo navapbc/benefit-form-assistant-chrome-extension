@@ -111,7 +111,7 @@
         };
       agentPlanner.configure(config);
       config.captcha = {
-        provider: ['same', 'nano', 'codex', 'eve'].includes(data.get('captchaProvider')) ? data.get('captchaProvider') : 'same',
+        provider: ['same', 'nano', 'codex', 'eve'].includes(String(data.get('captchaProvider'))) ? data.get('captchaProvider') : 'same',
         model: String(data.get('captchaModel') || 'gpt-6.1-sol').trim(),
         reasoning: data.get('captchaReasoning') === 'xhigh' ? 'xhigh' : 'low',
       };

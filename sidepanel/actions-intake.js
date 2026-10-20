@@ -2,6 +2,9 @@
 (function installIntakeActions(root) {
   'use strict';
 
+  /** The form control with this id; these handlers only look up inputs and selects they rendered. */
+  const control = (id) => /** @type {HTMLInputElement & HTMLSelectElement} */ (document.getElementById(id));
+
   /**
    * deps:
    * - state, render(), setBusy(message), sendRuntime(message), getActiveTab(): panel state, the screen, transport and the active tab.
@@ -103,7 +106,7 @@
     }
 
     function useSampleRecord() {
-      document.getElementById('client-json').value = JSON.stringify(DEMO_RECORDS['339619'], null, 2);
+      control('client-json').value = JSON.stringify(DEMO_RECORDS['339619'], null, 2);
       return SKIP_FINAL_RENDER;
     }
 
@@ -112,7 +115,7 @@
     }
 
     async function submitClientJson({ form, uiToken }) {
-      const raw = new FormData(form).get('clientJson');
+      const raw = String(new FormData(form).get('clientJson') ?? '');
       let parsed;
       try {
         parsed = JSON.parse(raw);

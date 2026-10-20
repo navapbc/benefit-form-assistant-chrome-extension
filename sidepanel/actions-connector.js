@@ -2,6 +2,9 @@
 (function installConnectorActions(root) {
   'use strict';
 
+  /** The form control with this id; these handlers only look up inputs and selects they rendered. */
+  const control = (id) => /** @type {HTMLInputElement & HTMLSelectElement} */ (document.getElementById(id));
+
   /**
    * deps:
    * - state, previewMode, setBusy(message), sendRuntime(message), getActiveTab(): panel state, transport and the active tab.
@@ -99,13 +102,13 @@
 
     /** Fills the connector form with the local mock connector's settings; the caseworker still reviews and submits it. */
     function fillLocalConnectorSettings() {
-      const providerSelect = document.getElementById('connector-provider');
+      const providerSelect = control('connector-provider');
       providerSelect.value = 'apricot360';
       providerSelect.dispatchEvent(new Event('change', { bubbles: true }));
-      document.getElementById('connector-org').value = 'Riverside Community Services';
-      document.getElementById('connector-url').value = 'http://127.0.0.1:4789';
-      document.getElementById('connection-id').value = 'nava-demo';
-      document.getElementById('connector-source-id').value = '99';
+      control('connector-org').value = 'Riverside Community Services';
+      control('connector-url').value = 'http://127.0.0.1:4789';
+      control('connection-id').value = 'nava-demo';
+      control('connector-source-id').value = '99';
       return SKIP_FINAL_RENDER;
     }
 
@@ -192,7 +195,7 @@
       const provider = connectorEngine.providerDefinition(event.target.value);
       if (!provider) return;
       const sourceLabel = document.querySelector('label[for="connector-source-id"]');
-      const sourceInput = document.getElementById('connector-source-id');
+      const sourceInput = control('connector-source-id');
       if (sourceLabel) sourceLabel.textContent = provider.sourceLabel;
       if (sourceInput) sourceInput.placeholder = provider.sourceLabel;
     }
