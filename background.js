@@ -249,10 +249,23 @@ function routeCaptchaMessage(message, sender, sendResponse) {
   return true;
 }
 
-// Each message type belongs to exactly one domain router. A type no router owns gets no response.
+// Only the assistant side panel may drive the coordinator, run, and connector routes. A content script in an
+// application page shares this extension's id but carries a tab, so it never qualifies.
+function isSidePanelSender(sender) {
+  if (sender?.id !== chrome.runtime.id || sender.tab) return false;
+  try {
+    return new URL(sender.url).href.split(/[?#]/)[0] === `chrome-extension://${chrome.runtime.id}/sidepanel/index.html`;
+  } catch {
+    return false;
+  }
+}
+
+// Each message type belongs to exactly one domain router. A type no router owns, or a sender that is not the side panel, gets no response.
 function routeMessage(message, sender, sendResponse) {
-  return routeCaptchaMessage(message, sender, sendResponse)
-    ?? routeSessionMessage(message, sender, sendResponse)
+  const captcha = routeCaptchaMessage(message, sender, sendResponse);
+  if (captcha !== undefined) return captcha;
+  if (!isSidePanelSender(sender)) return false;
+  return routeSessionMessage(message, sender, sendResponse)
     ?? routeApplicationRunMessage(message, sender, sendResponse)
     ?? routeConnectorMessage(message, sender, sendResponse)
     ?? false;
