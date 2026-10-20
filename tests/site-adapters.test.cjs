@@ -6,7 +6,7 @@ const vm = require('node:vm');
 
 const adapters = require('../shared/site-adapters.js');
 const engine = require('../shared/form-engine.js');
-const demoConnectorData = require('../shared/demo-connector-data.js');
+const demoConnectorData = require('../shared/demo-connector-data.mjs');
 
 const IHSS_HOST = 'riversideihss.org';
 const IHSS_PATH = '/IntakeApp';

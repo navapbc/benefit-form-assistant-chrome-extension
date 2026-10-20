@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const planner = require('../shared/agentic-planner.js');
+const planner = require('../shared/agentic-planner.mjs');
 
 const originalFetch = globalThis.fetch;
 const originalChrome = globalThis.chrome;

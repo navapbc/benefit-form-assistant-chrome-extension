@@ -6,10 +6,10 @@ const net = require('node:net');
 const path = require('node:path');
 const vm = require('node:vm');
 
-const demoData = require('../shared/demo-connector-data.js');
-const connectorEngine = require('../shared/connector-engine.js');
-const programCatalog = require('../shared/program-catalog.js');
-const recertificationEngine = require('../shared/recertification-engine.js');
+const demoData = require('../shared/demo-connector-data.mjs');
+const connectorEngine = require('../shared/connector-engine.mjs');
+const programCatalog = require('../shared/program-catalog.mjs');
+const recertificationEngine = require('../shared/recertification-engine.mjs');
 const coordinatorRules = require('../background/coordinator-rules.js');
 
 const root = path.resolve(__dirname, '..');

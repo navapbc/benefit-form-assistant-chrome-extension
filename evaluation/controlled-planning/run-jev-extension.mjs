@@ -6,7 +6,7 @@ import { cases } from './cases.mjs';
 import { scorePlan } from './score.mjs';
 const require = createRequire(import.meta.url);
 const engine = require('../../shared/form-engine.js');
-const planner = require('../../shared/agentic-planner.js');
+const planner = require('../../shared/agentic-planner.mjs');
 const token = process.env.NAVA_MODEL_BRIDGE_TOKEN;
 if (!token) {
   console.log(JSON.stringify({ status: 'not-run', reason: 'Missing local companion pairing token', measuredAttempts: 0 }));

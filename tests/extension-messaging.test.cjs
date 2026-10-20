@@ -6,7 +6,7 @@ const path = require('node:path');
 const messaging = require('../sidepanel/extension-messaging.js');
 const policyRules = require('../sidepanel/application-policy.js');
 const { hostLabel } = require('../sidepanel/panel-format.js');
-const { PROGRAMS } = require('../shared/program-catalog.js');
+const { PROGRAMS } = require('../shared/program-catalog.mjs');
 
 const MANIFEST = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'manifest.json'), 'utf8'));
 const policy = policyRules.create({ programs: PROGRAMS, hostLabel });

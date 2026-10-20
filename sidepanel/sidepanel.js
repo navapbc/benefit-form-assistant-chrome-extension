@@ -1,5 +1,6 @@
 // Side-panel composition root: reads the shared engines and the panel state, creates each panel module in dependency order, keeps the shared render, audit and tab helpers, and starts the panel.
-(function startSidePanel() {
+// Starts on DOMContentLoaded so the ES modules (which republish their APIs on globalThis) have run first.
+document.addEventListener('DOMContentLoaded', function startSidePanel() {
   'use strict';
 
   const appRoot = document.getElementById('app');
@@ -580,4 +581,4 @@
   }
 
   bootstrap();
-})();
+});

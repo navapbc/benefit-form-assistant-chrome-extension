@@ -232,7 +232,8 @@ test('resumable work queue persists only sanitized metadata and verifies before 
   const leaseRetrySource = panel.slice(panel.indexOf('function scheduleLeaseRetry'), panel.indexOf('function pumpAutomaticRunQueue'));
   const targetedSyncSource = panel.slice(panel.indexOf('async function synchronizeApplications'), panel.indexOf('function observeCoordinator'));
 
-  assert.match(html, /shared\/work-queue-engine\.js/);
+  assert.match(html, /type="module" src="main\.mjs"/);
+  assert.match(fs.readFileSync(path.join(root, 'sidepanel/legacy-globals.mjs'), 'utf8'), /shared\/work-queue-engine\.mjs/);
   assert.match(panel, /CLAIM_CLIENT_SESSION/);
   assert.match(panel, /UPDATE_SESSION_PARTICIPANT/);
   assert.doesNotMatch(persistSource, /participant: state\.participant/);

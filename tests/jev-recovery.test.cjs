@@ -1,7 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const engine = require('../shared/form-engine.js');
-const planner = require('../shared/agentic-planner.js');
+const planner = require('../shared/agentic-planner.mjs');
 const adapters = require('../shared/site-adapters.js');
 const page = { url: 'https://www.ruhealth.org/appointments/apply-4-wic-form', domain: 'www.ruhealth.org', documentId: 'test-document-a' };
 const address = { street: '12 Test Street', unit: 'Apt 3', city: 'Riverside', state: 'CA', zip: '92501' };

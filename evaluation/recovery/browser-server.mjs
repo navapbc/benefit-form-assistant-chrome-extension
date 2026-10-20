@@ -7,7 +7,7 @@ import { resolve } from 'node:path';
 import vm from 'node:vm';
 import { cases, wicUrl } from './cases.mjs';
 const require = createRequire(import.meta.url);
-const engine = require('../../shared/form-engine.js'), planner = require('../../shared/agentic-planner.js'), adapters = require('../../shared/site-adapters.js');
+const engine = require('../../shared/form-engine.js'), planner = require('../../shared/agentic-planner.mjs'), adapters = require('../../shared/site-adapters.js');
 const root = resolve(new URL('../..', import.meta.url).pathname);
 const panel = await readFile(resolve(root, 'sidepanel/sidepanel.js'), 'utf8');
 const context = { engine };

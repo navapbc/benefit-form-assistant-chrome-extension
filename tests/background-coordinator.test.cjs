@@ -5,21 +5,14 @@ const path = require('node:path');
 const vm = require('node:vm');
 
 const root = path.resolve(__dirname, '..');
-const connectorEngine = require('../shared/connector-engine.js');
-const workQueueEngine = require('../shared/work-queue-engine.js');
-const programCatalog = require('../shared/program-catalog.js');
-const recertificationEngine = require('../shared/recertification-engine.js');
+const connectorEngine = require('../shared/connector-engine.mjs');
+const workQueueEngine = require('../shared/work-queue-engine.mjs');
+const programCatalog = require('../shared/program-catalog.mjs');
+const recertificationEngine = require('../shared/recertification-engine.mjs');
+const demoConnectorData = require('../shared/demo-connector-data.mjs');
 
-// Shared engines the harness hands to the service worker as required globals.
-const ENGINE_IMPORTS = [
-  'shared/connector-engine.js',
-  'shared/work-queue-engine.js',
-  'shared/program-catalog.js',
-  'shared/recertification-engine.js',
-];
 // The rest of background.js's imports, run in the harness context in background.js import order.
 const SERVICE_WORKER_SCRIPTS = [
-  'shared/demo-connector-data.js',
   'background/coordinator-rules.js',
   'background/client-session.js',
   'background/application-runs.js',
@@ -89,6 +82,12 @@ function backgroundHarness({ captchaServiceFactory = () => ({ handle: async () =
     setTimeout,
     structuredClone,
     chrome,
+    // background.js imports these as namespaces; its import lines are stripped, so the harness supplies the bindings.
+    connectorEngine,
+    workQueueEngine,
+    programCatalog,
+    recertificationEngine,
+    demoConnectorData,
     NavaConnectorEngine: connectorEngine,
     NavaWorkQueueEngine: workQueueEngine,
     NavaProgramCatalog: programCatalog,
@@ -227,7 +226,15 @@ test('the harness runs every service-worker import, in background.js import orde
   const source = fs.readFileSync(path.join(root, 'background.js'), 'utf8');
   const imports = [...source.matchAll(/^import\b.*$/gm)]
     .map(([line]) => line.match(/^import '\.\/([^']+)';$/)?.[1] ?? line);
-  assert.deepEqual(imports, [...ENGINE_IMPORTS, ...SERVICE_WORKER_SCRIPTS, "import { createCaptchaService } from './background/captcha-service.mjs';"]);
+  assert.deepEqual(imports, [
+    "import * as connectorEngine from './shared/connector-engine.mjs';",
+    "import * as workQueueEngine from './shared/work-queue-engine.mjs';",
+    "import * as programCatalog from './shared/program-catalog.mjs';",
+    "import * as recertificationEngine from './shared/recertification-engine.mjs';",
+    "import * as demoConnectorData from './shared/demo-connector-data.mjs';",
+    ...SERVICE_WORKER_SCRIPTS,
+    "import { createCaptchaService } from './background/captcha-service.mjs';",
+  ]);
 });
 
 test('service-worker modules reach the coordinator only through injected dependencies', () => {

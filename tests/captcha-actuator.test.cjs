@@ -146,7 +146,7 @@ test('image MIME must match magic bytes; bounded JPEG metadata is supported with
   assert.equal(validateCaptchaRequest({ ...request, image: `data:image/jpeg;base64,${image}` }).mediaType, 'image/jpeg');
 });
 test('CAPTCHA audit retains real long durations and unknown billing without client/image values', () => {
-  const queue = require('../shared/work-queue-engine.js');
+  const queue = require('../shared/work-queue-engine.mjs');
   const event = queue.auditEvent('captcha_attempt', { id: 'app', url: 'https://benefits.test/?secret=private' }, {
     captchaDurationMs: 120_100, captchaOutcome: 'handoff', captchaBilledCost: 'unknown', modelInputTokens: null, image: 'private pixels', participant: 'private', captchaUsageStatus: 'partial',
   });

@@ -2,7 +2,7 @@ import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 const engine = require('../shared/form-engine.js');
-const planner = require('../shared/agentic-planner.js');
+const planner = require('../shared/agentic-planner.mjs');
 
 const token = String(process.env.NAVA_MODEL_BRIDGE_TOKEN || '').trim();
 const provider = String(process.env.NAVA_MODEL_PROVIDER || 'codex').trim();

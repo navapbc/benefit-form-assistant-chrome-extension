@@ -1,20 +1,15 @@
 // Service worker: owns the assistant coordinator core (one serialized chain over the coordinator, session, queue, and lease stores) and wires the client-session, application-run, and connector-client modules to Chrome's listeners.
-import './shared/connector-engine.js';
-import './shared/work-queue-engine.js';
-import './shared/program-catalog.js';
-import './shared/recertification-engine.js';
-import './shared/demo-connector-data.js';
+import * as connectorEngine from './shared/connector-engine.mjs';
+import * as workQueueEngine from './shared/work-queue-engine.mjs';
+import * as programCatalog from './shared/program-catalog.mjs';
+import * as recertificationEngine from './shared/recertification-engine.mjs';
+import * as demoConnectorData from './shared/demo-connector-data.mjs';
 import './background/coordinator-rules.js';
 import './background/client-session.js';
 import './background/application-runs.js';
 import './background/connector-client.js';
 import { createCaptchaService } from './background/captcha-service.mjs';
 
-const connectorEngine = globalThis.NavaConnectorEngine;
-const workQueueEngine = globalThis.NavaWorkQueueEngine;
-const programCatalog = globalThis.NavaProgramCatalog;
-const recertificationEngine = globalThis.NavaRecertificationEngine;
-const demoConnectorData = globalThis.NavaDemoConnectorData;
 const coordinatorRules = globalThis.NavaCoordinatorRules;
 const CONNECTOR_STORAGE_KEY = 'nava:connector';
 const QUEUE_STORAGE_KEY = 'nava:work-queue';

@@ -1,7 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 
-const queue = require('../shared/work-queue-engine.js');
+const queue = require('../shared/work-queue-engine.mjs');
 
 const sample = {
   id: 'workflow:abc',

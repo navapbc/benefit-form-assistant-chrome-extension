@@ -1,5 +1,5 @@
 import http from 'node:http';
-import demoConnectorData from '../shared/demo-connector-data.js';
+import * as demoConnectorData from '../shared/demo-connector-data.mjs';
 
 const port = Number(process.env.PORT || 4789);
 const sourceId = String(demoConnectorData.FORM_ID);

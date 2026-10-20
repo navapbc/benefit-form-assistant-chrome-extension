@@ -1,7 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const engine = require('../shared/form-engine.js');
-const planner = require('../shared/agentic-planner.js');
+const planner = require('../shared/agentic-planner.mjs');
 const base = { fields: [{ fieldKey: 'name', label: 'Applicant full name', type: 'text', required: true }], sources: [{ purpose: 'fullName', label: 'must be rebuilt', value: 'PRIVATE' }] };
 const response = (answers, usage = { input_tokens: 100, output_tokens: 20 }) => ({ model: 'jev-1.13.0', answers, usage });
 test.afterEach(() => { planner.setRuntimeForTests(null); planner.setBridgeFetchForTests(null); });

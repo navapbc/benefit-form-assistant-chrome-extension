@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const connector = require('../shared/connector-engine.js');
+const connector = require('../shared/connector-engine.mjs');
 const form = require('../shared/form-engine.js');
 
 const canonicalKeys = [

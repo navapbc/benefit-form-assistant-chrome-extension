@@ -4,7 +4,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
-const workQueueEngine = require('../shared/work-queue-engine.js');
+const workQueueEngine = require('../shared/work-queue-engine.mjs');
 const coordinatorMerge = require('../sidepanel/coordinator-merge.js');
 
 // The action tables in dispatcher order, then the dispatcher, as sidepanel/index.html loads them.
