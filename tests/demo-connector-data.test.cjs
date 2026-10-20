@@ -10,7 +10,7 @@ const demoData = require('../shared/demo-connector-data.mjs');
 const connectorEngine = require('../shared/connector-engine.mjs');
 const programCatalog = require('../shared/program-catalog.mjs');
 const recertificationEngine = require('../shared/recertification-engine.mjs');
-const coordinatorRules = require('../background/coordinator-rules.js');
+const coordinatorRules = require('../background/coordinator-rules.mjs');
 
 const root = path.resolve(__dirname, '..');
 
@@ -24,11 +24,8 @@ function serviceWorkerDemoConnector(clock) {
       super(...(args.length ? args : [clock.now]));
     }
   }
-  const context = { Date: ClockDate, chrome: { storage: { local: { async get() { return {}; } } } } };
-  context.globalThis = context;
-  const script = 'background/connector-client.js';
-  vm.runInNewContext(fs.readFileSync(path.join(root, script), 'utf8'), context, { filename: script });
-  const client = context.NavaConnectorClient.create({
+  const fakeChrome = { storage: { local: { async get() { return {}; } } } };
+  const client = require('../background/connector-client.mjs').create({
     rules: coordinatorRules,
     connectorEngine,
     programCatalog,
@@ -36,9 +33,20 @@ function serviceWorkerDemoConnector(clock) {
     demoConnectorData: demoData,
     storageKeys: { CONNECTOR_STORAGE_KEY: 'nava:connector' },
   });
-  return (message) => new Promise((resolve) => {
-    assert.equal(client.routeConnectorMessage(message, {}, resolve), true);
-  });
+  // The module reads the global Date and chrome when a request is handled, so each request runs under the fake clock.
+  return async (message) => {
+    const saved = { Date: globalThis.Date, chrome: globalThis.chrome };
+    globalThis.Date = ClockDate;
+    globalThis.chrome = fakeChrome;
+    try {
+      return await new Promise((resolve) => {
+        assert.equal(client.routeConnectorMessage(message, {}, resolve), true);
+      });
+    } finally {
+      globalThis.Date = saved.Date;
+      globalThis.chrome = saved.chrome;
+    }
+  };
 }
 
 function freePort() {

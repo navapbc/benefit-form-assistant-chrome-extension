@@ -2,21 +2,17 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
-const vm = require('node:vm');
+const { pathToFileURL } = require('node:url');
 
 const root = path.resolve(__dirname, '..');
-const connectorEngine = require('../shared/connector-engine.mjs');
 const workQueueEngine = require('../shared/work-queue-engine.mjs');
-const programCatalog = require('../shared/program-catalog.mjs');
-const recertificationEngine = require('../shared/recertification-engine.mjs');
-const demoConnectorData = require('../shared/demo-connector-data.mjs');
 
-// The rest of background.js's imports, run in the harness context in background.js import order.
+// The service-worker modules the worker body composes, in import order.
 const SERVICE_WORKER_SCRIPTS = [
-  'background/coordinator-rules.js',
-  'background/client-session.js',
-  'background/application-runs.js',
-  'background/connector-client.js',
+  'background/coordinator-rules.mjs',
+  'background/client-session.mjs',
+  'background/application-runs.mjs',
+  'background/connector-client.mjs',
 ];
 
 const EXTENSION_ID = 'a'.repeat(32);
@@ -45,7 +41,7 @@ function storageArea(initial = {}) {
   };
 }
 
-function backgroundHarness({ captchaServiceFactory = () => ({ handle: async () => { throw new Error('Unexpected CAPTCHA command'); }, cancelApplications() {} }) } = {}) {
+async function backgroundHarness({ captchaServiceFactory = () => ({ handle: async () => { throw new Error('Unexpected CAPTCHA command'); }, cancelApplications() {} }) } = {}) {
   const local = storageArea();
   const session = storageArea();
   let messageListener;
@@ -73,35 +69,11 @@ function backgroundHarness({ captchaServiceFactory = () => ({ handle: async () =
     },
     sidePanel: { async setPanelBehavior() {} },
   };
-  const context = {
-    AbortController,
-    URL,
-    clearTimeout,
-    console,
-    fetch: async () => { throw new Error('Unexpected network request'); },
-    setTimeout,
-    structuredClone,
-    chrome,
-    // background.js imports these as namespaces; its import lines are stripped, so the harness supplies the bindings.
-    connectorEngine,
-    workQueueEngine,
-    programCatalog,
-    recertificationEngine,
-    demoConnectorData,
-    NavaConnectorEngine: connectorEngine,
-    NavaWorkQueueEngine: workQueueEngine,
-    NavaProgramCatalog: programCatalog,
-    NavaRecertificationEngine: recertificationEngine,
-    createCaptchaService: captchaServiceFactory,
-  };
-  context.globalThis = context;
-  vm.createContext(context);
-  SERVICE_WORKER_SCRIPTS.forEach((script) => {
-    vm.runInContext(fs.readFileSync(path.join(root, script), 'utf8'), context, { filename: script });
-  });
-  const source = fs.readFileSync(path.join(root, 'background.js'), 'utf8')
-    .replace(/^import .*;\s*$/gm, '');
-  vm.runInContext(source, context, { filename: 'background.js' });
+  // The service-worker modules read the global `chrome` when a handler runs, so each harness installs its own.
+  globalThis.chrome = chrome;
+  globalThis.fetch = async () => { throw new Error('Unexpected network request'); };
+  const { startServiceWorker } = await import(pathToFileURL(path.join(root, 'background/service-worker.mjs')).href);
+  startServiceWorker({ createCaptchaService: captchaServiceFactory });
 
   return {
     local,
@@ -222,18 +194,20 @@ function leaseMessage(type, state, app, holder) {
   };
 }
 
-test('the harness runs every service-worker import, in background.js import order', () => {
-  const source = fs.readFileSync(path.join(root, 'background.js'), 'utf8');
-  const imports = [...source.matchAll(/^import\b.*$/gm)]
-    .map(([line]) => line.match(/^import '\.\/([^']+)';$/)?.[1] ?? line);
-  assert.deepEqual(imports, [
-    "import * as connectorEngine from './shared/connector-engine.mjs';",
-    "import * as workQueueEngine from './shared/work-queue-engine.mjs';",
-    "import * as programCatalog from './shared/program-catalog.mjs';",
-    "import * as recertificationEngine from './shared/recertification-engine.mjs';",
-    "import * as demoConnectorData from './shared/demo-connector-data.mjs';",
-    ...SERVICE_WORKER_SCRIPTS,
-    "import { createCaptchaService } from './background/captcha-service.mjs';",
+test('background.js only starts the worker, and the worker imports every service-worker module in order', () => {
+  const importsOf = (file) => [...fs.readFileSync(path.join(root, file), 'utf8').matchAll(/^import\b.*$/gm)].map(([line]) => line);
+  assert.deepEqual(importsOf('background.js'), ["import { startServiceWorker } from './background/service-worker.mjs';"]);
+  assert.deepEqual(importsOf('background/service-worker.mjs'), [
+    "import * as connectorEngine from '../shared/connector-engine.mjs';",
+    "import * as workQueueEngine from '../shared/work-queue-engine.mjs';",
+    "import * as programCatalog from '../shared/program-catalog.mjs';",
+    "import * as recertificationEngine from '../shared/recertification-engine.mjs';",
+    "import * as demoConnectorData from '../shared/demo-connector-data.mjs';",
+    "import * as coordinatorRules from './coordinator-rules.mjs';",
+    "import * as clientSession from './client-session.mjs';",
+    "import * as applicationRuns from './application-runs.mjs';",
+    "import * as connectorClient from './connector-client.mjs';",
+    "import { createCaptchaService as defaultCreateCaptchaService } from './captcha-service.mjs';",
   ]);
 });
 
@@ -246,7 +220,7 @@ test('service-worker modules reach the coordinator only through injected depende
 });
 
 test('a client-session claim is exclusive and persist can never replace its participant', async () => {
-  const harness = backgroundHarness();
+  const harness = await backgroundHarness();
   const initial = await harness.send({ type: 'GET_ASSISTANT_STATE' });
   const alice = { firstName: 'Alice', recordId: 'alice-1' };
   const bob = { firstName: 'Bob', recordId: 'bob-2' };
@@ -278,7 +252,7 @@ test('a client-session claim is exclusive and persist can never replace its part
 });
 
 test('participant updates require the claim token and a current state revision', async () => {
-  const harness = backgroundHarness();
+  const harness = await backgroundHarness();
   const initial = await harness.send({ type: 'GET_ASSISTANT_STATE' });
   const claimed = await claim(harness, initial, { firstName: 'Alice' }, 'participant:alice');
   const updatedParticipant = { firstName: 'Alice', email: 'alice@example.test' };
@@ -316,7 +290,7 @@ test('participant updates require the claim token and a current state revision',
 });
 
 test('a global revoke stops stale application snapshots from replacing the paused state', async () => {
-  const harness = backgroundHarness();
+  const harness = await backgroundHarness();
   const initial = await harness.send({ type: 'GET_ASSISTANT_STATE' });
   const claimed = await claim(harness, initial);
   const app = application();
@@ -351,7 +325,7 @@ test('a global revoke stops stale application snapshots from replacing the pause
 });
 
 test('clear rejects stale epochs and late writers without erasing a newer client session', async () => {
-  const harness = backgroundHarness();
+  const harness = await backgroundHarness();
   const initial = await harness.send({ type: 'GET_ASSISTANT_STATE' });
   const alice = await claim(harness, initial, { firstName: 'Alice' }, 'participant:alice');
   const app = application();
@@ -380,7 +354,7 @@ test('clear rejects stale epochs and late writers without erasing a newer client
 });
 
 test('persist enforces state and application CAS plus the central lease holder', async () => {
-  const harness = backgroundHarness();
+  const harness = await backgroundHarness();
   const initial = await harness.send({ type: 'GET_ASSISTANT_STATE' });
   const claimed = await claim(harness, initial);
   const app = application();
@@ -418,7 +392,7 @@ test('persist enforces state and application CAS plus the central lease holder',
 });
 
 test('a participant change revokes every stored application and reports the affected ids', async () => {
-  const harness = backgroundHarness();
+  const harness = await backgroundHarness();
   const initial = await harness.send({ type: 'GET_ASSISTANT_STATE' });
   const claimed = await claim(harness, initial, { firstName: 'Alice' }, 'participant:alice');
   const app = application();
@@ -443,7 +417,7 @@ test('a participant change revokes every stored application and reports the affe
 });
 
 test('only the current lease holder can release an active application lease', async () => {
-  const harness = backgroundHarness();
+  const harness = await backgroundHarness();
   const initial = await harness.send({ type: 'GET_ASSISTANT_STATE' });
   const claimed = await claim(harness, initial);
   const app = application();
@@ -461,7 +435,7 @@ test('only the current lease holder can release an active application lease', as
 });
 
 test('application commands and revocation are linearized around dispatch', async () => {
-  const harness = backgroundHarness();
+  const harness = await backgroundHarness();
   const initial = await harness.send({ type: 'GET_ASSISTANT_STATE' });
   const claimed = await claim(harness, initial);
   const app = application();
@@ -516,7 +490,7 @@ test('application commands and revocation are linearized around dispatch', async
 });
 
 test('a partial sibling persist cannot change an in-flight application revision', async () => {
-  const harness = backgroundHarness();
+  const harness = await backgroundHarness();
   const initial = await harness.send({ type: 'GET_ASSISTANT_STATE' });
   const claimed = await claim(harness, initial);
   const appA = { ...application(), id: 'workflow:a', tabId: 41, name: 'Application A', queueLabel: 'Application A' };
@@ -559,7 +533,7 @@ test('a partial sibling persist cannot change an in-flight application revision'
 });
 
 test('closing a bound tab advances the application and state revisions', async () => {
-  const harness = backgroundHarness();
+  const harness = await backgroundHarness();
   const initial = await harness.send({ type: 'GET_ASSISTANT_STATE' });
   const claimed = await claim(harness, initial);
   const app = application();
@@ -575,7 +549,7 @@ test('closing a bound tab advances the application and state revisions', async (
 });
 
 test('disconnecting a connector atomically expires connector-derived client data and runs', async () => {
-  const harness = backgroundHarness();
+  const harness = await backgroundHarness();
   const initial = await harness.send({ type: 'GET_ASSISTANT_STATE' });
   const claimed = await claim(harness, initial, {
     firstName: 'Fictional',
@@ -629,7 +603,7 @@ async function savedApplication(harness) {
 }
 
 test('unknown message types, including the removed GET_PROGRAMS, are never answered', async () => {
-  const harness = backgroundHarness();
+  const harness = await backgroundHarness();
   const unknown = [undefined, null, {}, { type: 'GET_PROGRAMS' }, { type: 'CHECK_APPLICATION_RUN' }, { type: 'NAVA_FILL' }, { type: 'get_assistant_state' }];
   for (const message of unknown) {
     const { returned, responses } = harness.dispatch(message);
@@ -640,7 +614,7 @@ test('unknown message types, including the removed GET_PROGRAMS, are never answe
 });
 
 test('every routed message type answers exactly once and holds the channel open for its async response', async () => {
-  const harness = backgroundHarness();
+  const harness = await backgroundHarness();
   const routedTypes = [
     'NAVA_CAPTCHA_COMMAND',
     'GET_ASSISTANT_STATE',
@@ -670,7 +644,7 @@ test('every routed message type answers exactly once and holds the channel open 
 });
 
 test('record lookups reject a malformed ID synchronously and otherwise answer from the demo connector', async () => {
-  const harness = backgroundHarness();
+  const harness = await backgroundHarness();
   const invalid = harness.dispatch({ type: 'LOOKUP_RECORD', recordId: '../339619' });
   assert.equal(invalid.returned, false);
   assert.deepEqual(invalid.responses, [{ ok: false, record: null, message: 'Enter a valid client record ID.' }]);
@@ -690,7 +664,7 @@ test('record lookups reject a malformed ID synchronously and otherwise answer fr
 });
 
 test('connector status, recertifications, and program tabs fall back to bundled demo data', async () => {
-  const harness = backgroundHarness();
+  const harness = await backgroundHarness();
   const status = await harness.send({ type: 'GET_CONNECTOR_STATUS' });
   assert.equal(status.ok, true);
   assert.equal(status.connector.mode, 'demo');
@@ -711,7 +685,7 @@ test('connector status, recertifications, and program tabs fall back to bundled 
 });
 
 test('persisting an unchanged snapshot writes nothing and keeps every revision', async () => {
-  const harness = backgroundHarness();
+  const harness = await backgroundHarness();
   const { app, saved } = await savedApplication(harness);
 
   const unchanged = await persist(harness, saved, app);
@@ -723,7 +697,7 @@ test('persisting an unchanged snapshot writes nothing and keeps every revision',
 });
 
 test('a current-application change alone advances the state revision but no application revision', async () => {
-  const harness = backgroundHarness();
+  const harness = await backgroundHarness();
   const { app, saved } = await savedApplication(harness);
 
   const switched = await harness.send({
@@ -747,7 +721,7 @@ test('a current-application change alone advances the state revision but no appl
 });
 
 test('persist drops an expired foreign lease while saving a changed application', async () => {
-  const harness = backgroundHarness();
+  const harness = await backgroundHarness();
   const { app, saved } = await savedApplication(harness);
   harness.local.data[LEASE_KEY] = {
     [app.id]: { holder: 'window-b', acquiredAt: '2000-01-01T00:00:00.000Z', expiresAt: '2000-01-01T00:01:00.000Z' },
@@ -762,7 +736,7 @@ test('persist drops an expired foreign lease while saving a changed application'
 });
 
 test('a claim after a connector reset re-binds stored applications as source-expired with fresh counters', async () => {
-  const harness = backgroundHarness();
+  const harness = await backgroundHarness();
   const initial = await harness.send({ type: 'GET_ASSISTANT_STATE' });
   const connectorClient = { firstName: 'Fictional', _connector: { provider: 'apricot360' } };
   const claimed = await claim(harness, initial, connectorClient, 'participant:first');
@@ -793,7 +767,7 @@ test('a claim after a connector reset re-binds stored applications as source-exp
 });
 
 test('application commands are rejected before dispatch when the input, target, or lease is wrong', async () => {
-  const harness = backgroundHarness();
+  const harness = await backgroundHarness();
   const { app, saved } = await savedApplication(harness);
   const fillCount = () => harness.tabMessages.filter((entry) => entry.message.type === 'NAVA_FILL').length;
 
@@ -826,7 +800,7 @@ test('application commands are rejected before dispatch when the input, target, 
 });
 
 test('a completed write command keeps the tab result, re-authorizes, and hands the lease back to the window', async () => {
-  const harness = backgroundHarness();
+  const harness = await backgroundHarness();
   const { app, saved } = await savedApplication(harness);
   await harness.send(leaseMessage('ACQUIRE_APPLICATION_LEASE', saved, app, 'window-a'));
   harness.onTabMessage(async () => ({ ok: true, verifiedCount: 3 }));
@@ -845,7 +819,7 @@ test('a completed write command keeps the tab result, re-authorizes, and hands t
 });
 
 test('a rejected tab dispatch shortens the command lease and reports TAB_COMMAND_FAILED', async () => {
-  const harness = backgroundHarness();
+  const harness = await backgroundHarness();
   const { app, saved } = await savedApplication(harness);
   await harness.send(leaseMessage('ACQUIRE_APPLICATION_LEASE', saved, app, 'window-a'));
   harness.onTabMessage(async () => { throw new Error('Receiving end does not exist.'); });
@@ -870,7 +844,7 @@ async function nativeCoordinatorHarness() {
   const { createCaptchaService } = await import('../background/captcha-service.mjs');
   const frame = { actions: 0, revocations: 0 };
   const app = { ...application(), checkpoint: { kind: 'captcha' } };
-  const harness = backgroundHarness({ captchaServiceFactory(chrome) {
+  const harness = await backgroundHarness({ captchaServiceFactory(chrome) {
     chrome.runtime.id = 'a'.repeat(32);
     chrome.scripting = { async executeScript(request) {
       const source = String(request.func || '');
@@ -940,7 +914,7 @@ for (const stop of ['pause', 'tab closure']) {
 }
 
 test('only the side panel can use the session, run, and connector routes', async () => {
-  const harness = backgroundHarness();
+  const harness = await backgroundHarness();
   const message = { type: 'GET_ASSISTANT_STATE' };
   const impostors = {
     'a content script in an application page': { id: EXTENSION_ID, tab: { id: 4 }, url: 'https://benefitscal.com/ApplyForBenefits' },
@@ -966,7 +940,7 @@ test('only the side panel can use the session, run, and connector routes', async
 });
 
 test('a non-side-panel sender cannot write, lease, or save a connector', async () => {
-  const harness = backgroundHarness();
+  const harness = await backgroundHarness();
   const contentScript = { id: EXTENSION_ID, tab: { id: 4 }, url: 'https://benefitscal.com/' };
   for (const type of ['CLAIM_CLIENT_SESSION', 'PERSIST_ASSISTANT_STATE', 'CLEAR_ASSISTANT_STATE', 'ACQUIRE_APPLICATION_LEASE', 'EXECUTE_APPLICATION_COMMAND', 'REVOKE_APPLICATION_RUN', 'SAVE_CONNECTOR', 'DISCOVER_CONNECTOR', 'OPEN_PROGRAMS']) {
     const responses = [];
@@ -975,4 +949,25 @@ test('a non-side-panel sender cannot write, lease, or save a connector', async (
     assert.deepEqual(responses, [], type);
   }
   assert.deepEqual(harness.local.data, {});
+});
+
+test('the service worker registers every Chrome listener synchronously and no worker module awaits at top level', async () => {
+  const registered = [];
+  const addListener = (name) => ({ addListener() { registered.push(name); } });
+  globalThis.chrome = {
+    storage: { local: storageArea(), session: storageArea() },
+    runtime: { id: EXTENSION_ID, onInstalled: addListener('onInstalled'), onStartup: addListener('onStartup'), onMessage: addListener('onMessage') },
+    tabs: { onRemoved: addListener('tabs.onRemoved') },
+    sidePanel: { async setPanelBehavior() {} },
+  };
+  const { startServiceWorker } = await import(pathToFileURL(path.join(root, 'background/service-worker.mjs')).href);
+  startServiceWorker({ createCaptchaService: () => ({ handle: async () => ({}), cancelApplications() {} }) });
+  assert.deepEqual(registered.sort(), ['onInstalled', 'onMessage', 'onStartup', 'tabs.onRemoved']);
+
+  const workerFiles = ['background.js', ...fs.readdirSync(path.join(root, 'background')).map((name) => `background/${name}`)];
+  for (const file of workerFiles) {
+    const source = fs.readFileSync(path.join(root, file), 'utf8');
+    const topLevel = source.split('\n').filter((line) => line && !/^\s/.test(line) && !/^(\/\/|\/\*|\*)/.test(line));
+    assert.deepEqual(topLevel.filter((line) => /\bawait\b/.test(line)), [], `${file} must not await at top level`);
+  }
 });
