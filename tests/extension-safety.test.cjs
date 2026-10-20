@@ -17,7 +17,7 @@ function between(source, start, end) {
 
 /** The document parser and the readers it extracts from, as one source. */
 function documentIntakeSource() {
-  return ['sidepanel/document-parser.js', 'sidepanel/document-readers.js']
+  return ['sidepanel/document-parser.mjs', 'sidepanel/document-readers.mjs']
     .map((file) => fs.readFileSync(path.join(root, file), 'utf8'))
     .join('\n');
 }
@@ -192,11 +192,12 @@ test('document intake uses only bundled parsers and never persists the raw file'
 
 test('OCR uses only bundled assets, enforces resource limits, and requires field review', () => {
   const html = fs.readFileSync(path.join(root, 'sidepanel/index.html'), 'utf8');
-  const ocr = fs.readFileSync(path.join(root, 'sidepanel/ocr-engine.js'), 'utf8');
+  const ocr = fs.readFileSync(path.join(root, 'sidepanel/ocr-engine.mjs'), 'utf8');
   const parser = documentIntakeSource();
   const panel = sidePanelSource();
 
-  assert.match(html, /ocr-engine\.js/);
+  assert.match(html, /type="module" src="main\.mjs"/);
+  assert.match(fs.readFileSync(path.join(root, 'sidepanel/legacy-globals.mjs'), 'utf8'), /\.\/ocr-engine\.mjs/);
   assert.match(ocr, /vendor\/tesseract\/tesseract\.esm\.min\.js/);
   assert.match(ocr, /MAX_OCR_PAGES = 8/);
   assert.match(ocr, /MAX_PAGE_PIXELS = 8_000_000/);

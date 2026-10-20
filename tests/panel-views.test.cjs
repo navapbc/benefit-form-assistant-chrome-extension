@@ -1,7 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 
-const format = require('../sidepanel/panel-format.js');
+const format = require('../sidepanel/panel-format.mjs');
 const intakeViews = require('../sidepanel/view-intake.js');
 const connectorViews = require('../sidepanel/view-connector.js');
 const recertificationViews = require('../sidepanel/view-recertification.js');

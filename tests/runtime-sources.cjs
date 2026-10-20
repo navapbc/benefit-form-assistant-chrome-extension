@@ -8,13 +8,28 @@ function read(relativePath) {
   return fs.readFileSync(path.join(root, relativePath), 'utf8');
 }
 
-/** Side-panel scripts from sidepanel/index.html in load order, without shared engines or vendored code. */
+/**
+ * Side-panel scripts in load order, without shared engines or vendored code: the ES modules reachable from the
+ * entry module (sidepanel/main.mjs) first, then the classic scripts still listed in sidepanel/index.html.
+ */
 function sidePanelScripts() {
   const html = read('sidepanel/index.html');
-  return [...html.matchAll(/<script\b[^>]*\bsrc="([^"]+)"/g)]
+  const classic = [...html.matchAll(/<script\b(?![^>]*\btype="module")[^>]*\bsrc="([^"]+)"/g)]
     .map((match) => match[1].split(/[?#]/)[0])
     .filter((src) => !src.startsWith('../shared/') && !src.startsWith('../vendor/'))
     .map((src) => path.posix.join('sidepanel', src));
+  const modules = [];
+  const visit = (file) => {
+    if (modules.includes(file)) return;
+    const dir = path.posix.dirname(file);
+    for (const match of read(file).matchAll(/^\s*import\s+(?:[^'"]*?\s+from\s+)?['"](\.[^'"]+)['"]/gm)) {
+      const target = path.posix.normalize(path.posix.join(dir, match[1]));
+      if (target.startsWith('sidepanel/')) visit(target);
+    }
+    modules.push(file);
+  };
+  visit('sidepanel/main.mjs');
+  return [...modules.filter((file) => !/\/(main|legacy-globals)\.mjs$/.test(file)), ...classic];
 }
 
 function sidePanelSource() {

@@ -3,9 +3,9 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 
-const messaging = require('../sidepanel/extension-messaging.js');
-const policyRules = require('../sidepanel/application-policy.js');
-const { hostLabel } = require('../sidepanel/panel-format.js');
+const messaging = require('../sidepanel/extension-messaging.mjs');
+const policyRules = require('../sidepanel/application-policy.mjs');
+const { hostLabel } = require('../sidepanel/panel-format.mjs');
 const { PROGRAMS } = require('../shared/program-catalog.mjs');
 
 const MANIFEST = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'manifest.json'), 'utf8'));

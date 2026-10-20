@@ -1,6 +1,6 @@
-(async function runParserFixture() {
-  'use strict';
+import { parseDocument } from '../sidepanel/document-parser.mjs';
 
+(async function runParserFixture() {
   const fixtures = {
     pdf: { name: 'sample-client.pdf', type: 'application/pdf' },
     docx: { name: 'sample-business.docx', type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' },
@@ -16,7 +16,7 @@
     const response = await fetch(`fixtures/${fixture.name}`);
     if (!response.ok) throw new Error(`Fixture failed to load (${response.status}).`);
     const file = new File([await response.arrayBuffer()], fixture.name, { type: fixture.type });
-    const result = await globalThis.NavaDocumentParser.parseDocument(file);
+    const result = await parseDocument(file);
     resultElement.textContent = JSON.stringify(result, null, 2);
     status.textContent = `Parsed ${result.fields.length} fields from ${fixture.name}`;
     document.body.dataset.status = 'ready';

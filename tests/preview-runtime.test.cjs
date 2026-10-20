@@ -2,7 +2,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 
 const previewRuntime = require('../sidepanel/preview-runtime.js');
-const policyRules = require('../sidepanel/application-policy.js');
+const policyRules = require('../sidepanel/application-policy.mjs');
 const engine = require('../shared/form-engine.js');
 const connectorEngine = require('../shared/connector-engine.mjs');
 const programCatalog = require('../shared/program-catalog.mjs');

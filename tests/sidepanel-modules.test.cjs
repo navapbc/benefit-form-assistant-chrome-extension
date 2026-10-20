@@ -14,7 +14,7 @@ const coordinatorSyncModule = require('../sidepanel/coordinator-sync.js');
 const coordinatorWritesModule = require('../sidepanel/coordinator-writes.js');
 const agentRuntimeModule = require('../sidepanel/agent-runtime.js');
 const automaticRunsModule = require('../sidepanel/automatic-runs.js');
-const recertificationCaseloadModule = require('../sidepanel/recertification-caseload.js');
+const recertificationCaseloadModule = require('../sidepanel/recertification-caseload.mjs');
 const agentActionsModule = require('../sidepanel/actions-agent.js');
 const recertificationActionsModule = require('../sidepanel/actions-recertification.js');
 const intakeActionsModule = require('../sidepanel/actions-intake.js');
@@ -30,7 +30,7 @@ const MODULES = {
   'sidepanel/coordinator-writes.js': coordinatorWritesModule,
   'sidepanel/agent-runtime.js': agentRuntimeModule,
   'sidepanel/automatic-runs.js': automaticRunsModule,
-  'sidepanel/recertification-caseload.js': recertificationCaseloadModule,
+  'sidepanel/recertification-caseload.mjs': recertificationCaseloadModule,
   'sidepanel/actions-agent.js': agentActionsModule,
   'sidepanel/actions-recertification.js': recertificationActionsModule,
   'sidepanel/actions-intake.js': intakeActionsModule,
@@ -86,7 +86,7 @@ test('every new side-panel module exports create(), loads before the composition
     const source = fs.readFileSync(path.resolve(__dirname, '..', file), 'utf8');
     assert.doesNotMatch(source, /globalThis\.Nava/, `${file} must take its engines from the composition root`);
   }
-  assert.ok(scripts.indexOf('sidepanel/recertification-caseload.js') < scripts.indexOf('sidepanel/ui-dispatch.js'));
+  assert.ok(scripts.indexOf('sidepanel/recertification-caseload.mjs') < scripts.indexOf('sidepanel/ui-dispatch.js'));
   assert.ok(scripts.indexOf('sidepanel/actions-applications.js') < scripts.indexOf('sidepanel/ui-dispatch.js'));
 });
 

@@ -215,7 +215,7 @@ function executableRunner(rescan, blocked = false) {
   const context = { previewMode: true, state: {}, MAX_SAME_PAGE_FILL_PASSES: 3, captchaAuthorizations: new Set(),
     STOPPED: 'stopped', FILL_AGAIN: 'fill-again', PAGE_DONE: 'page-done',
     pageNumber: app => (app.completedPages?.length || 0) + 1,
-    stopCheckpoint: require('../sidepanel/application-policy.js').stopCheckpoint,
+    stopCheckpoint: require('../sidepanel/application-policy.mjs').stopCheckpoint,
     assertApplicationRun() {}, assertApprovedApplicationLocation() {}, persist: async () => {}, renewApplicationLease: async () => {},
     setCheckpoint(app, kind, _label, status) { app.checkpoint = { kind }; app.status = status; },
     recordAudit(type) { if (type === 'review_reached') calls.reviewEvents++; },

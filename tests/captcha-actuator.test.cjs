@@ -165,7 +165,7 @@ test('Codex image invocation is ephemeral, read-only, attaches one crop and stri
 });
 test('Jev retains the shared checkbox executor but makes zero image model calls', async () => {
   globalThis.NavaCaptchaEngine = engine;
-  const model = require('../sidepanel/captcha-model.js');
+  const model = require('../sidepanel/captcha-model.mjs');
   const result = await model.classify({ task: 'Select traffic lights', tileCount: 9, image: 'not-transmitted' }, { kind: 'local-cli', provider: 'jev' });
   assert.equal(result.decision.action, 'handoff'); assert.equal(result.metrics.inferenceCalls, 0);
   assert.throws(() => model.companionUrl('https://external.test'), /loopback/);

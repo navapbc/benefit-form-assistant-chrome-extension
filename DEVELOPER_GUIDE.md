@@ -11,7 +11,7 @@ The extension now combines the modular legacy implementation with the newer Jev,
 | Field meaning and values | `shared/form-engine.js`; `form-purposes.js`, `participant-record.js`, `field-values.js`; known-site rules in `site-adapters.js`. |
 | Form planning and API | `shared/agentic-planner.js`; `planner-inventory.js`, `planner-runtime.js`; CLI/TypeSafe transport in `model-bridge/`. |
 | Panel composition | `sidepanel/sidepanel.js`; `view-*.js`, `actions-*.js`, application runner, runtime, scan, coordination, and run-control modules. `sidepanel/index.html` defines browser load order. |
-| Documents and OCR | `sidepanel/document-parser.js`, `document-readers.js`, `ocr-engine.js`. |
+| Documents and OCR | `sidepanel/document-parser.mjs`, `document-readers.mjs`, `ocr-engine.mjs`. |
 | Queue and renewals | `shared/work-queue-engine.js`, `recertification-engine.js`; panel renewal views/actions and caseload modules. |
 
 A file's name is not proof it is wired into Chrome. Preserve the manifest, background imports, panel load order and dynamic page-injection tests when moving modules.

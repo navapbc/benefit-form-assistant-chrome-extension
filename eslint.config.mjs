@@ -15,6 +15,10 @@ export default [
     languageOptions: { sourceType: 'script', globals: { ...globals.node, ...extensionGlobals } },
   },
   {
+    files: ['demo/parser-test.js'],
+    languageOptions: { sourceType: 'module', globals: { ...extensionGlobals } },
+  },
+  {
     files: ['**/*.mjs'],
     languageOptions: { sourceType: 'module', globals: { ...globals.node, ...extensionGlobals } },
   },

@@ -1,9 +1,9 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 
-const scanAnalysis = require('../sidepanel/scan-analysis.js');
-const policyRules = require('../sidepanel/application-policy.js');
-const format = require('../sidepanel/panel-format.js');
+const scanAnalysis = require('../sidepanel/scan-analysis.mjs');
+const policyRules = require('../sidepanel/application-policy.mjs');
+const format = require('../sidepanel/panel-format.mjs');
 const workQueueEngine = require('../shared/work-queue-engine.mjs');
 
 const record = scanAnalysis.create({

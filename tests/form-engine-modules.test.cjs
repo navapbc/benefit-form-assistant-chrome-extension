@@ -203,7 +203,8 @@ test('every page that loads the engine loads its modules first, in dependency or
   const manifest = JSON.parse(read('manifest.json'));
   inLoadOrder(manifest.content_scripts[0].js, FORM_MODULES);
   inLoadOrder(sharedScripts('sidepanel/index.html'), FORM_MODULES);
-  inLoadOrder(sharedScripts('demo/parser-test.html'), FORM_MODULES);
+  // ES-module pages (the parser demo, the side panel's modules) get the same files, in the same order, through the facade.
+  inLoadOrder([...read('shared/engines.mjs').matchAll(/^import '\.\/([^']+)';/gm)].map((match) => `shared/${match[1]}`), FORM_MODULES);
 });
 
 test('in script order the engine runs on the globals its modules install, and fails loudly without them', () => {

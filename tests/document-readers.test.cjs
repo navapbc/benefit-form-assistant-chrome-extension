@@ -1,7 +1,8 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 
-const readers = require('../sidepanel/document-readers.js');
+const readers = require('../sidepanel/document-readers.mjs');
+const bundledOcrEngine = require('../sidepanel/ocr-engine.mjs');
 
 const UNSUPPORTED = 'Use a PDF, PNG, JPEG, WebP, DOCX, TXT, CSV, TSV, or JSON file. HEIC, password-protected files, and legacy Word files are not supported.';
 
@@ -17,13 +18,8 @@ function fakeFile(name, type, content = '') {
 }
 
 function withOcrEngine(engine, action) {
-  const previous = globalThis.NavaOcrEngine;
-  if (engine) globalThis.NavaOcrEngine = engine;
-  else delete globalThis.NavaOcrEngine;
-  return Promise.resolve().then(action).finally(() => {
-    if (previous === undefined) delete globalThis.NavaOcrEngine;
-    else globalThis.NavaOcrEngine = previous;
-  });
+  readers.setOcrEngineForTests(engine || null);
+  return Promise.resolve().then(action).finally(() => readers.setOcrEngineForTests(bundledOcrEngine));
 }
 
 const labelKeys = { 'first name': 'firstName', 'last name': 'lastName', email: 'email' };
