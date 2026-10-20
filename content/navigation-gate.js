@@ -388,4 +388,4 @@
   const api = { create };
   root.NavaPageNavigationGate = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
-})(typeof globalThis !== 'undefined' ? globalThis : this);
+})(globalThis);

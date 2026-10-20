@@ -91,4 +91,4 @@
   const api = { create };
   root.NavaCaptchaRuns = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
-})(typeof globalThis !== 'undefined' ? globalThis : this);
+})(globalThis);

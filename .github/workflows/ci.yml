@@ -33,6 +33,8 @@ jobs:
         run: npm ci --include=dev --no-audit --no-fund
       - name: Lint source
         run: npm run lint
+      - name: Type-check against the baseline
+        run: npm run typecheck
       - name: Check source syntax and manifest
         run: npm run check
       - name: Check version sync and manifest references
