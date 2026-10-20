@@ -277,3 +277,23 @@ test('intake screens offer every client source and analyze only regular web page
   assert.match(view.appRoot.innerHTML, /value="current" >/);
   assert.match(view.appRoot.innerHTML, /forms\.example/);
 });
+
+test('application cards escape every text and attribute value that can come from a page, record, or handoff', () => {
+  const hostile = '"><img src=x onerror=alert(1)>';
+  const view = screens({ state: { agentProvider: { kind: 'chrome-local' } } });
+  const card = view.applicationCard({
+    id: hostile,
+    name: hostile,
+    url: `https://site.example/${hostile}`,
+    status: 'needs_attention',
+    tabId: 4,
+    error: hostile,
+    runProgress: hostile,
+    owner: { assignedTo: hostile, state: hostile },
+    checkpoint: { kind: 'captcha', label: hostile },
+    agentic: { provider: hostile, approvedMappings: hostile },
+  });
+  assert.doesNotMatch(card, /<img/i);
+  assert.doesNotMatch(card, /"><img/);
+  assert.match(card, /&lt;img src=x onerror=alert\(1\)&gt;/);
+});

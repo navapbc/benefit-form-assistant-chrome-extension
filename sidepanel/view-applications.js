@@ -97,7 +97,7 @@
             <div aria-label="${progressFor(application)} percent complete" class="progress-track"><div class="progress-fill" style="width:${progressFor(application)}%"></div></div>
           </div>
           <p class="card-note"><strong>${escapeHtml(statusLabel(application))}.</strong> ${escapeHtml(note)}</p>
-          ${application.owner ? `<p class="ownership-line"><span class="owner-chip ${application.owner.state}">${application.owner.state === 'pending' ? 'Assigned to' : 'Owned by'} ${escapeHtml(application.owner.assignedTo)}</span></p>` : ''}
+          ${application.owner ? `<p class="ownership-line"><span class="owner-chip ${escapeHtml(application.owner.state)}">${application.owner.state === 'pending' ? 'Assigned to' : 'Owned by'} ${escapeHtml(application.owner.assignedTo)}</span></p>` : ''}
           ${application.checkpoint ? `<p class="checkpoint-line"><strong>Checkpoint:</strong> ${escapeHtml(application.checkpoint.label)}</p>` : ''}
           ${application.agentic ? `<details class="help-disclosure"><summary>AI plan details <span class="disclosure-meta">${Number(application.agentic.approvedMappings || 0)} mappings</span></summary><p>${application.agentic.provider === 'jev' ? 'Jev 1.13.0 · purpose classification with local validation; no independent model reviewer.' : `${application.agentic.provider === 'codex' ? 'Codex' : application.agentic.provider === 'claude' ? 'Claude' : 'Gemini Nano'} · mapper, gap analyst, and independent reviewer.`}</p>${application.agentic.usage ? `<p>${escapeHtml(agentUsageSummary(application.agentic))}</p>` : ''}</details>` : ''}
           ${completedPages ? `<p class="automation-badge">✓ ${completedPages} page${completedPages === 1 ? '' : 's'} completed automatically</p>` : ''}
