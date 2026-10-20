@@ -38,7 +38,7 @@ Start with the first group. Everything else is reference or an evidence record f
 
 ## Historical snapshots (older builds)
 
-- [Release notes v0.14](RELEASE_NOTES_v0.14.md) and [v0.15](RELEASE_NOTES_v0.15.md).
+- Release notes [v0.14](archive/RELEASE_NOTES_v0.14.md) and [v0.15](archive/RELEASE_NOTES_v0.15.md), in `docs/archive/`.
 - [Production-readiness evidence](PRODUCTION_READINESS.md), dated 2026-09-25.
 - [Release verification](RELEASE_VERIFICATION.md), for 0.13.0.
 - [Test report](TEST_REPORT.md), dated 2026-10-13.

@@ -271,16 +271,19 @@ function routeMessage(message, sender, sendResponse) {
     ?? false;
 }
 
+// Lifecycle failures have no caller to report to; log them so a missing side-panel button or a stale tab record is diagnosable.
+const logFailure = (what) => (error) => console.error(`${what} failed:`, error);
+
 chrome.runtime.onInstalled.addListener(() => {
-  configureSidePanel().catch(() => undefined);
+  configureSidePanel().catch(logFailure('Configuring the side panel on install'));
 });
 
 chrome.runtime.onStartup.addListener(() => {
-  configureSidePanel().catch(() => undefined);
+  configureSidePanel().catch(logFailure('Configuring the side panel on startup'));
 });
 
 chrome.tabs.onRemoved.addListener((tabId) => {
-  coordinate(() => closeApplicationTab(tabId)).catch(() => undefined);
+  coordinate(() => closeApplicationTab(tabId)).catch(logFailure('Recording a closed application tab'));
 });
 
 chrome.runtime.onMessage.addListener(routeMessage);
