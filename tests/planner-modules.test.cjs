@@ -176,14 +176,12 @@ test('prompts to one role never overlap, and each reports value-free usage', asy
   });
 });
 
-test('the planner modules import each other, and the side panel bridge republishes the same objects as globals', async () => {
+test('the planner modules import each other, and the side panel composition root imports the planner', async () => {
   const importsOf = (file) => [...read(file).matchAll(/^import\b[^;]*from '([^']+)';/gm)].map((match) => match[1]);
   assert.deepEqual(importsOf('shared/planner-runtime.mjs'), ['./planner-inventory.mjs']);
   assert.deepEqual(importsOf('shared/agentic-planner.mjs'), ['./planner-inventory.mjs', './planner-runtime.mjs', './engines.mjs']);
 
-  const bridge = read('sidepanel/legacy-globals.mjs');
-  ['NavaPlannerInventory: plannerInventory', 'NavaPlannerRuntime: plannerRuntime', 'NavaAgenticPlanner: agenticPlanner']
-    .forEach((entry) => assert.ok(bridge.includes(entry), entry));
+  assert.match(read('sidepanel/main.mjs'), /import \* as agentPlanner from '\.\.\/shared\/agentic-planner\.mjs';/);
 
   assert.equal(planner.configure, plannerRuntime.configure);
   assert.equal(planner.runtimeInfo().kind, 'chrome-local');

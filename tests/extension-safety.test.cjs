@@ -197,7 +197,7 @@ test('OCR uses only bundled assets, enforces resource limits, and requires field
   const panel = sidePanelSource();
 
   assert.match(html, /type="module" src="main\.mjs"/);
-  assert.match(fs.readFileSync(path.join(root, 'sidepanel/legacy-globals.mjs'), 'utf8'), /\.\/ocr-engine\.mjs/);
+  assert.match(fs.readFileSync(path.join(root, 'sidepanel/document-readers.mjs'), 'utf8'), /from '\.\/ocr-engine\.mjs'/);
   assert.match(ocr, /vendor\/tesseract\/tesseract\.esm\.min\.js/);
   assert.match(ocr, /MAX_OCR_PAGES = 8/);
   assert.match(ocr, /MAX_PAGE_PIXELS = 8_000_000/);
@@ -234,7 +234,7 @@ test('resumable work queue persists only sanitized metadata and verifies before 
   const targetedSyncSource = panel.slice(panel.indexOf('async function synchronizeApplications'), panel.indexOf('function observeCoordinator'));
 
   assert.match(html, /type="module" src="main\.mjs"/);
-  assert.match(fs.readFileSync(path.join(root, 'sidepanel/legacy-globals.mjs'), 'utf8'), /shared\/work-queue-engine\.mjs/);
+  assert.match(fs.readFileSync(path.join(root, 'sidepanel/main.mjs'), 'utf8'), /shared\/work-queue-engine\.mjs/);
   assert.match(panel, /CLAIM_CLIENT_SESSION/);
   assert.match(panel, /UPDATE_SESSION_PARTICIPANT/);
   assert.doesNotMatch(persistSource, /participant: state\.participant/);

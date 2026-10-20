@@ -7,6 +7,7 @@ import vm from 'node:vm';
 import { cases } from './cases.mjs';
 const require = createRequire(import.meta.url);
 const current = { engine: require('../../shared/form-engine.js'), planner: require('../../shared/agentic-planner.mjs'), adapters: require('../../shared/site-adapters.js') };
+const scanAnalysis = require('../../sidepanel/scan-analysis.mjs');
 const baseline = { engine: require('./source/v014-engine.cjs'), planner: require('./source/v014-planner.cjs'), adapters: require('./source/v014-adapters.cjs') };
 const variants = [
   { id: 'v014-baseline', modules: baseline },
@@ -20,12 +21,13 @@ try { await access(out); throw new Error('Choose a new output file; previous att
 await mkdir(resolve(out, '..'), { recursive: true });
 const sha = text => createHash('sha256').update(text).digest('hex');
 const sourceHashes = {};
-for (const path of ['shared/agentic-planner.mjs', 'shared/form-engine.js', 'shared/site-adapters.js', 'sidepanel/sidepanel.js', 'evaluation/recovery/cases.mjs', 'evaluation/recovery/run.mjs']) sourceHashes[path] = sha(await readFile(path));
+for (const path of ['shared/agentic-planner.mjs', 'shared/form-engine.js', 'shared/site-adapters.js', 'sidepanel/scan-analysis.mjs', 'evaluation/recovery/cases.mjs', 'evaluation/recovery/run.mjs']) sourceHashes[path] = sha(await readFile(path));
 function analysisFunction(text, engine) {
   const source = text.slice(text.indexOf('  function gapFromAgent('), text.indexOf('  async function scanTab('));
   const context = { engine }; vm.runInNewContext(`${source}\nresult = analysisFromAgentPlan;`, context); return context.result;
 }
-const analysisCurrent = analysisFunction(await readFile('sidepanel/sidepanel.js', 'utf8'), current.engine);
+// The current build keeps the analysis in sidepanel/scan-analysis.mjs, which takes the engine as its first argument.
+const analysisCurrent = (response, participant, plan) => scanAnalysis.analysisFromAgentPlan(current.engine, response, participant, plan);
 const analysisBaseline = analysisFunction(await readFile('evaluation/recovery/source/v014-sidepanel.js', 'utf8'), baseline.engine);
 function applyInventory(fields, assignments) {
   for (const assignment of assignments) {

@@ -75,19 +75,19 @@ function runControl({ state, previewMode = false, onCancelAll = () => {}, revoke
   });
 }
 
-test('every new side-panel module exports create(), loads before the composition root, and reads no Nava globals', () => {
+test('every side-panel module exports create(), is imported by the composition root, and reads no Nava globals', () => {
   const scripts = sidePanelScripts();
-  const rootIndex = scripts.indexOf('sidepanel/sidepanel.js');
-  assert.ok(rootIndex > 0);
+  const rootIndex = scripts.indexOf('sidepanel/main.mjs');
+  assert.equal(rootIndex, scripts.length - 1, 'main.mjs comes last, after everything it imports');
+  const main = fs.readFileSync(path.resolve(__dirname, '..', 'sidepanel/main.mjs'), 'utf8');
   for (const [file, api] of Object.entries(MODULES)) {
     assert.equal(typeof api.create, 'function', file);
     const index = scripts.indexOf(file);
-    assert.ok(index >= 0 && index < rootIndex, `${file} must load before sidepanel.js`);
+    assert.ok(index >= 0 && index < rootIndex, `${file} must be loaded before main.mjs`);
+    assert.ok(main.includes(`'./${path.basename(file)}'`), `${file} must be imported by main.mjs`);
     const source = fs.readFileSync(path.resolve(__dirname, '..', file), 'utf8');
     assert.doesNotMatch(source, /globalThis\.Nava/, `${file} must take its engines from the composition root`);
   }
-  assert.ok(scripts.indexOf('sidepanel/recertification-caseload.mjs') < scripts.indexOf('sidepanel/ui-dispatch.mjs'));
-  assert.ok(scripts.indexOf('sidepanel/actions-applications.mjs') < scripts.indexOf('sidepanel/ui-dispatch.mjs'));
 });
 
 test('the dispatcher outcome and screen switch are declared once, so every action table shares their identity', () => {

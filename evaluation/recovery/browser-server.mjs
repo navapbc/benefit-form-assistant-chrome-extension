@@ -4,15 +4,13 @@ import { createServer } from 'node:http';
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import { resolve } from 'node:path';
-import vm from 'node:vm';
 import { cases, wicUrl } from './cases.mjs';
 const require = createRequire(import.meta.url);
 const engine = require('../../shared/form-engine.js'), planner = require('../../shared/agentic-planner.mjs'), adapters = require('../../shared/site-adapters.js');
 const root = resolve(new URL('../..', import.meta.url).pathname);
-const panel = await readFile(resolve(root, 'sidepanel/sidepanel.js'), 'utf8');
-const context = { engine };
-vm.runInNewContext(`${panel.slice(panel.indexOf('  function gapFromAgent('), panel.indexOf('  async function scanTab('))}\nresult=analysisFromAgentPlan;`, context);
-const analyze = context.result;
+// The side panel's plan analysis lives in sidepanel/scan-analysis.mjs, which takes the engine as its first argument.
+const scanAnalysis = require('../../sidepanel/scan-analysis.mjs');
+const analyze = (response, participant, plan) => scanAnalysis.analysisFromAgentPlan(engine, response, participant, plan);
 planner.configure({ kind: 'local-cli', provider: 'jev', endpoint: process.env.NAVA_MODEL_BRIDGE_URL, token: process.env.NAVA_MODEL_BRIDGE_TOKEN });
 const plansByJob = new Map(), attempts = [];
 const output = process.env.NAVA_BROWSER_RECOVERY_OUTPUT || resolve(root, 'evaluation/local-results/jev-recovery-browser.json');

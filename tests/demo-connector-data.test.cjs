@@ -78,15 +78,15 @@ async function withMockConnector(action) {
   }
 }
 
-/** The side panel's preview fixture, evaluated from sidepanel.js against the shared module. */
+/** The side panel's preview fixture, evaluated from sidepanel/main.mjs against the shared module. */
 function previewFixture() {
-  const source = fs.readFileSync(path.join(root, 'sidepanel/sidepanel.js'), 'utf8');
+  const source = fs.readFileSync(path.join(root, 'sidepanel/main.mjs'), 'utf8');
   const start = source.indexOf('const PREVIEW_CONNECTOR_SCHEMA');
   const recordStart = source.indexOf('const PREVIEW_RAW_RECORD', start);
-  const end = source.indexOf('\n  };\n', recordStart);
-  assert.ok(start >= 0 && recordStart > start && end > recordStart, 'preview connector fixture should be declared in sidepanel.js');
+  const end = source.indexOf('\n};\n', recordStart);
+  assert.ok(start >= 0 && recordStart > start && end > recordStart, 'preview connector fixture should be declared in sidepanel/main.mjs');
   const context = { demoConnectorData: demoData };
-  vm.runInNewContext(`${source.slice(start, end + 5)}\nresult = { PREVIEW_CONNECTOR_SCHEMA, PREVIEW_RAW_RECORD };`, context);
+  vm.runInNewContext(`${source.slice(start, end + 3)}\nresult = { PREVIEW_CONNECTOR_SCHEMA, PREVIEW_RAW_RECORD };`, context);
   return context.result;
 }
 

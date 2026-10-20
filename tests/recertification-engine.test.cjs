@@ -97,7 +97,7 @@ test('extension wiring keeps answers session-only and locks preparation behind r
   const prepare = panel.slice(prepareStart, prepareEnd);
 
   assert.match(html, /type="module" src="main\.mjs"/);
-  assert.match(fs.readFileSync(path.join(root, 'sidepanel/legacy-globals.mjs'), 'utf8'), /shared\/recertification-engine\.mjs/);
+  assert.match(fs.readFileSync(path.join(root, 'sidepanel/main.mjs'), 'utf8'), /shared\/recertification-engine\.mjs/);
   assert.match(background, /LIST_RECERTIFICATIONS/);
   assert.match(background, /connectorRequest\(saved\.config, 'recertifications'/);
   assert.match(save, /chrome\.storage\.session\.set/);

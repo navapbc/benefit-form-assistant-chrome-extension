@@ -10,7 +10,7 @@ function read(relativePath) {
 
 /**
  * Side-panel scripts in load order, without shared engines or vendored code: the ES modules reachable from the
- * entry module (sidepanel/main.mjs) first, then the classic scripts still listed in sidepanel/index.html.
+ * entry module (sidepanel/main.mjs, which comes last), then any classic scripts sidepanel/index.html still lists.
  */
 function sidePanelScripts() {
   const html = read('sidepanel/index.html');
@@ -29,7 +29,7 @@ function sidePanelScripts() {
     modules.push(file);
   };
   visit('sidepanel/main.mjs');
-  return [...modules.filter((file) => !/\/(main|legacy-globals)\.mjs$/.test(file)), ...classic];
+  return [...modules, ...classic];
 }
 
 function sidePanelSource() {

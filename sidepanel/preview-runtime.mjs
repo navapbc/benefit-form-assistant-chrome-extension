@@ -55,7 +55,7 @@ function demoConnector() {
  * deps:
  * - state, previewMode, demoMode, search: panel state, preview flags, and the panel URL's query string.
  * - engine, connectorEngine, programCatalog, workQueueEngine: the shared engines.
- * - DEMO_RECORDS, PREVIEW_CONNECTOR_SCHEMA, PREVIEW_RAW_RECORD: fictional records declared in sidepanel.js.
+ * - DEMO_RECORDS, PREVIEW_CONNECTOR_SCHEMA, PREVIEW_RAW_RECORD: fictional records declared in sidepanel/main.mjs.
  * - managedConnector(), checkpoint(kind, label), assertUiGeneration(token): panel and policy helpers.
  * - parseDocument(file): the on-device document parser.
  */

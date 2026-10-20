@@ -1,5 +1,4 @@
-import '../shared/captcha-engine.js';
-const engine = globalThis.NavaCaptchaEngine;
+import { captchaEngine as engine } from '../shared/engines.mjs';
 
 // No debugger/CDP, hidden token APIs, arbitrary selectors or page-provided code.
 export function createCaptchaService(chromeApi, { now = Date.now, randomId = () => crypto.randomUUID() } = {}) {
