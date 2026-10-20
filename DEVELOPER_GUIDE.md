@@ -6,13 +6,13 @@ The extension now combines the modular legacy implementation with the newer Jev,
 
 | Area | Entry point and modules |
 |---|---|
-| Background coordination | `background.js`; `background/client-session.js`, `application-runs.js`, `connector-client.js`, `coordinator-rules.js`; native challenge service in `background/captcha-service.mjs`. |
+| Background coordination | `background.js` (starts the worker); `background/service-worker.mjs`, `client-session.mjs`, `application-runs.mjs`, `connector-client.mjs`, `coordinator-rules.mjs`; native challenge service in `background/captcha-service.mjs`. |
 | Page scan and execution | `content/form-agent.js`; `page-dom.js`, `field-inventory.js`, `navigation-gate.js`, `value-writers.js`; native challenge adapter in `content/captcha-agent.js`. |
 | Field meaning and values | `shared/form-engine.js`; `form-purposes.js`, `participant-record.js`, `field-values.js`; known-site rules in `site-adapters.js`. |
-| Form planning and API | `shared/agentic-planner.js`; `planner-inventory.js`, `planner-runtime.js`; CLI/TypeSafe transport in `model-bridge/`. |
+| Form planning and API | `shared/agentic-planner.mjs`; `planner-inventory.mjs`, `planner-runtime.mjs`; CLI/TypeSafe transport in `model-bridge/`. |
 | Panel composition | `sidepanel/main.mjs` (the ES-module composition root); `view-*.mjs`, `actions-*.mjs`, application runner, runtime, scan, coordination, and run-control modules. `sidepanel/index.html` defines browser load order. |
 | Documents and OCR | `sidepanel/document-parser.mjs`, `document-readers.mjs`, `ocr-engine.mjs`. |
-| Queue and renewals | `shared/work-queue-engine.js`, `recertification-engine.js`; panel renewal views/actions and caseload modules. |
+| Queue and renewals | `shared/work-queue-engine.mjs`, `recertification-engine.js`; panel renewal views/actions and caseload modules. |
 
 A file's name is not proof it is wired into Chrome. Preserve the manifest, background imports, panel load order and dynamic page-injection tests when moving modules.
 
@@ -196,7 +196,7 @@ The current handoff is a same-Chrome-profile workflow and ownership prototype. I
 Version 0.9 implements the extension half of a provider-neutral managed connector, bounded local OCR, an extraction-quality gate, passive synthetic benefits fixtures, exact adapters for the currently observed Riverside IHSS and WIC DOMs, safer BenefitsCal navigation rules, and a resumable metadata-only work queue. It ships a fictional loopback connector service for contract testing, not a production credential broker, organization-authentication service, provider network, or cross-device queue backend.
 
 - `background.js` uses credentialed, read-only `GET` requests to the configured Nava connector service. It does not call Apricot directly.
-- `shared/connector-engine.js` accepts only labeled schema fields, rejects secret-like configuration, requires HTTPS outside localhost, and will not infer meaning from an opaque source field ID.
+- `shared/connector-engine.mjs` accepts only labeled schema fields, rejects secret-like configuration, requires HTTPS outside localhost, and will not infer meaning from an opaque source field ID.
 - Chrome stores the sanitized connection descriptor, reviewed mapping, and labeled schema—not Apricot credentials or participant records. Retrieved participant data remains session-only.
 - The production service must authenticate the current organization, keep provider credentials in a secret manager, enforce least-privilege read scopes, restrict CORS to the managed extension ID, support revocation, and avoid logging record bodies.
 - The managed build should narrow `host_permissions` to approved application and connector domains.

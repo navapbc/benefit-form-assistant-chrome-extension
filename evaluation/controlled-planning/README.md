@@ -63,4 +63,4 @@ Start the v0.13 [protected companion](../../model-bridge/README.md#jev-in-the-ch
 node run-jev-extension.mjs --output-dir ../local-results/jev-extension-new-batch
 ```
 
-Use `NAVA_MODEL_BRIDGE_URL` if the companion uses a different loopback port. This runner calls the current `shared/agentic-planner.js`, not the frozen three-role planner or older classifier adapter. Six actual requests cover the same three fictional cases twice, at confidence 0.90. It preserves failures and cannot overwrite an existing batch. It measures transport and planning; it does not open Chrome, fill the DOM or click CAPTCHA. Local checks convert required deferrals into caseworker questions.
+Use `NAVA_MODEL_BRIDGE_URL` if the companion uses a different loopback port. This runner calls the current `shared/agentic-planner.mjs`, not the frozen three-role planner or older classifier adapter. Six actual requests cover the same three fictional cases twice, at confidence 0.90. It preserves failures and cannot overwrite an existing batch. It measures transport and planning; it does not open Chrome, fill the DOM or click CAPTCHA. Local checks convert required deferrals into caseworker questions.

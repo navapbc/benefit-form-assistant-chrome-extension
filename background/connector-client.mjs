@@ -4,7 +4,7 @@
  * deps:
  * - rules: the coordinator rules (background/coordinator-rules.mjs).
  * - connectorEngine, programCatalog, recertificationEngine: the shared engines.
- * - demoConnectorData: the fictional demo data (shared/demo-connector-data.js).
+ * - demoConnectorData: the fictional demo data (shared/demo-connector-data.mjs).
  * - storageKeys: CONNECTOR_STORAGE_KEY, SESSION_STORAGE_KEY, QUEUE_STORAGE_KEY, COORDINATOR_STORAGE_KEY.
  * - coordinatorState, revokeApplications: the coordinator core.
  * - respondCoordinated(operation, sendResponse, errorExtras): runs one operation on the coordinator chain.

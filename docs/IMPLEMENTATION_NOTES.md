@@ -43,12 +43,12 @@ sidepanel/
         ├── vendor/                    bundled PDF.js, fflate, Tesseract.js, WASM + English data
         ├── chrome.storage.session     participant values + live application details
         ├── chrome.storage.local       connector config + sanitized durable queue metadata
-        ├── shared/connector-engine.js label-based schema mapping, validation, provenance
-        ├── shared/agentic-planner.js   runtime-neutral mapper + gap analyst + independent reviewer
+        ├── shared/connector-engine.mjs label-based schema mapping, validation, provenance
+        ├── shared/agentic-planner.mjs   runtime-neutral mapper + gap analyst + independent reviewer
         ├── model-bridge/               loopback Codex/Claude subscription CLI companion
-        ├── shared/program-catalog.js   current routes, approved origins, BenefitsCal grouping
+        ├── shared/program-catalog.mjs   current routes, approved origins, BenefitsCal grouping
         ├── shared/site-adapters.js     exact IHSS/WIC field scopes and semantic choices
-        ├── shared/work-queue-engine.js resume fingerprints, leases, handoff, audit sanitization
+        ├── shared/work-queue-engine.mjs resume fingerprints, leases, handoff, audit sanitization
         ├── background.js              connector adapter, side-panel setup, open grouped tabs
         └── content/form-agent.js     typed page tools → scan → write → readback by bound tab ID
                     │
