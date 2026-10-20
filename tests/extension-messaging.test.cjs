@@ -8,15 +8,17 @@ const policyRules = require('../sidepanel/application-policy.js');
 const { hostLabel } = require('../sidepanel/panel-format.js');
 const { PROGRAMS } = require('../shared/program-catalog.js');
 
+const MANIFEST = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'manifest.json'), 'utf8'));
 const policy = policyRules.create({ programs: PROGRAMS, hostLabel });
 const APPLICATION_URL = 'https://benefitscal.com/ApplyForBenefits/step-2?b=2&a=1';
 
 /** A fake chrome.tabs / chrome.scripting pair that records every call. */
-function fakeChrome({ pongs = [], documentId = 'doc-7', probeUrl = APPLICATION_URL, tabReply = { ok: true } } = {}) {
+function fakeChrome({ contentScripts = MANIFEST.content_scripts[0].js, pongs = [], documentId = 'doc-7', probeUrl = APPLICATION_URL, tabReply = { ok: true } } = {}) {
   const calls = [];
   const replies = [...pongs];
   return {
     calls,
+    runtime: { getManifest: () => ({ content_scripts: [{ js: contentScripts }] }) },
     tabs: {
       async sendMessage(tabId, message, options) {
         calls.push({ api: 'tabs.sendMessage', tabId, message, options });
@@ -95,13 +97,16 @@ test('a stale page agent is replaced in the bound document, engine and adapters 
   pings.forEach((ping) => assert.deepEqual(ping.options, { documentId: 'doc-7' }));
 });
 
-test('the dynamic injection list matches the manifest content scripts exactly, so a re-injected tab gets the whole agent', async () => {
-  const manifest = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'manifest.json'), 'utf8'));
+test('the dynamic injection list is the manifest content scripts, so a re-injected tab gets the whole agent', async () => {
+  const manifest = MANIFEST;
   const fake = fakeChrome({ pongs: [null, ready] });
   await withChrome(fake, () => create().api.ensurePageAgent(tab));
 
   const injection = fake.calls.find((call) => call.api === 'scripting.executeScript');
   assert.deepEqual(injection.details.files, manifest.content_scripts[0].js);
+  const custom = fakeChrome({ contentScripts: ['shared/only.js'], pongs: [null, ready] });
+  await withChrome(custom, () => create().api.ensurePageAgent(tab));
+  assert.deepEqual(custom.calls.find((call) => call.api === 'scripting.executeScript').details.files, ['shared/only.js']);
 });
 
 test('a current page agent is reused, and an unreachable one is injected tab-wide', async () => {

@@ -31,7 +31,7 @@
       return { ...common, status: anchor.getAttribute('aria-checked') === 'true' ? 'accepted' : 'checkbox' };
     }
     const grid = document.querySelector('.rc-imageselect-target');
-    const cells = [...document.querySelectorAll('.rc-imageselect-target td.rc-imageselect-tile')];
+    const cells = /** @type {HTMLElement[]} */ ([...document.querySelectorAll('.rc-imageselect-target td.rc-imageselect-tile')]);
     const task = String(document.querySelector('.rc-imageselect-desc-wrapper')?.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 800);
     if (!visible(grid)) return { ...common, status: 'waiting' };
     const unsupported = ![9, 16].includes(cells.length) || !task
@@ -55,7 +55,7 @@
   }
   async function act(token, action) {
     assertArmed(token);
-    const before = await observe();
+    const before = /** @type {any} */ (await observe());
     assertArmed(token);
     if (action.type === 'checkbox' && before?.status === 'checkbox') {
       document.getElementById('recaptcha-anchor').click();
@@ -72,7 +72,7 @@
       if (await fingerprint(before.task, cells) !== before.challengeId) throw new Error('The CAPTCHA image changed during selection.');
       assertArmed(token);
       if (!visible(cells[tile - 1])) throw new Error('A CAPTCHA tile is hidden.');
-      cells[tile - 1].click();
+      /** @type {HTMLElement} */ (cells[tile - 1]).click();
     }
     assertArmed(token);
     if (await fingerprint(before.task, cells) !== before.challengeId) throw new Error('The CAPTCHA image changed before verification.');

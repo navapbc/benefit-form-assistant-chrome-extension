@@ -120,6 +120,7 @@
   };
 
   function cleanText(value, limit = 100) {
+    // eslint-disable-next-line no-control-regex -- stripping control characters is the point
     return String(value || '').replace(/[\u0000-\u001f\u007f]+/g, ' ').replace(/\s+/g, ' ').trim().slice(0, limit);
   }
 
@@ -453,6 +454,7 @@
 
   function markTabClosed(queue, tabId, options = {}) {
     const at = safeIso(options.at);
+    /** @type {any} */
     let changedApplication;
     const applications = (queue?.applications || []).map((application) => {
       if (application.tabId !== tabId) return application;
@@ -514,4 +516,4 @@
 
   root.NavaWorkQueueEngine = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
-})(typeof globalThis !== 'undefined' ? globalThis : this);
+})(globalThis);

@@ -118,6 +118,7 @@
     return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
   }
 
+  /** @param {(update: object) => void} [onProgress] */
   async function createWorker(onProgress = () => {}) {
     const tesseractModule = await import(assetUrl('../vendor/tesseract/tesseract.esm.min.js'));
     const tesseract = tesseractModule.default || tesseractModule;
@@ -216,6 +217,10 @@
     }
   }
 
+  /**
+   * @param {any[]} sources
+   * @param {{ onProgress?: (update: object) => void }} [options]
+   */
   async function recognizeSources(sources, { onProgress = () => {} } = {}) {
     const limitedSources = sources.slice(0, MAX_OCR_PAGES);
     const warnings = [];
@@ -277,4 +282,4 @@
 
   root.NavaOcrEngine = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
-})(typeof globalThis !== 'undefined' ? globalThis : this);
+})(globalThis);

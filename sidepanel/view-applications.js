@@ -97,111 +97,12 @@
             <div aria-label="${progressFor(application)} percent complete" class="progress-track"><div class="progress-fill" style="width:${progressFor(application)}%"></div></div>
           </div>
           <p class="card-note"><strong>${escapeHtml(statusLabel(application))}.</strong> ${escapeHtml(note)}</p>
-          ${application.owner ? `<p class="ownership-line"><span class="owner-chip ${application.owner.state}">${application.owner.state === 'pending' ? 'Assigned to' : 'Owned by'} ${escapeHtml(application.owner.assignedTo)}</span></p>` : ''}
+          ${application.owner ? `<p class="ownership-line"><span class="owner-chip ${escapeHtml(application.owner.state)}">${application.owner.state === 'pending' ? 'Assigned to' : 'Owned by'} ${escapeHtml(application.owner.assignedTo)}</span></p>` : ''}
           ${application.checkpoint ? `<p class="checkpoint-line"><strong>Checkpoint:</strong> ${escapeHtml(application.checkpoint.label)}</p>` : ''}
           ${application.agentic ? `<details class="help-disclosure"><summary>AI plan details <span class="disclosure-meta">${Number(application.agentic.approvedMappings || 0)} mappings</span></summary><p>${application.agentic.provider === 'jev' ? 'Jev 1.13.0 · purpose classification with local validation; no independent model reviewer.' : `${application.agentic.provider === 'codex' ? 'Codex' : application.agentic.provider === 'claude' ? 'Claude' : 'Gemini Nano'} · mapper, gap analyst, and independent reviewer.`}</p>${application.agentic.usage ? `<p>${escapeHtml(agentUsageSummary(application.agentic))}</p>` : ''}</details>` : ''}
           ${completedPages ? `<p class="automation-badge">✓ ${completedPages} page${completedPages === 1 ? '' : 's'} completed automatically</p>` : ''}
           <div class="card-actions">${actions}</div>
         </article>`;
-    }
-
-    /** The most specific explanation of where the application stands, live run progress first. */
-    function cardNote({ application, running, review, gaps, blocked }) {
-      return (running ? application.runProgress : '')
-        || application.error
-        || application.runStopReason
-        || (blocked ? `${blocked} fields need direct help` : '')
-        || (gaps ? `${gaps} answers are needed before this page is complete` : '')
-        || (review ? (application.runStopReason || 'All writes were read back and verified') : 'Ready to fill the values found in the client record');
-    }
-
-    function agentPlanBadge(agentic) {
-      return `<p class="automation-badge">AI-reviewed plan · ${Number(agentic.approvedMappings || 0)} mapping${Number(agentic.approvedMappings || 0) === 1 ? '' : 's'} · ${agentic.provider === 'codex' ? 'Codex' : agentic.provider === 'claude' ? 'Claude' : 'Gemini Nano'} mapper + gap analyst + reviewer</p>`;
-    }
-
-    /** Ownership, checkpoint, AI-plan, model-usage, and completed-page lines (each only when it applies). */
-    function cardDetails(application) {
-      const completedPages = application.completedPages?.length || 0;
-      return `${application.owner ? `<p class="ownership-line"><span class="owner-chip ${application.owner.state}">${application.owner.state === 'pending' ? 'Assigned to' : 'Owned by'} ${escapeHtml(application.owner.assignedTo)}</span></p>` : ''}
-        ${application.checkpoint ? `<p class="checkpoint-line"><strong>Checkpoint:</strong> ${escapeHtml(application.checkpoint.label)}</p>` : ''}
-        ${application.agentic ? agentPlanBadge(application.agentic) : ''}
-        ${application.agentic?.usage ? `<p class="card-note">${escapeHtml(agentUsageSummary(application.agentic))}</p>` : ''}
-        ${completedPages ? `<p class="automation-badge">✓ ${completedPages} page${completedPages === 1 ? '' : 's'} completed automatically</p>` : ''}`;
-    }
-
-    /**
-     * The card's primary action: the first rule whose `when` matches wins, so order is precedence.
-     * A live run hides every action; human checkpoints (CAPTCHA, one-time code) outrank resume and fill.
-     */
-    const CARD_ACTIONS = [
-      {
-        when: ({ running }) => running,
-        render: () => '<span class="automation-badge">Scanning, filling, and continuing in this application tab…</span>',
-      },
-      {
-        when: ({ application }) => application.status === 'source_expired',
-        render: () => '<button class="small-button" type="button" data-action="reload-source">Reload client data</button>',
-      },
-      {
-        when: ({ application }) => application.status === 'handoff_pending',
-        render: ({ application }) => `<button class="small-button" type="button" data-action="accept-handoff" data-app="${encoded(application.id)}">Accept handoff</button>`,
-      },
-      {
-        when: ({ application }) => application.programSelectionRequired,
-        render: () => '<button class="small-button" type="button" data-action="add-application">Choose programs in a new BenefitsCal application</button>',
-      },
-      {
-        when: ({ application }) => ['captcha', 'otp'].includes(application.checkpoint?.kind) && application.tabId,
-        render: ({ application }) => {
-          const challenge = application.checkpoint.kind === 'captcha' ? 'CAPTCHA' : 'one-time code';
-          return `<button class="small-button" type="button" data-action="resume-human-checkpoint" data-app="${encoded(application.id)}">I completed the ${challenge} — resume</button>`;
-        },
-      },
-      {
-        when: ({ application }) => application.status === 'paused',
-        render: ({ application }) => `<button class="small-button" type="button" data-action="${application.tabId ? 'resume' : 'resume-current'}" data-app="${encoded(application.id)}">${application.tabId ? 'Verify and resume' : 'Reconnect current tab'}</button>`,
-      },
-      {
-        when: ({ application }) => application.status === 'not_started' && application.autoRun,
-        render: () => '<span class="automation-badge">Opening, scanning, and continuing in this tab…</span>',
-      },
-      {
-        when: ({ application }) => application.status === 'not_started' && application.tabId,
-        render: ({ application }) => `<button class="small-button" type="button" data-action="scan-application" data-app="${encoded(application.id)}">Scan application</button>`,
-      },
-      {
-        when: ({ attention, gaps }) => attention && gaps,
-        render: ({ application }) => `<button class="small-button" type="button" data-action="answer-run" data-app="${encoded(application.id)}">Answer and continue</button>
-        <button class="small-button secondary" type="button" data-action="answer" data-app="${encoded(application.id)}">This page only</button>`,
-      },
-      {
-        when: ({ application }) => application.status === 'ready_to_fill',
-        render: ({ application }) => `<button class="small-button" type="button" data-action="run" data-app="${encoded(application.id)}">Fill through application</button>
-        <button class="small-button secondary" type="button" data-action="fill" data-app="${encoded(application.id)}">This page only</button>`,
-      },
-      {
-        when: ({ review }) => review,
-        render: ({ application }) => `<button class="small-button secondary" type="button" data-action="review" data-app="${encoded(application.id)}">Review details</button>`,
-      },
-      {
-        when: ({ application }) => application.tabId,
-        render: ({ application }) => `<button class="small-button" type="button" data-action="scan-application" data-app="${encoded(application.id)}">Scan this application</button>`,
-      },
-      {
-        when: () => true,
-        render: ({ application }) => `<button class="small-button" type="button" data-action="resume-current" data-app="${encoded(application.id)}">Reconnect current tab</button>`,
-      },
-    ];
-
-    /** The primary action, then pause-or-handoff while the work is still open, then a jump to the tab. */
-    function cardActions(card) {
-      const { application } = card;
-      let actions = CARD_ACTIONS.find((rule) => rule.when(card)).render(card);
-      if (!['source_expired', 'handoff_pending', 'ready_for_review'].includes(application.status)) {
-        actions += `<button class="small-button secondary" type="button" data-action="open-handoff" data-app="${encoded(application.id)}">Pause or hand off</button>`;
-      }
-      if (application.tabId) actions += `<button class="small-button secondary" type="button" data-action="go-tab" data-app="${encoded(application.id)}">Go to application</button>`;
-      return actions;
     }
 
     function renderDashboard() {
@@ -284,4 +185,4 @@
 
   root.NavaApplicationViews = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
-})(typeof globalThis !== 'undefined' ? globalThis : this);
+})(globalThis);

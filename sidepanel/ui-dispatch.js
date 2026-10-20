@@ -88,7 +88,7 @@
     /** Installs the panel's click, submit and change listeners; the composition root calls it once, after every table exists. */
     function installListeners() {
       document.addEventListener('click', (event) => {
-        const button = event.target.closest('[data-action]');
+        const button = /** @type {Element} */ (event.target).closest('[data-action]');
         if (!button) return;
         const uiToken = currentUiGeneration();
         onClick(button, uiToken).catch((error) => {
@@ -132,4 +132,4 @@
 
   root.NavaUiDispatch = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
-})(typeof globalThis !== 'undefined' ? globalThis : this);
+})(globalThis);

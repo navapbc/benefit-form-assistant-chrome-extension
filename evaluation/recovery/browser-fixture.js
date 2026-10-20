@@ -11,6 +11,7 @@ globalThis.NavaSiteAdapters = { ...originalAdapters, fieldPolicy(host, path, fie
 } };
 globalThis.chrome = { runtime: { onMessage: { addListener(listener) { messageHandler = listener; } } } };
 const command = (type, props = {}) => new Promise(resolve => messageHandler({ type, ...props, routePolicy: { origins: [location.origin], exactPaths: [location.pathname] } }, {}, resolve));
+// eslint-disable-next-line no-redeclare -- page-local element named after the window.status global
 const form = document.getElementById('application'), status = document.getElementById('status'), result = document.getElementById('result'), button = document.getElementById('run');
 async function initialize() {
   const fields = await (await fetch('/controls')).json();

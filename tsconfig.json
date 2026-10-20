@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "noEmit": true,
+    "target": "ES2022",
+    "module": "ES2022",
+    "moduleResolution": "bundler",
+    "lib": ["ES2023", "DOM", "DOM.Iterable", "WebWorker"],
+    "types": ["chrome", "node"],
+    "strict": false,
+    "skipLibCheck": true
+  },
+  "include": ["types/**/*.d.ts", "background.js", "background/**/*.js", "background/**/*.mjs", "content/**/*.js", "shared/**/*.js", "sidepanel/**/*.js"],
+  "exclude": ["node_modules", "vendor"]
+}

@@ -26,7 +26,7 @@
     const text = String(value || '').trim();
     const iso = text.match(/^(\d{4})-(\d{2})-(\d{2})$/);
     if (iso) return { year: iso[1], month: iso[2], day: iso[3] };
-    const us = text.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})$/);
+    const us = text.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})$/);
     if (!us) return null;
     const month = Number(us[1]);
     const day = Number(us[2]);
@@ -201,4 +201,4 @@
 
   root.NavaFieldValues = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
-})(typeof globalThis !== 'undefined' ? globalThis : this);
+})(globalThis);

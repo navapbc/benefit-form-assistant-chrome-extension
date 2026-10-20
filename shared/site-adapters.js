@@ -37,6 +37,7 @@
   // An exclusive checkbox pair whose id suffix (Yes/No, Male/Female) is the
   // semantic option value; the live DOM values are ambiguous (both sex boxes
   // report "on"). A class-scoped group uses each checkbox's own DOM value.
+  /** @param {{ pattern?: RegExp, className?: string, groupKey: string, purpose: string, question: string, required: boolean, unmapped?: boolean }} rule */
   function choiceRule({ pattern, className, groupKey, purpose, question, required, unmapped = false }) {
     return (field) => {
       const optionValue = className ? classOptionValue(field, className) : pattern.exec(field.id)?.[1];
@@ -256,4 +257,4 @@
   const api = { fieldPolicy, hostMatches, pathMatchesPrefix };
   root.NavaSiteAdapters = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
-})(typeof globalThis !== 'undefined' ? globalThis : this);
+})(globalThis);

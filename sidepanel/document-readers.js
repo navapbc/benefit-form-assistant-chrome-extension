@@ -11,6 +11,7 @@
   /** Whitespace and edge-separator cleanup shared by row cells and extracted field values. */
   function cleanText(value) {
     return String(value ?? '')
+      // eslint-disable-next-line no-control-regex -- NUL bytes from PDF/DOCX text extraction
       .replace(/\u0000/g, '')
       .replace(/[\t ]+/g, ' ')
       .replace(/^\s*[-–—:|]+\s*|\s*[-–—:|]+\s*$/g, '')
@@ -219,11 +220,15 @@
    * Reads a file with the reader for its format. Returns `{ extension, method, text, ocrPages, ocrMetrics, warnings }`
    * with text capped at MAX_TEXT_CHARS, or `{ extension, method: 'structured', record }` for a JSON record.
    */
+  /**
+   * @param {File} file
+   * @param {{ onProgress?: (update: object) => void, keyForLabel?: (label: string) => string | null }} [options]
+   */
   async function readDocument(file, { onProgress = () => {}, keyForLabel = () => null } = {}) {
     const extension = fileExtension(file);
     const format = formatFor(extension, file.type);
     if (!format) throw new Error(UNSUPPORTED_FORMAT_MESSAGE);
-    const read = await format.read(file, { extension, onProgress, keyForLabel });
+    const read = await /** @type {any} */ (format).read(file, { extension, onProgress, keyForLabel });
     if (read.record) return { extension, ...read };
     return {
       extension,
@@ -250,4 +255,4 @@
 
   root.NavaDocumentReaders = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
-})(typeof globalThis !== 'undefined' ? globalThis : this);
+})(globalThis);

@@ -5,7 +5,6 @@ export const engine=require('./source/form-engine.cjs');
 const adapters=require('./source/site-adapters.cjs');
 const raw=JSON.parse(readFileSync(new URL('./source/wic-controls.json',import.meta.url)));
 export const fixture={firstName:'Synthetic',lastName:'Applicant',dateOfBirth:'2000-01-02',address:{residential:{street:'5556 Test Blvd',unit:'Apt 556',city:'WILDOMAR',state:'CA',zip:'92595'},mailing:{street:'5556 Test Blvd',unit:'Apt 556',city:'WILDOMAR',state:'CA',zip:'92595'}},phone:'2025550117',email:'test@example.invalid',primaryLanguage:'English',pregnant:false,canReceiveTexts:'Yes',mediCalCoverage:'No',programData:{wic:{postpartum:false,breastfeedingInfant:false,formulaInfant:false,childUnderFive:true,appointmentInPerson:true,appointmentPhone:false,appointmentVideo:false,clinic:'Temecula WIC'}}};
-const values=engine.canonicalizeParticipant(fixture).values;
 const wicFields=raw.filter(f=>f.id.startsWith('edit-')&&f.id!=='edit-url').map(f=>({...f,fieldKey:f.id,value:'',checked:false,optionLabel:f.label,...adapters.fieldPolicy('www.ruhealth.org','/appointments/apply-4-wic-form',f)}));
 function field(fieldKey,label,type='text',options=[]){return {fieldKey,label,type,required:true,question:label,options:options.map(label=>({label,value:label})),value:'',checked:false};}
 const wicMaps={

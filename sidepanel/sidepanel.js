@@ -110,7 +110,6 @@
   const {
     currentUiGeneration,
     currentUiSignal,
-    isRunning,
     runActive,
     runCancelledError,
     coordinatorStaleError,

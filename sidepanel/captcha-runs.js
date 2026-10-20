@@ -10,6 +10,10 @@
       persist, resumeHumanCheckpoint, setCheckpoint,
     } = deps;
 
+    /**
+     * @param {any} application
+     * @param {{ runToken?: any }} [options]
+     */
     async function tryCaptcha(application, { runToken } = {}) {
       if (previewMode) throw new Error('CAPTCHA actuation requires the installed extension; preview results are simulated.');
       assertApplicationRun(application, runToken);
@@ -91,4 +95,4 @@
   const api = { create };
   root.NavaCaptchaRuns = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
-})(typeof globalThis !== 'undefined' ? globalThis : this);
+})(globalThis);

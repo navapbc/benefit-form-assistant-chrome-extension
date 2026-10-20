@@ -5,7 +5,11 @@
   "description": "Local-first Chrome side-panel prototype for Nava's form-completion protocol.",
   "scripts": {
     "check": "node scripts/check-syntax.mjs",
+    "lint": "eslint .",
+    "check:vendor": "node scripts/verify-vendor.mjs",
+    "typecheck": "node scripts/typecheck.mjs",
     "check:docs": "node scripts/check-doc-links.mjs",
+    "check:package": "node scripts/package-extension.mjs",
     "connector:mock": "node connector-service/mock-server.mjs",
     "model:bridge": "node model-bridge/server.mjs",
     "model:jev": "node model-bridge/start-jev.mjs",
@@ -16,12 +20,19 @@
     "eval:models": "node scripts/summarize-model-evaluation.mjs",
     "test": "node --test tests/*.test.cjs",
     "model:eve": "npm --prefix model-bridge/eve run dev",
-    "eval:captcha": "node scripts/summarize-captcha-metrics.mjs"
+    "eval:captcha": "node scripts/summarize-captcha-metrics.mjs",
+    "icons": "node scripts/generate-icons.mjs",
+    "package": "node scripts/package-extension.mjs --build"
   },
   "devDependencies": {
     "@napi-rs/canvas": "^1.0.9",
+    "@types/chrome": "^0.3.5",
+    "@types/node": "^24.19.2",
+    "eslint": "^9.39.5",
     "fflate": "^0.8.3",
+    "globals": "^16.5.0",
     "pdfjs-dist": "^6.3.289",
-    "tesseract.js": "^7.0.0"
+    "tesseract.js": "^7.0.0",
+    "typescript": "^5.9.3"
   }
 }

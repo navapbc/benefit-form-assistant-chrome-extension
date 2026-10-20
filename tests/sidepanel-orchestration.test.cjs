@@ -1,6 +1,8 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const vm = require('node:vm');
+const fs = require('node:fs');
+const path = require('node:path');
 const { sidePanelSource } = require('./runtime-sources.cjs');
 
 const panel = sidePanelSource();
@@ -27,12 +29,14 @@ function recoveryHelper() {
   return context.result;
 }
 
-test('dynamic page-agent injection installs site adapters before the content agent', () => {
+test('dynamic page-agent injection reuses the manifest content scripts, which install site adapters before the content agent', () => {
   const source = section('async function ensurePageAgent', 'async function sendToTab');
-  const formEngine = source.indexOf("'shared/form-engine.js'");
-  const siteAdapters = source.indexOf("'shared/site-adapters.js'");
-  const contentAgent = source.indexOf("'content/form-agent.js'");
+  assert.match(source, /files: chrome\.runtime\.getManifest\(\)\.content_scripts\[0\]\.js/);
 
+  const scripts = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'manifest.json'), 'utf8')).content_scripts[0].js;
+  const formEngine = scripts.indexOf('shared/form-engine.js');
+  const siteAdapters = scripts.indexOf('shared/site-adapters.js');
+  const contentAgent = scripts.indexOf('content/form-agent.js');
   assert.ok(formEngine >= 0);
   assert.ok(formEngine < siteAdapters);
   assert.ok(siteAdapters < contentAgent);

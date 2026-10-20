@@ -26,6 +26,9 @@ const SERVICE_WORKER_SCRIPTS = [
   'background/connector-client.js',
 ];
 
+const EXTENSION_ID = 'a'.repeat(32);
+const SIDE_PANEL_SENDER = { id: EXTENSION_ID, url: `chrome-extension://${EXTENSION_ID}/sidepanel/index.html` };
+
 function clone(value) {
   return value === undefined ? undefined : structuredClone(value);
 }
@@ -60,6 +63,7 @@ function backgroundHarness({ captchaServiceFactory = () => ({ handle: async () =
   const chrome = {
     storage: { local, session },
     runtime: {
+      id: EXTENSION_ID,
       onInstalled: { addListener() {} },
       onStartup: { addListener() {} },
       onMessage: { addListener(listener) { messageListener = listener; } },
@@ -117,7 +121,7 @@ function backgroundHarness({ captchaServiceFactory = () => ({ handle: async () =
         tabMessageWaiters.push(wait);
       });
     },
-    send(message, sender = {}) {
+    send(message, sender = SIDE_PANEL_SENDER) {
       return new Promise((resolve, reject) => {
         try {
           const asyncResponse = messageListener(message, sender, resolve);
@@ -127,10 +131,14 @@ function backgroundHarness({ captchaServiceFactory = () => ({ handle: async () =
         }
       });
     },
+    // Calls the listener as `sender` and appends every response to `responses`; returns the listener's return value.
+    dispatchAs(message, sender, responses) {
+      return messageListener(message, sender, (response) => responses.push(clone(response)));
+    },
     // Calls the listener exactly as Chrome does and records what it returned and every response it sent.
     dispatch(message) {
       const responses = [];
-      const returned = messageListener(message, {}, (response) => responses.push(clone(response)));
+      const returned = messageListener(message, SIDE_PANEL_SENDER, (response) => responses.push(clone(response)));
       return { returned, responses };
     },
   };
@@ -923,3 +931,41 @@ for (const stop of ['pause', 'tab closure']) {
     assert.equal(h.frame.revocations, 1);
   });
 }
+
+test('only the side panel can use the session, run, and connector routes', async () => {
+  const harness = backgroundHarness();
+  const message = { type: 'GET_ASSISTANT_STATE' };
+  const impostors = {
+    'a content script in an application page': { id: EXTENSION_ID, tab: { id: 4 }, url: 'https://benefitscal.com/ApplyForBenefits' },
+    'another extension page': { id: EXTENSION_ID, url: `chrome-extension://${EXTENSION_ID}/other.html` },
+    'a different extension': { id: 'b'.repeat(32), url: `chrome-extension://${'b'.repeat(32)}/sidepanel/index.html` },
+    'a tab on the side panel URL': { id: EXTENSION_ID, tab: { id: 4 }, url: SIDE_PANEL_SENDER.url },
+    'no sender details': {},
+    'a malformed url': { id: EXTENSION_ID, url: 'not a url' },
+  };
+  for (const [label, sender] of Object.entries(impostors)) {
+    const { returned, responses } = (() => {
+      const responses = [];
+      return { returned: harness.dispatchAs(message, sender, responses), responses };
+    })();
+    await settle();
+    assert.equal(returned, false, label);
+    assert.deepEqual(responses, [], label);
+  }
+  const allowed = await harness.send(message);
+  assert.equal(allowed.ok, true);
+  const withQuery = await harness.send(message, { ...SIDE_PANEL_SENDER, url: `${SIDE_PANEL_SENDER.url}?x=1#top` });
+  assert.equal(withQuery.ok, true);
+});
+
+test('a non-side-panel sender cannot write, lease, or save a connector', async () => {
+  const harness = backgroundHarness();
+  const contentScript = { id: EXTENSION_ID, tab: { id: 4 }, url: 'https://benefitscal.com/' };
+  for (const type of ['CLAIM_CLIENT_SESSION', 'PERSIST_ASSISTANT_STATE', 'CLEAR_ASSISTANT_STATE', 'ACQUIRE_APPLICATION_LEASE', 'EXECUTE_APPLICATION_COMMAND', 'REVOKE_APPLICATION_RUN', 'SAVE_CONNECTOR', 'DISCOVER_CONNECTOR', 'OPEN_PROGRAMS']) {
+    const responses = [];
+    assert.equal(harness.dispatchAs({ type }, contentScript, responses), false, type);
+    await settle(3);
+    assert.deepEqual(responses, [], type);
+  }
+  assert.deepEqual(harness.local.data, {});
+});

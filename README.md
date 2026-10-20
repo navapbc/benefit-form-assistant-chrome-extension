@@ -84,6 +84,7 @@ For this sprint, record simple outcomes on the real site: **checkbox accepted: y
 
 - [Testing guide](docs/TESTER_GUIDE.md): simple setup, real-site tasks, design questions, and a results template.
 - [Engineering review plan and production gaps](docs/PRODUCTION_GAPS.md): what to verify, what to fix first, and remaining integration work.
+- [Documentation index](docs/README.md): every guide, result, and historical record, grouped by purpose.
 - [Detailed evidence index](evaluation/results/README.md): dated reports and machine-readable receipts.
 
 ## Demo and development
@@ -94,6 +95,7 @@ The demo shows an earlier local practice build. It illustrates the workflow and 
 
 ```sh
 npm ci
+npm run lint
 npm run check
 npm test
 ```

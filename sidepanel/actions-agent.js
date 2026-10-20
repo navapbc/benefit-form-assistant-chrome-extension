@@ -2,6 +2,9 @@
 (function installAgentActions(root) {
   'use strict';
 
+  /** The form control with this id; these handlers only look up inputs and selects they rendered. */
+  const control = (id) => /** @type {HTMLInputElement & HTMLSelectElement} */ (document.getElementById(id));
+
   /**
    * deps:
    * - state, render(), assertUiGeneration(token): panel state, the screen, and the UI-generation guard.
@@ -35,10 +38,11 @@
         agentPlanner.reset();
         state.agentRuntime = { status: 'checking', message: '' };
       } else {
+        await root.NavaHostAccess?.ensureHostAccess(control('nava-api-base')?.value);
         const config = await agentPlanner.saveGatewayConfig({
-          base: document.getElementById('nava-api-base')?.value,
-          token: document.getElementById('nava-api-token')?.value,
-          allowLoopbackHttp: document.getElementById('nava-api-loopback')?.checked === true,
+          base: control('nava-api-base')?.value,
+          token: control('nava-api-token')?.value,
+          allowLoopbackHttp: control('nava-api-loopback')?.checked === true,
         });
         state.plannerBase = config.base;
         state.plannerAllowLoopbackHttp = config.allowLoopbackHttp;
@@ -73,9 +77,9 @@
 
     /** The model-provider select shows the companion endpoint and token fields only for a subscription CLI. */
     function showModelCompanionFields(event) {
-      const fields = document.getElementById('model-companion-fields');
-      if (fields) fields.hidden = document.getElementById('model-provider')?.value === 'chrome-local'
-        && !['codex', 'eve'].includes(document.getElementById('captcha-provider')?.value);
+      const fields = control('model-companion-fields');
+      if (fields) fields.hidden = control('model-provider')?.value === 'chrome-local'
+        && !['codex', 'eve'].includes(control('captcha-provider')?.value);
     }
 
     function changeCaptchaAuthorization(event) {
@@ -111,4 +115,4 @@
 
   root.NavaAgentActions = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
-})(typeof globalThis !== 'undefined' ? globalThis : this);
+})(globalThis);
