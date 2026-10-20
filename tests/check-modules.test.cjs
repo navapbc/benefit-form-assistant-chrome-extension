@@ -27,3 +27,15 @@ test('the module-graph check reports unresolved imports and import cycles, and a
   const dynamicOnly = project({ 'a.mjs': "await import('./nope.mjs');" });
   assert.deepEqual(findProblems(dynamicOnly, ['a.mjs']), []);
 });
+
+test('the package check reports a static import that resolves outside the shipped directories', async () => {
+  const { findUnshippedImports } = await import('../scripts/check-modules.mjs');
+  const dir = project({
+    'sidepanel/main.mjs': "import './ok.mjs'; import '../demo/helper.mjs';",
+    'sidepanel/ok.mjs': 'export const ok = 1;',
+    'demo/helper.mjs': 'export const helper = 1;',
+  });
+  const problems = findUnshippedImports(dir, ['sidepanel/main.mjs'], ['sidepanel', 'shared']);
+  assert.deepEqual(problems, ['sidepanel/main.mjs imports ../demo/helper.mjs, which is outside the shipped directories']);
+  assert.deepEqual(findUnshippedImports(dir, ['sidepanel/ok.mjs'], ['sidepanel']), []);
+});

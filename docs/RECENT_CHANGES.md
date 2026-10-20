@@ -4,7 +4,7 @@ High-level notes on what changed in the extension's code and tooling, newest fir
 
 ## October 20, 2026
 
-**In progress: ES modules** (branch `refactor/es-modules`). Replacing the side panel's 40 hand-ordered script tags and the service worker's global lookups with real `import`s, with no build step. The page agent stays classic for now. Plan: [the migration plan](superpowers/plans/2026-10-20-es-modules-migration.md).
+**ES modules** (branch `refactor/es-modules`, for review). The side panel's 40 hand-ordered script tags and the service worker's `globalThis.Nava*` lookups are now real `import`s with no build step: `sidepanel/main.mjs` is the composition root, `background/service-worker.mjs` holds the worker body, and `background.js` only starts it. The page agent and the six shared files it needs stay classic scripts, reached from modules through `shared/engines.mjs`. New guards: `npm run check:modules` (resolvable imports, no cycles), an entry test that imports the real side-panel graph, a test pinning synchronous listener registration, and `check:package` now rejects an import the zip would leave out. Plan: [the migration plan](superpowers/plans/2026-10-20-es-modules-migration.md).
 
 **[PR 9](https://github.com/navapbc/benefit-form-assistant-chrome-extension/pull/9): cleanup**
 - Moved the v0.14 and v0.15 release notes to `docs/archive/`.

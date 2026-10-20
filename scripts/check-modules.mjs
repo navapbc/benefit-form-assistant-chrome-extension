@@ -3,7 +3,7 @@ import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
-const STATIC_IMPORT = /^\s*(?:import|export)\s+(?:[^'";]*?\s+from\s+)?['"]([^'"]+)['"]/gm;
+const STATIC_IMPORT = /(?:^|;)\s*(?:import|export)\s+(?:[^'";]*?\s+from\s+)?['"]([^'"]+)['"]/gm;
 
 function specifiers(source) {
   return [...source.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '').matchAll(STATIC_IMPORT)].map((match) => match[1]);
@@ -30,6 +30,26 @@ export function findProblems(root, files) {
     state.set(file, 'done');
   };
   files.forEach((file) => visit(file, []));
+  return problems;
+}
+
+/** Static imports reachable from `entries` that resolve outside the directories the release package ships. */
+export function findUnshippedImports(root, entries, shippedDirectories) {
+  const problems = [];
+  const seen = new Set();
+  const shipped = (path) => path.split('/').length === 1 || shippedDirectories.some((directory) => path === directory || path.startsWith(`${directory}/`));
+  const visit = (file) => {
+    if (seen.has(file)) return;
+    seen.add(file);
+    const absolute = join(root, file);
+    for (const specifier of specifiers(readFileSync(absolute, 'utf8'))) {
+      if (!specifier.startsWith('.')) continue;
+      const target = relative(root, resolve(dirname(absolute), specifier)).split('\\').join('/');
+      if (!shipped(target) || target.startsWith('..')) problems.push(`${file} imports ${specifier}, which is outside the shipped directories`);
+      else if (existsSync(join(root, target)) && /\.m?js$/.test(target)) visit(target);
+    }
+  };
+  entries.forEach(visit);
   return problems;
 }
 

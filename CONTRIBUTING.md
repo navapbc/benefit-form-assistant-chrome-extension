@@ -13,6 +13,7 @@ npm run lint
 npm run typecheck
 npm run check
 npm run check:package
+npm run check:modules
 npm run check:vendor
 npm test
 npm run eval:extraction
@@ -31,13 +32,14 @@ GitHub's **Validate extension** job runs on pull requests and main pushes. It in
 | `typecheck` | TypeScript over the JavaScript, as a ratchet. `types/baseline.json` is empty, so any new type error fails. After fixing errors elsewhere, run `npm run typecheck -- --update`. |
 | `check` | Syntax of every first-party script and a valid `manifest.json`. |
 | `check:package` | The same version in `manifest.json`, `package.json`, and the lockfile; every file the manifest and side panel reference exists; icons are PNGs of their stated size. |
+| `check:modules` | Every static import in the ES-module sources resolves and the import graph has no cycles; a bad specifier would blank the whole side panel. |
 | `check:vendor` | Every file under `vendor/` matches its locked npm package, the English OCR model matches its pinned SHA-256, and `THIRD_PARTY_NOTICES.md` names the installed versions. After a dependency bump, run `npm run ocr:assets` and update the notices. |
 | `test` | The unit and integration suite. |
 | `eval:extraction` | The synthetic document-extraction gate. |
 
 The handoff documentation also has a local-file/anchor check (`npm run check:docs`). These checks use fictional data and do not call a model provider, submit applications, or establish live-site quality.
 
-When resolving a conflict, test the combined result. In particular, keep the module load order consistent in `manifest.json`, `background.js`, `sidepanel/index.html`, and test fixtures. Dynamic page injection reads its script list from the manifest's content scripts, so it needs no separate edit. Runtime selection, pairing, CAPTCHA, cancellation, queues, and source-value isolation have cross-module behavior tests.
+When resolving a conflict, test the combined result. The side panel and service worker are ES modules: add a module by importing it (from `sidepanel/main.mjs` or `background/service-worker.mjs`); there is no script tag or load order to keep in sync. Only the page agent (the manifest's content scripts) and the six shared files it needs (`form-purposes`, `participant-record`, `field-values`, `form-engine`, `site-adapters`, `captcha-engine`) are classic scripts, because Manifest V3 content scripts cannot be modules without a bundler. Their order matters and lives in `manifest.json`, whose list dynamic page injection also reads; ES modules reach them through `shared/engines.mjs`. Runtime selection, pairing, CAPTCHA, cancellation, queues, and source-value isolation have cross-module behavior tests.
 
 Merge only the checked head. Use a merge commit for integration work that must preserve both histories; use a normal focused PR for follow-up fixes. Delete a remote feature branch after confirming its work is merged or deliberately superseded. Do not delete an unmerged branch merely because it is behind main.
 

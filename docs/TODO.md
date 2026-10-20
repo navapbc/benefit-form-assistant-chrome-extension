@@ -5,7 +5,7 @@ Things we decided to come back to. Add to the top of a section as you find more;
 ## Build and layout
 
 - [ ] **Add a bundler (esbuild, or an extension framework such as WXT).** Deliberately deferred: the ES-module migration keeps "Load unpacked from the repo folder" working with no build step. Come back to this when preparing for the Chrome Web Store or a managed pilot rollout. What it buys:
-  - The page agent (content scripts) becomes modules too, as one bundle. Today it and six shared files (`form-purposes`, `participant-record`, `field-values`, `form-engine`, `site-adapters`, `captcha-engine`) stay classic and are imported through `shared/engines.mjs`.
+  - The page agent (content scripts) becomes modules too, as one bundle. Today it and six shared files (`form-purposes`, `participant-record`, `field-values`, `form-engine`, `site-adapters`, `captcha-engine`) stay classic and ES modules import them through `shared/engines.mjs`; with a bundler that facade and the classic wrappers go away.
   - One content-script bundle and one side-panel bundle: faster startup, minification, tree-shaking, source maps.
   - Real TypeScript source, and libraries imported from `npm` at pinned versions so most of `vendor/` goes away.
   - A reproducible `dist/` that is exactly what the store receives, plus per-environment builds (pilot and production endpoints) and bundle-size budgets in CI.
@@ -34,7 +34,7 @@ Things we decided to come back to. Add to the top of a section as you find more;
 - [ ] **Chrome Web Store readiness:** privacy policy, a plain-English justification for each permission and host permission, screenshots, and a decision on the experimental CAPTCHA feature's policy exposure.
 - [ ] **Forms inside iframes.** The page agent has `all_frames: false`, so iframe forms are not covered.
 - [ ] **Preview mode in a packaged build.** The side panel's preview fetches `../demo/fixtures/…`, which the release zip omits.
-- [ ] **Chrome check after the ES-module migration.** Reload the extension, open the side panel, scan the extensive demo, and check both consoles (the plan's Task 7 and Task 9 list the steps).
+- [ ] **Chrome check after the ES-module migration.** The preview page and the parser demo were checked in the in-app browser (no console errors), but the unpacked extension was not: reload it, open the side panel, scan the extensive demo, and check both the side panel and service-worker consoles.
 
 ## Docs
 

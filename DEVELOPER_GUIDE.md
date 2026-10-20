@@ -10,11 +10,11 @@ The extension now combines the modular legacy implementation with the newer Jev,
 | Page scan and execution | `content/form-agent.js`; `page-dom.js`, `field-inventory.js`, `navigation-gate.js`, `value-writers.js`; native challenge adapter in `content/captcha-agent.js`. |
 | Field meaning and values | `shared/form-engine.js`; `form-purposes.js`, `participant-record.js`, `field-values.js`; known-site rules in `site-adapters.js`. |
 | Form planning and API | `shared/agentic-planner.mjs`; `planner-inventory.mjs`, `planner-runtime.mjs`; CLI/TypeSafe transport in `model-bridge/`. |
-| Panel composition | `sidepanel/main.mjs` (the ES-module composition root); `view-*.mjs`, `actions-*.mjs`, application runner, runtime, scan, coordination, and run-control modules. `sidepanel/index.html` defines browser load order. |
+| Panel composition | `sidepanel/main.mjs` (the ES-module composition root); `view-*.mjs`, `actions-*.mjs`, application runner, runtime, scan, coordination, and run-control modules. `sidepanel/index.html` loads the vendored unzipper and `main.mjs`; the rest is imported. |
 | Documents and OCR | `sidepanel/document-parser.mjs`, `document-readers.mjs`, `ocr-engine.mjs`. |
 | Queue and renewals | `shared/work-queue-engine.mjs`, `recertification-engine.js`; panel renewal views/actions and caseload modules. |
 
-A file's name is not proof it is wired into Chrome. Preserve the manifest, background imports, panel load order and dynamic page-injection tests when moving modules.
+A file's name is not proof it is wired into Chrome. Preserve the manifest, the import graph (`npm run check:modules`) and the dynamic page-injection tests when moving modules.
 
 ## Historical implementation notes — v0.11
 
@@ -156,6 +156,7 @@ npm run lint
 npm run typecheck
 npm run check
 npm run check:package
+npm run check:modules
 npm run check:vendor
 npm test
 npm run eval:extraction
