@@ -86,18 +86,7 @@
       try {
         await chrome.scripting.executeScript({
           target: documentId ? { tabId: tab.id, documentIds: [documentId] } : { tabId: tab.id },
-          files: [
-            'shared/form-purposes.js',
-            'shared/participant-record.js',
-            'shared/field-values.js',
-            'shared/form-engine.js',
-            'shared/site-adapters.js',
-            'content/page-dom.js',
-            'content/field-inventory.js',
-            'content/navigation-gate.js',
-            'content/value-writers.js',
-            'content/form-agent.js',
-          ],
+          files: chrome.runtime.getManifest().content_scripts[0].js,
         });
         const verified = await chrome.tabs.sendMessage(tab.id, { type: 'NAVA_PING' }, messageOptions);
         if (verified?.ok && verified.agentVersion === PAGE_AGENT_VERSION && verified.adaptersReady) return;
