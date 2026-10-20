@@ -7,6 +7,7 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const documents = [
   'README.md',
   'CONTRIBUTING.md',
+  'docs/README.md',
   'docs/FEATURE_GUIDE.md',
   'docs/TESTER_GUIDE.md',
   'docs/PRODUCTION_GAPS.md',
