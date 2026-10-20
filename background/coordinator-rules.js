@@ -73,11 +73,11 @@
   }
 
   function coordinatorError(message, code, coordinator, extras = {}) {
-    const error = new Error(message);
-    error.code = code;
-    error.coordinator = coordinator ? coordinatorFields(coordinator) : null;
-    Object.assign(error, extras);
-    return error;
+    return Object.assign(new Error(message), {
+      code,
+      coordinator: coordinator ? coordinatorFields(coordinator) : null,
+      ...extras,
+    });
   }
 
   function participantValue(value) {

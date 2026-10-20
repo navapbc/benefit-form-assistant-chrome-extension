@@ -66,10 +66,7 @@
     }
 
     function leaseConflictError(message = 'Another assistant window is already working on this application.', lease = null) {
-      const error = new Error(message);
-      error.name = 'LeaseConflictError';
-      error.lease = lease;
-      return error;
+      return Object.assign(new Error(message), { name: 'LeaseConflictError', lease });
     }
 
     function uiCancelledError() {

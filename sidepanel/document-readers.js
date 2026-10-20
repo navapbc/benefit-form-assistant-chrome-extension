@@ -220,6 +220,10 @@
    * Reads a file with the reader for its format. Returns `{ extension, method, text, ocrPages, ocrMetrics, warnings }`
    * with text capped at MAX_TEXT_CHARS, or `{ extension, method: 'structured', record }` for a JSON record.
    */
+  /**
+   * @param {File} file
+   * @param {{ onProgress?: (update: object) => void, keyForLabel?: (label: string) => string | null }} [options]
+   */
   async function readDocument(file, { onProgress = () => {}, keyForLabel = () => null } = {}) {
     const extension = fileExtension(file);
     const format = formatFor(extension, file.type);

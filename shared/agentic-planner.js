@@ -67,6 +67,12 @@
     await storage.remove(GATEWAY_STORAGE_KEYS);
   }
 
+  /**
+   * @param {any} input
+   * @param {string} path
+   * @param {any} body
+   * @param {{ signal?: AbortSignal, timeoutMs?: number }} [options]
+   */
   async function gatewayRequest(input, path, body, { signal, timeoutMs = GATEWAY_TIMEOUT_MS } = {}) {
     const gateway = normalizeGatewayConfig(input);
     if (!/^\/v1\/(?:plan|households|applications(?:\/[^/?#]+\/share)?)$/.test(path)) {

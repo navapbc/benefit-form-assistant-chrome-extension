@@ -454,6 +454,7 @@
 
   function markTabClosed(queue, tabId, options = {}) {
     const at = safeIso(options.at);
+    /** @type {any} */
     let changedApplication;
     const applications = (queue?.applications || []).map((application) => {
       if (application.tabId !== tabId) return application;

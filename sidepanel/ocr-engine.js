@@ -118,6 +118,7 @@
     return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
   }
 
+  /** @param {(update: object) => void} [onProgress] */
   async function createWorker(onProgress = () => {}) {
     const tesseractModule = await import(assetUrl('../vendor/tesseract/tesseract.esm.min.js'));
     const tesseract = tesseractModule.default || tesseractModule;
@@ -216,6 +217,7 @@
     }
   }
 
+  /** @param {{ onProgress?: (update: object) => void }} [options] */
   async function recognizeSources(sources, { onProgress = () => {} } = {}) {
     const limitedSources = sources.slice(0, MAX_OCR_PAGES);
     const warnings = [];
