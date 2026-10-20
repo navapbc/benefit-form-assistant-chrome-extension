@@ -39,6 +39,8 @@ jobs:
         run: npm run check
       - name: Check version sync and manifest references
         run: npm run check:package
+      - name: Check the ES-module import graph
+        run: npm run check:modules
       - name: Check vendored libraries match locked packages
         run: npm run check:vendor
       - name: Check setup and handoff documentation links

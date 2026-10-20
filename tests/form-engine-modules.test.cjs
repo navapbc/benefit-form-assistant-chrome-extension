@@ -18,13 +18,6 @@ function read(relativePath) {
   return fs.readFileSync(path.join(root, relativePath), 'utf8');
 }
 
-/** The shared/ scripts an HTML page loads, in order, as repo-relative paths. */
-function sharedScripts(htmlPath) {
-  return [...read(htmlPath).matchAll(/<script\b[^>]*\bsrc="([^"]+)"/g)]
-    .map((match) => path.posix.join(path.posix.dirname(htmlPath), match[1].split(/[?#]/)[0]))
-    .filter((file) => file.startsWith('shared/'));
-}
-
 function inLoadOrder(files, expected) {
   const positions = expected.map((file) => files.indexOf(file));
   assert.ok(positions.every((position) => position >= 0), `missing one of ${expected.join(', ')} in ${files.join(', ')}`);
@@ -202,8 +195,8 @@ test('field values: what a field holds now, and whether it holds the expected va
 test('every page that loads the engine loads its modules first, in dependency order', () => {
   const manifest = JSON.parse(read('manifest.json'));
   inLoadOrder(manifest.content_scripts[0].js, FORM_MODULES);
-  inLoadOrder(sharedScripts('sidepanel/index.html'), FORM_MODULES);
-  inLoadOrder(sharedScripts('demo/parser-test.html'), FORM_MODULES);
+  // ES-module pages (the parser demo, the side panel's modules) get the same files, in the same order, through the facade.
+  inLoadOrder([...read('shared/engines.mjs').matchAll(/^import '\.\/([^']+)';/gm)].map((match) => `shared/${match[1]}`), FORM_MODULES);
 });
 
 test('in script order the engine runs on the globals its modules install, and fails loudly without them', () => {

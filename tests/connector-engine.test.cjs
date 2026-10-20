@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const connector = require('../shared/connector-engine.js');
+const connector = require('../shared/connector-engine.mjs');
 
 const schema = [
   { id: 101, label: 'First Name', reference_tag: 'firstName' },

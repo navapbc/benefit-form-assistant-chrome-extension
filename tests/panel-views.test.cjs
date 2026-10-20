@@ -1,16 +1,16 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 
-const format = require('../sidepanel/panel-format.js');
-const intakeViews = require('../sidepanel/view-intake.js');
-const connectorViews = require('../sidepanel/view-connector.js');
-const recertificationViews = require('../sidepanel/view-recertification.js');
-const applicationViews = require('../sidepanel/view-applications.js');
-const reviewViews = require('../sidepanel/view-review.js');
+const format = require('../sidepanel/panel-format.mjs');
+const intakeViews = require('../sidepanel/view-intake.mjs');
+const connectorViews = require('../sidepanel/view-connector.mjs');
+const recertificationViews = require('../sidepanel/view-recertification.mjs');
+const applicationViews = require('../sidepanel/view-applications.mjs');
+const reviewViews = require('../sidepanel/view-review.mjs');
 const engine = require('../shared/form-engine.js');
-const connectorEngine = require('../shared/connector-engine.js');
-const recertificationEngine = require('../shared/recertification-engine.js');
-const programCatalog = require('../shared/program-catalog.js');
+const connectorEngine = require('../shared/connector-engine.mjs');
+const recertificationEngine = require('../shared/recertification-engine.mjs');
+const programCatalog = require('../shared/program-catalog.mjs');
 
 /** Composes every screen module the way sidepanel.js does, over a fake screen root. */
 function screens({ state: stateOverrides = {}, previewMode = false, running = [], agentPlanner = null } = {}) {

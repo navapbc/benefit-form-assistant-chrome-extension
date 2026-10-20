@@ -7,9 +7,9 @@ import { fileURLToPath } from 'node:url';
 const require = createRequire(import.meta.url);
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const formEngine = require('../shared/form-engine.js');
-const ocrEngine = require('../sidepanel/ocr-engine.js');
-require('../sidepanel/document-readers.js');
-const documentParser = require('../sidepanel/document-parser.js');
+const ocrEngine = require('../sidepanel/ocr-engine.mjs');
+require('../sidepanel/document-readers.mjs');
+const documentParser = require('../sidepanel/document-parser.mjs');
 const { createWorker, OEM } = require('tesseract.js');
 const corpus = JSON.parse(await readFile(path.join(root, 'evaluation', 'corpus.json'), 'utf8'));
 

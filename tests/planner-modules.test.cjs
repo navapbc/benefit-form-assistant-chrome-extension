@@ -4,15 +4,13 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
-const vm = require('node:vm');
 
-const plannerInventory = require('../shared/planner-inventory.js');
-const plannerRuntime = require('../shared/planner-runtime.js');
-const planner = require('../shared/agentic-planner.js');
+const plannerInventory = require('../shared/planner-inventory.mjs');
+const plannerRuntime = require('../shared/planner-runtime.mjs');
+const planner = require('../shared/agentic-planner.mjs');
 const engine = require('../shared/form-engine.js');
 
 const root = path.resolve(__dirname, '..');
-const PLANNER_MODULES = ['shared/planner-inventory.js', 'shared/planner-runtime.js', 'shared/agentic-planner.js'];
 const TOKEN = 'pairing-token-0123456789abcdef';
 
 function read(relativePath) {
@@ -59,9 +57,8 @@ test.afterEach(() => {
 });
 
 test('the planner API keeps its keys and delegates to the runtime and inventory modules', () => {
-  assert.deepEqual(Object.keys(planner), [
-    'availability', 'configure', 'gatewayConfig', 'gatewayRequest', 'normalizeGatewayBase', 'saveGatewayConfig', 'clearGatewayConfig', 'groupedInventory', 'plan', 'prepare', 'reset', 'runtimeInfo',
-    'setBridgeFetchForTests', 'setRuntimeForTests',
+  assert.deepEqual(Object.keys(planner).sort(), [
+    'availability', 'clearGatewayConfig', 'configure', 'gatewayConfig', 'gatewayRequest', 'groupedInventory', 'normalizeGatewayBase', 'plan', 'prepare', 'reset', 'runtimeInfo', 'saveGatewayConfig', 'setBridgeFetchForTests', 'setRuntimeForTests'
   ]);
   assert.equal(planner.groupedInventory, plannerInventory.groupedInventory);
   ['availability', 'configure', 'prepare', 'reset', 'runtimeInfo', 'setBridgeFetchForTests', 'setRuntimeForTests']
@@ -179,31 +176,22 @@ test('prompts to one role never overlap, and each reports value-free usage', asy
   });
 });
 
-test('side-panel script order loads the inventory, then the runtime, then the planner, which runs on their globals', async () => {
-  const sidePanelShared = [...read('sidepanel/index.html').matchAll(/<script\b[^>]*\bsrc="\.\.\/(shared\/[^"?#]+)/g)].map((match) => match[1]);
-  const positions = PLANNER_MODULES.map((file) => sidePanelShared.indexOf(file));
-  assert.ok(positions.every((position, index) => position >= 0 && (index === 0 || position > positions[index - 1])), sidePanelShared.join(', '));
+test('the planner modules import each other, and the side panel composition root imports the planner', async () => {
+  const importsOf = (file) => [...read(file).matchAll(/^import\b[^;]*from '([^']+)';/gm)].map((match) => match[1]);
+  assert.deepEqual(importsOf('shared/planner-runtime.mjs'), ['./planner-inventory.mjs']);
+  assert.deepEqual(importsOf('shared/agentic-planner.mjs'), ['./planner-inventory.mjs', './planner-runtime.mjs', './engines.mjs']);
 
-  const context = vm.createContext({ URL });
-  PLANNER_MODULES.forEach((file) => vm.runInContext(read(file), context, { filename: file }));
-  const browserPlanner = context.NavaAgenticPlanner;
-  assert.deepEqual(Object.keys(browserPlanner), Object.keys(planner));
-  assert.equal(browserPlanner.groupedInventory, context.NavaPlannerInventory.groupedInventory);
-  assert.equal(browserPlanner.configure, context.NavaPlannerRuntime.configure);
-  assert.equal(browserPlanner.runtimeInfo().kind, 'chrome-local');
-  assert.equal(await browserPlanner.availability(), 'unavailable');
+  assert.match(read('sidepanel/main.mjs'), /import \* as agentPlanner from '\.\.\/shared\/agentic-planner\.mjs';/);
 
-  const withoutModules = vm.createContext({ URL });
-  assert.throws(
-    () => vm.runInContext(read('shared/agentic-planner.js'), withoutModules, { filename: 'shared/agentic-planner.js' }),
-    (error) => error.name === 'TypeError',
-  );
-  assert.equal(withoutModules.NavaAgenticPlanner, undefined);
+  assert.equal(planner.configure, plannerRuntime.configure);
+  assert.equal(planner.runtimeInfo().kind, 'chrome-local');
+  assert.equal(await planner.availability(), 'unavailable');
+  plannerRuntime.setBridgeFetchForTests(null);
 });
 
 test('redaction keeps form vocabulary whole and never marks the client\'s choice among the options', () => {
   // Fictional demo record 339619: preferred contact "Email", a household member whose relationship is "Child".
-  const { CLIENT_RECORDS } = require('../shared/demo-connector-data.js');
+  const { CLIENT_RECORDS } = require('../shared/demo-connector-data.mjs');
   const participant = CLIENT_RECORDS.find((record) => JSON.stringify(record).includes('339619'));
   const rawFields = [
     { fieldKey: 'care', type: 'radio', label: 'Yes', question: 'Is the household paying for childcare?', optionLabel: 'Yes' },

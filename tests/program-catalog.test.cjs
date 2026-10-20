@@ -1,7 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 
-const catalog = require('../shared/program-catalog.js');
+const catalog = require('../shared/program-catalog.mjs');
 
 test('BenefitsCal programs are grouped into one application workflow', () => {
   const planned = catalog.planWorkflows(['calfresh', 'medical', 'calworks', 'wic', 'ihss']);

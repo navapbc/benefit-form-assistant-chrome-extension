@@ -1,9 +1,9 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 
-const policyRules = require('../sidepanel/application-policy.js');
-const { hostLabel } = require('../sidepanel/panel-format.js');
-const { PROGRAMS } = require('../shared/program-catalog.js');
+const policyRules = require('../sidepanel/application-policy.mjs');
+const { hostLabel } = require('../sidepanel/panel-format.mjs');
+const { PROGRAMS } = require('../shared/program-catalog.mjs');
 
 const policy = policyRules.create({ programs: PROGRAMS, hostLabel });
 

@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const { sidePanelSource, serviceWorkerSource } = require('./runtime-sources.cjs');
-const engine = require('../shared/recertification-engine.js');
+const engine = require('../shared/recertification-engine.mjs');
 
 const root = path.resolve(__dirname, '..');
 
@@ -96,7 +96,8 @@ test('extension wiring keeps answers session-only and locks preparation behind r
   const save = panel.slice(saveStart, saveEnd);
   const prepare = panel.slice(prepareStart, prepareEnd);
 
-  assert.match(html, /shared\/recertification-engine\.js/);
+  assert.match(html, /type="module" src="main\.mjs"/);
+  assert.match(fs.readFileSync(path.join(root, 'sidepanel/main.mjs'), 'utf8'), /shared\/recertification-engine\.mjs/);
   assert.match(background, /LIST_RECERTIFICATIONS/);
   assert.match(background, /connectorRequest\(saved\.config, 'recertifications'/);
   assert.match(save, /chrome\.storage\.session\.set/);

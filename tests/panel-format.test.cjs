@@ -1,7 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 
-const format = require('../sidepanel/panel-format.js');
+const format = require('../sidepanel/panel-format.mjs');
 
 test('HTML escaping covers every markup-significant character and empty values', () => {
   assert.equal(format.escapeHtml(`<a href="x">Tom & Jerry's</a>`), '&lt;a href=&quot;x&quot;&gt;Tom &amp; Jerry&#039;s&lt;/a&gt;');

@@ -1,7 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 
-const rules = require('../background/coordinator-rules.js');
+const rules = require('../background/coordinator-rules.mjs');
 
 const APP = 'workflow:test';
 

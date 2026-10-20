@@ -1,13 +1,13 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 
-const pageScan = require('../sidepanel/page-scan.js');
-const applicationRunner = require('../sidepanel/application-runner.js');
-const scanAnalysis = require('../sidepanel/scan-analysis.js');
-const policyRules = require('../sidepanel/application-policy.js');
-const format = require('../sidepanel/panel-format.js');
-const workQueueEngine = require('../shared/work-queue-engine.js');
-const { PROGRAMS } = require('../shared/program-catalog.js');
+const pageScan = require('../sidepanel/page-scan.mjs');
+const applicationRunner = require('../sidepanel/application-runner.mjs');
+const scanAnalysis = require('../sidepanel/scan-analysis.mjs');
+const policyRules = require('../sidepanel/application-policy.mjs');
+const format = require('../sidepanel/panel-format.mjs');
+const workQueueEngine = require('../shared/work-queue-engine.mjs');
+const { PROGRAMS } = require('../shared/program-catalog.mjs');
 
 const policy = policyRules.create({ programs: PROGRAMS, hostLabel: format.hostLabel });
 const BASE = 'https://benefitscal.com/ApplyForBenefits';

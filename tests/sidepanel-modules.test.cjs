@@ -4,39 +4,39 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
-const workQueueEngine = require('../shared/work-queue-engine.js');
-const connectorEngine = require('../shared/connector-engine.js');
+const workQueueEngine = require('../shared/work-queue-engine.mjs');
+const connectorEngine = require('../shared/connector-engine.mjs');
 const { sidePanelScripts, sidePanelSource } = require('./runtime-sources.cjs');
-const runControlModule = require('../sidepanel/run-control.js');
-const captchaRunsModule = require('../sidepanel/captcha-runs.js');
-const coordinatorMergeModule = require('../sidepanel/coordinator-merge.js');
-const coordinatorSyncModule = require('../sidepanel/coordinator-sync.js');
-const coordinatorWritesModule = require('../sidepanel/coordinator-writes.js');
-const agentRuntimeModule = require('../sidepanel/agent-runtime.js');
-const automaticRunsModule = require('../sidepanel/automatic-runs.js');
-const recertificationCaseloadModule = require('../sidepanel/recertification-caseload.js');
-const agentActionsModule = require('../sidepanel/actions-agent.js');
-const recertificationActionsModule = require('../sidepanel/actions-recertification.js');
-const intakeActionsModule = require('../sidepanel/actions-intake.js');
-const connectorActionsModule = require('../sidepanel/actions-connector.js');
-const applicationActionsModule = require('../sidepanel/actions-applications.js');
-const uiDispatchModule = require('../sidepanel/ui-dispatch.js');
+const runControlModule = require('../sidepanel/run-control.mjs');
+const captchaRunsModule = require('../sidepanel/captcha-runs.mjs');
+const coordinatorMergeModule = require('../sidepanel/coordinator-merge.mjs');
+const coordinatorSyncModule = require('../sidepanel/coordinator-sync.mjs');
+const coordinatorWritesModule = require('../sidepanel/coordinator-writes.mjs');
+const agentRuntimeModule = require('../sidepanel/agent-runtime.mjs');
+const automaticRunsModule = require('../sidepanel/automatic-runs.mjs');
+const recertificationCaseloadModule = require('../sidepanel/recertification-caseload.mjs');
+const agentActionsModule = require('../sidepanel/actions-agent.mjs');
+const recertificationActionsModule = require('../sidepanel/actions-recertification.mjs');
+const intakeActionsModule = require('../sidepanel/actions-intake.mjs');
+const connectorActionsModule = require('../sidepanel/actions-connector.mjs');
+const applicationActionsModule = require('../sidepanel/actions-applications.mjs');
+const uiDispatchModule = require('../sidepanel/ui-dispatch.mjs');
 
 const MODULES = {
-  'sidepanel/run-control.js': runControlModule,
-  'sidepanel/captcha-runs.js': captchaRunsModule,
-  'sidepanel/coordinator-merge.js': coordinatorMergeModule,
-  'sidepanel/coordinator-sync.js': coordinatorSyncModule,
-  'sidepanel/coordinator-writes.js': coordinatorWritesModule,
-  'sidepanel/agent-runtime.js': agentRuntimeModule,
-  'sidepanel/automatic-runs.js': automaticRunsModule,
-  'sidepanel/recertification-caseload.js': recertificationCaseloadModule,
-  'sidepanel/actions-agent.js': agentActionsModule,
-  'sidepanel/actions-recertification.js': recertificationActionsModule,
-  'sidepanel/actions-intake.js': intakeActionsModule,
-  'sidepanel/actions-connector.js': connectorActionsModule,
-  'sidepanel/actions-applications.js': applicationActionsModule,
-  'sidepanel/ui-dispatch.js': uiDispatchModule,
+  'sidepanel/run-control.mjs': runControlModule,
+  'sidepanel/captcha-runs.mjs': captchaRunsModule,
+  'sidepanel/coordinator-merge.mjs': coordinatorMergeModule,
+  'sidepanel/coordinator-sync.mjs': coordinatorSyncModule,
+  'sidepanel/coordinator-writes.mjs': coordinatorWritesModule,
+  'sidepanel/agent-runtime.mjs': agentRuntimeModule,
+  'sidepanel/automatic-runs.mjs': automaticRunsModule,
+  'sidepanel/recertification-caseload.mjs': recertificationCaseloadModule,
+  'sidepanel/actions-agent.mjs': agentActionsModule,
+  'sidepanel/actions-recertification.mjs': recertificationActionsModule,
+  'sidepanel/actions-intake.mjs': intakeActionsModule,
+  'sidepanel/actions-connector.mjs': connectorActionsModule,
+  'sidepanel/actions-applications.mjs': applicationActionsModule,
+  'sidepanel/ui-dispatch.mjs': uiDispatchModule,
 };
 
 const tick = () => new Promise((resolve) => setImmediate(resolve));
@@ -75,19 +75,19 @@ function runControl({ state, previewMode = false, onCancelAll = () => {}, revoke
   });
 }
 
-test('every new side-panel module exports create(), loads before the composition root, and reads no Nava globals', () => {
+test('every side-panel module exports create(), is imported by the composition root, and reads no Nava globals', () => {
   const scripts = sidePanelScripts();
-  const rootIndex = scripts.indexOf('sidepanel/sidepanel.js');
-  assert.ok(rootIndex > 0);
+  const rootIndex = scripts.indexOf('sidepanel/main.mjs');
+  assert.equal(rootIndex, scripts.length - 1, 'main.mjs comes last, after everything it imports');
+  const main = fs.readFileSync(path.resolve(__dirname, '..', 'sidepanel/main.mjs'), 'utf8');
   for (const [file, api] of Object.entries(MODULES)) {
     assert.equal(typeof api.create, 'function', file);
     const index = scripts.indexOf(file);
-    assert.ok(index >= 0 && index < rootIndex, `${file} must load before sidepanel.js`);
+    assert.ok(index >= 0 && index < rootIndex, `${file} must be loaded before main.mjs`);
+    assert.ok(main.includes(`'./${path.basename(file)}'`), `${file} must be imported by main.mjs`);
     const source = fs.readFileSync(path.resolve(__dirname, '..', file), 'utf8');
     assert.doesNotMatch(source, /globalThis\.Nava/, `${file} must take its engines from the composition root`);
   }
-  assert.ok(scripts.indexOf('sidepanel/recertification-caseload.js') < scripts.indexOf('sidepanel/ui-dispatch.js'));
-  assert.ok(scripts.indexOf('sidepanel/actions-applications.js') < scripts.indexOf('sidepanel/ui-dispatch.js'));
 });
 
 test('the dispatcher outcome and screen switch are declared once, so every action table shares their identity', () => {

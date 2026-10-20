@@ -1,13 +1,13 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 
-const previewRuntime = require('../sidepanel/preview-runtime.js');
-const policyRules = require('../sidepanel/application-policy.js');
+const previewRuntime = require('../sidepanel/preview-runtime.mjs');
+const policyRules = require('../sidepanel/application-policy.mjs');
 const engine = require('../shared/form-engine.js');
-const connectorEngine = require('../shared/connector-engine.js');
-const programCatalog = require('../shared/program-catalog.js');
-const workQueueEngine = require('../shared/work-queue-engine.js');
-const demoConnectorData = require('../shared/demo-connector-data.js');
+const connectorEngine = require('../shared/connector-engine.mjs');
+const programCatalog = require('../shared/program-catalog.mjs');
+const workQueueEngine = require('../shared/work-queue-engine.mjs');
+const demoConnectorData = require('../shared/demo-connector-data.mjs');
 
 const DEMO_RECORDS = { 339619: { record_id: '339619', participant: { name: { first: 'Celeste', last: 'Thomas' } } } };
 

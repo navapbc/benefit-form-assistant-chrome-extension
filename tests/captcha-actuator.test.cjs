@@ -146,7 +146,7 @@ test('image MIME must match magic bytes; bounded JPEG metadata is supported with
   assert.equal(validateCaptchaRequest({ ...request, image: `data:image/jpeg;base64,${image}` }).mediaType, 'image/jpeg');
 });
 test('CAPTCHA audit retains real long durations and unknown billing without client/image values', () => {
-  const queue = require('../shared/work-queue-engine.js');
+  const queue = require('../shared/work-queue-engine.mjs');
   const event = queue.auditEvent('captcha_attempt', { id: 'app', url: 'https://benefits.test/?secret=private' }, {
     captchaDurationMs: 120_100, captchaOutcome: 'handoff', captchaBilledCost: 'unknown', modelInputTokens: null, image: 'private pixels', participant: 'private', captchaUsageStatus: 'partial',
   });
@@ -165,7 +165,7 @@ test('Codex image invocation is ephemeral, read-only, attaches one crop and stri
 });
 test('Jev retains the shared checkbox executor but makes zero image model calls', async () => {
   globalThis.NavaCaptchaEngine = engine;
-  const model = require('../sidepanel/captcha-model.js');
+  const model = require('../sidepanel/captcha-model.mjs');
   const result = await model.classify({ task: 'Select traffic lights', tileCount: 9, image: 'not-transmitted' }, { kind: 'local-cli', provider: 'jev' });
   assert.equal(result.decision.action, 'handoff'); assert.equal(result.metrics.inferenceCalls, 0);
   assert.throws(() => model.companionUrl('https://external.test'), /loopback/);

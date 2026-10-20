@@ -1,7 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const engine = require('../shared/form-engine.js');
-const planner = require('../shared/agentic-planner.js');
+const planner = require('../shared/agentic-planner.mjs');
 const adapters = require('../shared/site-adapters.js');
 const page = { url: 'https://www.ruhealth.org/appointments/apply-4-wic-form', domain: 'www.ruhealth.org', documentId: 'test-document-a' };
 const address = { street: '12 Test Street', unit: 'Apt 3', city: 'Riverside', state: 'CA', zip: '92501' };
@@ -167,4 +167,15 @@ test('changing the paired runtime clears previously verified Jev mappings', asyn
   const afterChange = await planner.plan({ engine, page, rawFields: filled, participant: person });
   assert.equal(sent.length, 2, 'new runtime must classify rather than inherit the prior verified cache');
   assert.equal(afterChange.metadata.retainedVerifiedMappings, 0);
+});
+
+test('the side panel plans without site rules: with siteAdapters null a declined WIC field stays a question', async () => {
+  const sent = bridge(() => null);
+  const plan = await planner.plan({ engine, page, rawFields: controls, participant: person, siteAdapters: null });
+  assert.equal(sent.length, 2, 'the planner asks once, then retries once, as it did without adapters');
+  assert.equal(plan.metadata.trustedHintMappings, 0);
+  assert.equal(plan.approved.length, 0);
+  assert.deepEqual(plan.gaps.map((gap) => gap.fieldKey).sort(), ['edit-home-address', 'edit-name']);
+  const panel = require('node:fs').readFileSync(require('node:path').join(__dirname, '..', 'sidepanel/page-scan.mjs'), 'utf8');
+  assert.match(panel, /agentPlanner\.plan\(\{[\s\S]*?siteAdapters: null/, 'the side panel opts out of site-rule approvals, as it did before the ES-module migration');
 });

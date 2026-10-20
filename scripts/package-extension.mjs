@@ -3,6 +3,7 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSy
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { zipSync } from 'fflate';
+import { findUnshippedImports } from './check-modules.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const SHIPPED = ['manifest.json', 'background.js', 'background', 'content', 'shared', 'sidepanel', 'vendor', 'icons'];
@@ -48,6 +49,9 @@ if (!manifest.icons?.['128']) problems.push('manifest.json needs a 128px icon fo
 // Every script the side panel page loads must exist.
 const panel = read(manifest.side_panel.default_path);
 for (const [, src] of panel.matchAll(/<script[^>]+src="([^"?#]+)/g)) requireFile(relative(root, resolve(root, dirname(manifest.side_panel.default_path), src)), manifest.side_panel.default_path);
+
+// The page the manifest loads and the service worker must not import anything the zip leaves out.
+problems.push(...findUnshippedImports(root, [manifest.background.service_worker, ...(panel.match(/<script[^>]+type="module"[^>]+src="([^"]+)"/g) || []).map((tag) => join(dirname(manifest.side_panel.default_path), tag.match(/src="([^"]+)"/)[1]))], SHIPPED));
 
 if (problems.length) {
   console.error(problems.map((problem) => `- ${problem}`).join('\n'));

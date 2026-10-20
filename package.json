@@ -8,6 +8,7 @@
     "lint": "eslint .",
     "check:vendor": "node scripts/verify-vendor.mjs",
     "typecheck": "node scripts/typecheck.mjs",
+    "check:modules": "node scripts/check-modules.mjs",
     "check:docs": "node scripts/check-doc-links.mjs",
     "check:package": "node scripts/package-extension.mjs",
     "connector:mock": "node connector-service/mock-server.mjs",

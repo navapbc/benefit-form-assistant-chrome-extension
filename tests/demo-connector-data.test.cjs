@@ -6,11 +6,11 @@ const net = require('node:net');
 const path = require('node:path');
 const vm = require('node:vm');
 
-const demoData = require('../shared/demo-connector-data.js');
-const connectorEngine = require('../shared/connector-engine.js');
-const programCatalog = require('../shared/program-catalog.js');
-const recertificationEngine = require('../shared/recertification-engine.js');
-const coordinatorRules = require('../background/coordinator-rules.js');
+const demoData = require('../shared/demo-connector-data.mjs');
+const connectorEngine = require('../shared/connector-engine.mjs');
+const programCatalog = require('../shared/program-catalog.mjs');
+const recertificationEngine = require('../shared/recertification-engine.mjs');
+const coordinatorRules = require('../background/coordinator-rules.mjs');
 
 const root = path.resolve(__dirname, '..');
 
@@ -24,11 +24,8 @@ function serviceWorkerDemoConnector(clock) {
       super(...(args.length ? args : [clock.now]));
     }
   }
-  const context = { Date: ClockDate, chrome: { storage: { local: { async get() { return {}; } } } } };
-  context.globalThis = context;
-  const script = 'background/connector-client.js';
-  vm.runInNewContext(fs.readFileSync(path.join(root, script), 'utf8'), context, { filename: script });
-  const client = context.NavaConnectorClient.create({
+  const fakeChrome = { storage: { local: { async get() { return {}; } } } };
+  const client = require('../background/connector-client.mjs').create({
     rules: coordinatorRules,
     connectorEngine,
     programCatalog,
@@ -36,9 +33,20 @@ function serviceWorkerDemoConnector(clock) {
     demoConnectorData: demoData,
     storageKeys: { CONNECTOR_STORAGE_KEY: 'nava:connector' },
   });
-  return (message) => new Promise((resolve) => {
-    assert.equal(client.routeConnectorMessage(message, {}, resolve), true);
-  });
+  // The module reads the global Date and chrome when a request is handled, so each request runs under the fake clock.
+  return async (message) => {
+    const saved = { Date: globalThis.Date, chrome: globalThis.chrome };
+    globalThis.Date = ClockDate;
+    globalThis.chrome = fakeChrome;
+    try {
+      return await new Promise((resolve) => {
+        assert.equal(client.routeConnectorMessage(message, {}, resolve), true);
+      });
+    } finally {
+      globalThis.Date = saved.Date;
+      globalThis.chrome = saved.chrome;
+    }
+  };
 }
 
 function freePort() {
@@ -70,15 +78,15 @@ async function withMockConnector(action) {
   }
 }
 
-/** The side panel's preview fixture, evaluated from sidepanel.js against the shared module. */
+/** The side panel's preview fixture, evaluated from sidepanel/main.mjs against the shared module. */
 function previewFixture() {
-  const source = fs.readFileSync(path.join(root, 'sidepanel/sidepanel.js'), 'utf8');
+  const source = fs.readFileSync(path.join(root, 'sidepanel/main.mjs'), 'utf8');
   const start = source.indexOf('const PREVIEW_CONNECTOR_SCHEMA');
   const recordStart = source.indexOf('const PREVIEW_RAW_RECORD', start);
-  const end = source.indexOf('\n  };\n', recordStart);
-  assert.ok(start >= 0 && recordStart > start && end > recordStart, 'preview connector fixture should be declared in sidepanel.js');
+  const end = source.indexOf('\n};\n', recordStart);
+  assert.ok(start >= 0 && recordStart > start && end > recordStart, 'preview connector fixture should be declared in sidepanel/main.mjs');
   const context = { demoConnectorData: demoData };
-  vm.runInNewContext(`${source.slice(start, end + 5)}\nresult = { PREVIEW_CONNECTOR_SCHEMA, PREVIEW_RAW_RECORD };`, context);
+  vm.runInNewContext(`${source.slice(start, end + 3)}\nresult = { PREVIEW_CONNECTOR_SCHEMA, PREVIEW_RAW_RECORD };`, context);
   return context.result;
 }
 

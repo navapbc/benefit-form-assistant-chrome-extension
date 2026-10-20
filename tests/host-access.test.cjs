@@ -2,7 +2,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
-const { ensureHostAccess, originPattern } = require('../sidepanel/host-access.js');
+const { ensureHostAccess, originPattern } = require('../sidepanel/host-access.mjs');
 
 const root = path.resolve(__dirname, '..');
 const manifest = JSON.parse(fs.readFileSync(path.join(root, 'manifest.json'), 'utf8'));

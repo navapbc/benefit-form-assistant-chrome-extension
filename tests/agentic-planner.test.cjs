@@ -1,7 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const engine = require('../shared/form-engine.js');
-const planner = require('../shared/agentic-planner.js');
+const planner = require('../shared/agentic-planner.mjs');
 
 function runtimeFor({ reviewerApproved, reviewerRejected, mapperConfidence = 'high', mapperMappings, gapItems, rawOutput = {} } = {}) {
   const prompts = [];

@@ -3,19 +3,16 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
-const vm = require('node:vm');
-const workQueueEngine = require('../shared/work-queue-engine.js');
-const coordinatorMerge = require('../sidepanel/coordinator-merge.js');
+const workQueueEngine = require('../shared/work-queue-engine.mjs');
+const coordinatorMerge = require('../sidepanel/coordinator-merge.mjs');
 
-// The action tables in dispatcher order, then the dispatcher, as sidepanel/index.html loads them.
-const DISPATCH_SCRIPTS = [
-  'sidepanel/actions-agent.js',
-  'sidepanel/actions-recertification.js',
-  'sidepanel/actions-intake.js',
-  'sidepanel/actions-connector.js',
-  'sidepanel/actions-applications.js',
-  'sidepanel/ui-dispatch.js',
-].map((file) => ({ file, source: fs.readFileSync(path.resolve(__dirname, '..', file), 'utf8') }));
+// The action tables in dispatcher order, then the dispatcher, as sidepanel/main.mjs composes them.
+const uiDispatch = require('../sidepanel/ui-dispatch.mjs');
+const createAgentActions = require('../sidepanel/actions-agent.mjs').create;
+const createRecertificationActions = require('../sidepanel/actions-recertification.mjs').create;
+const createIntakeActions = require('../sidepanel/actions-intake.mjs').create;
+const createConnectorActions = require('../sidepanel/actions-connector.mjs').create;
+const createApplicationActions = require('../sidepanel/actions-applications.mjs').create;
 
 // Every data-action and form id the panel handled before the handler tables existed.
 const CLICK_ACTION_NAMES = [
@@ -125,15 +122,15 @@ function dispatchHarness(overrides = {}) {
     },
     ...overrides.stubs,
   };
-  vm.createContext(context);
-  DISPATCH_SCRIPTS.forEach(({ file, source }) => vm.runInContext(source, context, { filename: file }));
-  const deps = { ...context, ...context.NavaUiDispatch.handlerContract(context.state) };
-  const agentActions = context.NavaAgentActions.create(deps);
-  const recertificationActions = context.NavaRecertificationActions.create(deps);
-  const intakeActions = context.NavaIntakeActions.create(deps);
-  const connectorActions = context.NavaConnectorActions.create(deps);
-  const applicationActions = context.NavaApplicationActions.create(deps);
-  const { onClick, onSubmit, CLICK_ACTIONS, SUBMIT_ACTIONS } = context.NavaUiDispatch.create({
+  // The action modules look up `document`, `Event`, and `FormData` as globals when a handler runs, so the harness installs its stand-ins.
+  Object.assign(globalThis, { document: context.document, Event: context.Event, FormData: context.FormData });
+  const deps = { ...context, ...uiDispatch.handlerContract(context.state) };
+  const agentActions = createAgentActions(deps);
+  const recertificationActions = createRecertificationActions(deps);
+  const intakeActions = createIntakeActions(deps);
+  const connectorActions = createConnectorActions(deps);
+  const applicationActions = createApplicationActions(deps);
+  const { onClick, onSubmit, CLICK_ACTIONS, SUBMIT_ACTIONS } = uiDispatch.create({
     ...deps,
     agentActions,
     recertificationActions,
@@ -192,7 +189,7 @@ test('every click action and form id has exactly one handler in an own-property 
 test('every data-action a screen renders reaches a handler, and the planner form only re-renders', () => {
   const root = path.resolve(__dirname, '..');
   const screens = ['sidepanel/index.html', ...fs.readdirSync(path.join(root, 'sidepanel'))
-    .filter((file) => /^view-.*\.js$/.test(file))
+    .filter((file) => /^view-.*\.mjs$/.test(file))
     .map((file) => `sidepanel/${file}`)]
     .map((file) => fs.readFileSync(path.join(root, file), 'utf8'))
     .join('\n');

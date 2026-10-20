@@ -101,7 +101,7 @@ There is **no SQL database or production Apricot adapter bundled here**. The run
 - **Documents:** bundled local parsing/OCR proposes bounded fields for human review; it is not general document understanding. [OCR limits](OCR_SECURITY_AND_LIMITS.md).
 - **CAPTCHA:** human by default; an explicit bounded opt-in enables recognized native attempts. The image path may send a cropped challenge to its selected runtime. One-time codes remain human. Certification and submission remain human checkpoints.
 
-Source: [page executor](../content/form-agent.js), [site rules](../shared/site-adapters.js), [planner/gateway](../shared/agentic-planner.js), [side panel](../sidepanel/sidepanel.js), [connector validation](../shared/connector-engine.js), [background coordination](../background.js), [queue recovery](WORK_QUEUE_SECURITY_AND_RECOVERY.md).
+Source: [page executor](../content/form-agent.js), [site rules](../shared/site-adapters.js), [planner/gateway](../shared/agentic-planner.mjs), [side panel](../sidepanel/main.mjs), [connector validation](../shared/connector-engine.mjs), [background coordination](../background.js), [queue recovery](WORK_QUEUE_SECURITY_AND_RECOVERY.md).
 
 ### Checks and evidence boundaries
 

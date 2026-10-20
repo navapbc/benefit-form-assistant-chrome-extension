@@ -2,9 +2,9 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 
 require('../shared/form-engine.js');
-require('../sidepanel/document-readers.js');
-const ocr = require('../sidepanel/ocr-engine.js');
-const parser = require('../sidepanel/document-parser.js');
+const readers = require('../sidepanel/document-readers.mjs');
+const ocr = require('../sidepanel/ocr-engine.mjs');
+const parser = require('../sidepanel/document-parser.mjs');
 
 function byKey(fields) {
   return Object.fromEntries(fields.map((field) => [field.key, field]));
@@ -218,8 +218,7 @@ test('parseDocument reads a CSV on this device and reports its method and missin
 });
 
 test('parseDocument keeps OCR values unchecked for review and explains what OCR withheld', async () => {
-  const previous = globalThis.NavaOcrEngine;
-  globalThis.NavaOcrEngine = {
+  readers.setOcrEngineForTests({
     imageFileSource: () => ({}),
     recognizeSources: async () => ({
       pages: [{
@@ -236,7 +235,7 @@ test('parseDocument keeps OCR values unchecked for review and explains what OCR 
       warnings: [],
       metrics: { pages: 1 },
     }),
-  };
+  });
   try {
     const scan = await parser.parseDocument(fakeFile('scan.png', 'image/png', 'img'));
     assert.deepEqual(scan.fields.map((field) => [field.key, field.reviewRequired, field.confidence]), [['firstName', true, 'medium']]);
@@ -246,7 +245,6 @@ test('parseDocument keeps OCR values unchecked for review and explains what OCR 
       '1 low-confidence OCR candidate was withheld.',
     ]);
   } finally {
-    if (previous === undefined) delete globalThis.NavaOcrEngine;
-    else globalThis.NavaOcrEngine = previous;
+    readers.setOcrEngineForTests(ocr);
   }
 });

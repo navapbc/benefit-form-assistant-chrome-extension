@@ -11,6 +11,6 @@
     "strict": false,
     "skipLibCheck": true
   },
-  "include": ["types/**/*.d.ts", "background.js", "background/**/*.js", "background/**/*.mjs", "content/**/*.js", "shared/**/*.js", "sidepanel/**/*.js"],
+  "include": ["types/**/*.d.ts", "background.js", "background/**/*.js", "background/**/*.mjs", "content/**/*.js", "shared/**/*.js", "shared/**/*.mjs", "sidepanel/**/*.js", "sidepanel/**/*.mjs"],
   "exclude": ["node_modules", "vendor"]
 }
