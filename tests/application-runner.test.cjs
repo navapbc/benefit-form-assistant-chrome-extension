@@ -2,7 +2,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 
 const pageScan = require('../sidepanel/page-scan.mjs');
-const applicationRunner = require('../sidepanel/application-runner.js');
+const applicationRunner = require('../sidepanel/application-runner.mjs');
 const scanAnalysis = require('../sidepanel/scan-analysis.mjs');
 const policyRules = require('../sidepanel/application-policy.mjs');
 const format = require('../sidepanel/panel-format.mjs');

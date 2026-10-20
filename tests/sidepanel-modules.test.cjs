@@ -7,36 +7,36 @@ const path = require('node:path');
 const workQueueEngine = require('../shared/work-queue-engine.mjs');
 const connectorEngine = require('../shared/connector-engine.mjs');
 const { sidePanelScripts, sidePanelSource } = require('./runtime-sources.cjs');
-const runControlModule = require('../sidepanel/run-control.js');
-const captchaRunsModule = require('../sidepanel/captcha-runs.js');
-const coordinatorMergeModule = require('../sidepanel/coordinator-merge.js');
-const coordinatorSyncModule = require('../sidepanel/coordinator-sync.js');
-const coordinatorWritesModule = require('../sidepanel/coordinator-writes.js');
-const agentRuntimeModule = require('../sidepanel/agent-runtime.js');
-const automaticRunsModule = require('../sidepanel/automatic-runs.js');
+const runControlModule = require('../sidepanel/run-control.mjs');
+const captchaRunsModule = require('../sidepanel/captcha-runs.mjs');
+const coordinatorMergeModule = require('../sidepanel/coordinator-merge.mjs');
+const coordinatorSyncModule = require('../sidepanel/coordinator-sync.mjs');
+const coordinatorWritesModule = require('../sidepanel/coordinator-writes.mjs');
+const agentRuntimeModule = require('../sidepanel/agent-runtime.mjs');
+const automaticRunsModule = require('../sidepanel/automatic-runs.mjs');
 const recertificationCaseloadModule = require('../sidepanel/recertification-caseload.mjs');
-const agentActionsModule = require('../sidepanel/actions-agent.js');
-const recertificationActionsModule = require('../sidepanel/actions-recertification.js');
-const intakeActionsModule = require('../sidepanel/actions-intake.js');
-const connectorActionsModule = require('../sidepanel/actions-connector.js');
-const applicationActionsModule = require('../sidepanel/actions-applications.js');
-const uiDispatchModule = require('../sidepanel/ui-dispatch.js');
+const agentActionsModule = require('../sidepanel/actions-agent.mjs');
+const recertificationActionsModule = require('../sidepanel/actions-recertification.mjs');
+const intakeActionsModule = require('../sidepanel/actions-intake.mjs');
+const connectorActionsModule = require('../sidepanel/actions-connector.mjs');
+const applicationActionsModule = require('../sidepanel/actions-applications.mjs');
+const uiDispatchModule = require('../sidepanel/ui-dispatch.mjs');
 
 const MODULES = {
-  'sidepanel/run-control.js': runControlModule,
-  'sidepanel/captcha-runs.js': captchaRunsModule,
-  'sidepanel/coordinator-merge.js': coordinatorMergeModule,
-  'sidepanel/coordinator-sync.js': coordinatorSyncModule,
-  'sidepanel/coordinator-writes.js': coordinatorWritesModule,
-  'sidepanel/agent-runtime.js': agentRuntimeModule,
-  'sidepanel/automatic-runs.js': automaticRunsModule,
+  'sidepanel/run-control.mjs': runControlModule,
+  'sidepanel/captcha-runs.mjs': captchaRunsModule,
+  'sidepanel/coordinator-merge.mjs': coordinatorMergeModule,
+  'sidepanel/coordinator-sync.mjs': coordinatorSyncModule,
+  'sidepanel/coordinator-writes.mjs': coordinatorWritesModule,
+  'sidepanel/agent-runtime.mjs': agentRuntimeModule,
+  'sidepanel/automatic-runs.mjs': automaticRunsModule,
   'sidepanel/recertification-caseload.mjs': recertificationCaseloadModule,
-  'sidepanel/actions-agent.js': agentActionsModule,
-  'sidepanel/actions-recertification.js': recertificationActionsModule,
-  'sidepanel/actions-intake.js': intakeActionsModule,
-  'sidepanel/actions-connector.js': connectorActionsModule,
-  'sidepanel/actions-applications.js': applicationActionsModule,
-  'sidepanel/ui-dispatch.js': uiDispatchModule,
+  'sidepanel/actions-agent.mjs': agentActionsModule,
+  'sidepanel/actions-recertification.mjs': recertificationActionsModule,
+  'sidepanel/actions-intake.mjs': intakeActionsModule,
+  'sidepanel/actions-connector.mjs': connectorActionsModule,
+  'sidepanel/actions-applications.mjs': applicationActionsModule,
+  'sidepanel/ui-dispatch.mjs': uiDispatchModule,
 };
 
 const tick = () => new Promise((resolve) => setImmediate(resolve));
@@ -86,8 +86,8 @@ test('every new side-panel module exports create(), loads before the composition
     const source = fs.readFileSync(path.resolve(__dirname, '..', file), 'utf8');
     assert.doesNotMatch(source, /globalThis\.Nava/, `${file} must take its engines from the composition root`);
   }
-  assert.ok(scripts.indexOf('sidepanel/recertification-caseload.mjs') < scripts.indexOf('sidepanel/ui-dispatch.js'));
-  assert.ok(scripts.indexOf('sidepanel/actions-applications.js') < scripts.indexOf('sidepanel/ui-dispatch.js'));
+  assert.ok(scripts.indexOf('sidepanel/recertification-caseload.mjs') < scripts.indexOf('sidepanel/ui-dispatch.mjs'));
+  assert.ok(scripts.indexOf('sidepanel/actions-applications.mjs') < scripts.indexOf('sidepanel/ui-dispatch.mjs'));
 });
 
 test('the dispatcher outcome and screen switch are declared once, so every action table shares their identity', () => {

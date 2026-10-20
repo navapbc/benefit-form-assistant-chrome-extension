@@ -23,6 +23,21 @@ import * as connectorViews from './view-connector.mjs';
 import * as intakeViews from './view-intake.mjs';
 import * as recertificationViews from './view-recertification.mjs';
 import * as reviewViews from './view-review.mjs';
+import * as captchaRuns from './captcha-runs.mjs';
+import * as applicationRunner from './application-runner.mjs';
+import * as previewRuntime from './preview-runtime.mjs';
+import * as runControl from './run-control.mjs';
+import * as coordinatorMerge from './coordinator-merge.mjs';
+import * as coordinatorSync from './coordinator-sync.mjs';
+import * as coordinatorWrites from './coordinator-writes.mjs';
+import * as agentRuntime from './agent-runtime.mjs';
+import * as automaticRuns from './automatic-runs.mjs';
+import * as agentActions from './actions-agent.mjs';
+import * as recertificationActions from './actions-recertification.mjs';
+import * as intakeActions from './actions-intake.mjs';
+import * as connectorActions from './actions-connector.mjs';
+import * as applicationActions from './actions-applications.mjs';
+import * as uiDispatch from './ui-dispatch.mjs';
 
 Object.assign(globalThis, {
   NavaConnectorEngine: connectorEngine,
@@ -49,4 +64,19 @@ Object.assign(globalThis, {
   NavaIntakeViews: intakeViews,
   NavaRecertificationViews: recertificationViews,
   NavaReviewViews: reviewViews,
+  NavaCaptchaRuns: captchaRuns,
+  NavaApplicationRunner: applicationRunner,
+  NavaPreviewRuntime: previewRuntime,
+  NavaRunControl: runControl,
+  NavaCoordinatorMerge: coordinatorMerge,
+  NavaCoordinatorSync: coordinatorSync,
+  NavaCoordinatorWrites: coordinatorWrites,
+  NavaAgentRuntime: agentRuntime,
+  NavaAutomaticRuns: automaticRuns,
+  NavaAgentActions: agentActions,
+  NavaRecertificationActions: recertificationActions,
+  NavaIntakeActions: intakeActions,
+  NavaConnectorActions: connectorActions,
+  NavaApplicationActions: applicationActions,
+  NavaUiDispatch: uiDispatch,
 });

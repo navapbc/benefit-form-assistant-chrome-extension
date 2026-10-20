@@ -139,10 +139,10 @@ test('disconnect aborts pending requests, removes the token and all API preferen
   assert.equal(await planner.gatewayConfig(), null);
 });
 
-const runControlModule = require('../sidepanel/run-control.js');
-const agentRuntimeModule = require('../sidepanel/agent-runtime.js');
-const applicationActionsModule = require('../sidepanel/actions-applications.js');
-const uiDispatchModule = require('../sidepanel/ui-dispatch.js');
+const runControlModule = require('../sidepanel/run-control.mjs');
+const agentRuntimeModule = require('../sidepanel/agent-runtime.mjs');
+const applicationActionsModule = require('../sidepanel/actions-applications.mjs');
+const uiDispatchModule = require('../sidepanel/ui-dispatch.mjs');
 
 function clientLinkContext(extra = {}) {
   const state = extra.state || { apps: [], view: 'questions' };

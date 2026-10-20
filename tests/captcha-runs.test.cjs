@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const captchaRuns = require('../sidepanel/captcha-runs.js');
+const captchaRuns = require('../sidepanel/captcha-runs.mjs');
 const captchaEngine = require('../shared/captcha-engine.js');
 
 const originalChrome = globalThis.chrome;
