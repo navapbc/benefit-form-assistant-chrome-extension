@@ -192,7 +192,7 @@ test('every click action and form id has exactly one handler in an own-property 
 test('every data-action a screen renders reaches a handler, and the planner form only re-renders', () => {
   const root = path.resolve(__dirname, '..');
   const screens = ['sidepanel/index.html', ...fs.readdirSync(path.join(root, 'sidepanel'))
-    .filter((file) => /^view-.*\.js$/.test(file))
+    .filter((file) => /^view-.*\.mjs$/.test(file))
     .map((file) => `sidepanel/${file}`)]
     .map((file) => fs.readFileSync(path.join(root, file), 'utf8'))
     .join('\n');

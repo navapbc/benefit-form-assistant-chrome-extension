@@ -18,6 +18,11 @@ import * as extensionMessaging from './extension-messaging.mjs';
 import * as pageScan from './page-scan.mjs';
 import * as recertificationCaseload from './recertification-caseload.mjs';
 import * as captchaModel from './captcha-model.mjs';
+import * as applicationViews from './view-applications.mjs';
+import * as connectorViews from './view-connector.mjs';
+import * as intakeViews from './view-intake.mjs';
+import * as recertificationViews from './view-recertification.mjs';
+import * as reviewViews from './view-review.mjs';
 
 Object.assign(globalThis, {
   NavaConnectorEngine: connectorEngine,
@@ -39,4 +44,9 @@ Object.assign(globalThis, {
   NavaPageScan: pageScan,
   NavaRecertificationCaseload: recertificationCaseload,
   NavaCaptchaModel: captchaModel,
+  NavaApplicationViews: applicationViews,
+  NavaConnectorViews: connectorViews,
+  NavaIntakeViews: intakeViews,
+  NavaRecertificationViews: recertificationViews,
+  NavaReviewViews: reviewViews,
 });
