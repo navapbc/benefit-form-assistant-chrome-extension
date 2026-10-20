@@ -66,7 +66,7 @@
   function keyForLabel(label) {
     const variants = String(label || '').split(/\s*(?:\/|\|)\s*/).map((value) => engine.normalize(value)).filter(Boolean);
     for (const variant of variants) {
-      const match = LABEL_RULES.find(([pattern]) => pattern.test(variant));
+      const match = LABEL_RULES.find(([pattern]) => /** @type {RegExp} */ (pattern).test(variant));
       if (match) return match[1];
     }
     return null;

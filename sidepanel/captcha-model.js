@@ -13,6 +13,11 @@
     if (url.protocol !== 'http:' || !['127.0.0.1', 'localhost'].includes(url.hostname) || url.username || url.password || url.search || url.hash || url.pathname !== '/') throw new Error('The CAPTCHA companion must use a loopback URL.');
     return new URL('/v1/captcha', url).href;
   }
+  /**
+   * @param {any} captured
+   * @param {any} provider
+   * @param {{ signal?: AbortSignal }} [options]
+   */
   async function classify(captured, provider, { signal } = {}) {
     const config = configFor(provider);
     const start = performance.now();

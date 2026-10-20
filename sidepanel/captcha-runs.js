@@ -10,6 +10,10 @@
       persist, resumeHumanCheckpoint, setCheckpoint,
     } = deps;
 
+    /**
+     * @param {any} application
+     * @param {{ runToken?: any }} [options]
+     */
     async function tryCaptcha(application, { runToken } = {}) {
       if (previewMode) throw new Error('CAPTCHA actuation requires the installed extension; preview results are simulated.');
       assertApplicationRun(application, runToken);

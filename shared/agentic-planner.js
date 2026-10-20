@@ -46,6 +46,7 @@
     pendingGatewayRequests.forEach((controller) => controller.abort());
   }
 
+  /** @param {{ base?: string, token?: string, allowLoopbackHttp?: boolean }} [config] */
   async function saveGatewayConfig({ base, token, allowLoopbackHttp = false } = {}) {
     const origin = normalizeGatewayBase(base, { allowLoopbackHttp });
     const storage = root.chrome?.storage?.local;
@@ -394,6 +395,7 @@
       providerReportedCostUsd: sumKnown('providerReportedCostUsd'), estimatedApiCostUsd: sumKnown('estimatedApiCostUsd') };
   }
 
+  /** @param {{ engine: any, page: any, rawFields: any, participant: any, onProgress?: (update: object) => void, jevRecovery?: any }} args */
   async function planWithJev({ engine, page, rawFields, participant, onProgress, jevRecovery = {} }) {
     const start = Date.now();
     const policyFields = trustedSiteInventory(page, rawFields);
@@ -579,6 +581,7 @@
 
   // Orchestration: resolve the runtime, redact the inventory, run the three roles, then keep only
   // what the local policy validator accepts.
+  /** @param {{ engine?: any, page?: any, rawFields?: any[], participant?: any, onProgress?: (update: object) => void, jevRecovery?: any, signal?: AbortSignal }} [args] */
   async function plan({ engine, page, rawFields, participant, onProgress, jevRecovery, signal } = {}) {
     if (!engine?.canonicalizeParticipant || !engine?.buildAnalysis) throw new Error('The form engine is unavailable.');
     if (runtimeInfo().provider === 'jev') return planWithJev({ engine, page, rawFields, participant, onProgress, jevRecovery });

@@ -183,6 +183,7 @@ schema-constrained data.`,
     });
   }
 
+  /** @param {{ onProgress?: (update: object) => void }} [options] */
   async function prepare({ onProgress } = {}) {
     if (sessions) return { status: 'ready', agents: providerConfig.provider === 'jev' ? ['decision_classifier'] : ROLE_NAMES };
     if (!preparingPromise) {

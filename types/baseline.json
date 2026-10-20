@@ -1,11 +1,1 @@
-{
-  "content/captcha-agent.js": 7,
-  "content/navigation-gate.js": 5,
-  "shared/agentic-planner.js": 12,
-  "shared/planner-runtime.js": 1,
-  "sidepanel/captcha-model.js": 1,
-  "sidepanel/captcha-runs.js": 1,
-  "sidepanel/document-parser.js": 1,
-  "sidepanel/document-readers.js": 1,
-  "sidepanel/ocr-engine.js": 3
-}
+{}

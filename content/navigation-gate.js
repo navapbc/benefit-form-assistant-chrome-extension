@@ -98,9 +98,9 @@
     }
 
     function botCheckStatus() {
-      const token = document.querySelector(
+      const token = /** @type {HTMLInputElement | null} */ (document.querySelector(
         '#g-recaptcha-response, [name="g-recaptcha-response"], [name="h-captcha-response"], [name="cf-turnstile-response"]',
-      );
+      ));
       const widget = document.querySelector(
         '.g-recaptcha, .h-captcha, [data-sitekey], iframe[src*="recaptcha"], iframe[src*="hcaptcha"], iframe[src*="challenges.cloudflare.com"]',
       );
@@ -117,7 +117,7 @@
     }
 
     function submitGateStatus() {
-      const controls = [...document.querySelectorAll('button, input[type="submit"], input[type="button"], [role="button"]')]
+      const controls = /** @type {HTMLInputElement[]} */ ([...document.querySelectorAll('button, input[type="submit"], input[type="button"], [role="button"]')])
         .filter(visible)
         .map((element) => ({
           text: cleanText(element.textContent || element.value || element.getAttribute('aria-label')),
@@ -147,7 +147,7 @@
         .filter(visible)
         .map((element) => cleanText(element.textContent))
         .find(Boolean) || document.title;
-      const fieldSignal = [...document.querySelectorAll('input, select, textarea')]
+      const fieldSignal = /** @type {HTMLInputElement[]} */ ([...document.querySelectorAll('input, select, textarea')])
         .filter(fieldVisible)
         .slice(0, 30)
         .map((element) => `${element.tagName}:${element.type || ''}:${element.name || element.id || labelFor(element)}`)

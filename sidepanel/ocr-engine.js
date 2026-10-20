@@ -217,7 +217,10 @@
     }
   }
 
-  /** @param {{ onProgress?: (update: object) => void }} [options] */
+  /**
+   * @param {any[]} sources
+   * @param {{ onProgress?: (update: object) => void }} [options]
+   */
   async function recognizeSources(sources, { onProgress = () => {} } = {}) {
     const limitedSources = sources.slice(0, MAX_OCR_PAGES);
     const warnings = [];

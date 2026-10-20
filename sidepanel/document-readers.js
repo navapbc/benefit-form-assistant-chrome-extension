@@ -228,7 +228,7 @@
     const extension = fileExtension(file);
     const format = formatFor(extension, file.type);
     if (!format) throw new Error(UNSUPPORTED_FORMAT_MESSAGE);
-    const read = await format.read(file, { extension, onProgress, keyForLabel });
+    const read = await /** @type {any} */ (format).read(file, { extension, onProgress, keyForLabel });
     if (read.record) return { extension, ...read };
     return {
       extension,
