@@ -23,7 +23,7 @@ Version 0.15 adds bounded Jev recovery and fixes the WIC address and conditional
 - Browser median: 8.994 seconds. Median estimated Jev cost: $0.000638 per trial.
 - Remaining controlled failure: CalFresh housing-status transformation in both repeats; county confidence varied in one repeat.
 
-See the [full Jev v0.15 evaluation](JEV_RECOVERY_V015.md) for per-run timing, tokens, estimated cost, scope and error attribution.
+See the [full Jev v0.15 evaluation](../JEV_RECOVERY_V015.md) for per-run timing, tokens, estimated cost, scope and error attribution.
 
 ## Testing boundary
 
