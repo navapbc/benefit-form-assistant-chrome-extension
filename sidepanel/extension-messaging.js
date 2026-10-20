@@ -53,6 +53,9 @@
     }
 
     async function probeTabDocument(tabId) {
+      if (!previewMode && root.NavaHostAccess && root.chrome?.tabs?.get) {
+        await root.NavaHostAccess.ensureHostAccess((await chrome.tabs.get(tabId)).url);
+      }
       const [probe] = await chrome.scripting.executeScript({
         target: { tabId, frameIds: [0] },
         func: () => ({ url: location.href, origin: location.origin, path: location.pathname }),

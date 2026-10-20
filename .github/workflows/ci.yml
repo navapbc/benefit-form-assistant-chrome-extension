@@ -33,6 +33,8 @@ jobs:
         run: npm ci --include=dev --no-audit --no-fund
       - name: Check source syntax and manifest
         run: npm run check
+      - name: Check version sync and manifest references
+        run: npm run check:package
       - name: Check setup and handoff documentation links
         run: npm run check:docs
       - name: Run unit and integration tests

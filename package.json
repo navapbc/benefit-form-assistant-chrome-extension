@@ -6,6 +6,7 @@
   "scripts": {
     "check": "node scripts/check-syntax.mjs",
     "check:docs": "node scripts/check-doc-links.mjs",
+    "check:package": "node scripts/package-extension.mjs",
     "connector:mock": "node connector-service/mock-server.mjs",
     "model:bridge": "node model-bridge/server.mjs",
     "model:jev": "node model-bridge/start-jev.mjs",
@@ -16,7 +17,9 @@
     "eval:models": "node scripts/summarize-model-evaluation.mjs",
     "test": "node --test tests/*.test.cjs",
     "model:eve": "npm --prefix model-bridge/eve run dev",
-    "eval:captcha": "node scripts/summarize-captcha-metrics.mjs"
+    "eval:captcha": "node scripts/summarize-captcha-metrics.mjs",
+    "icons": "node scripts/generate-icons.mjs",
+    "package": "node scripts/package-extension.mjs --build"
   },
   "devDependencies": {
     "@napi-rs/canvas": "^1.0.9",

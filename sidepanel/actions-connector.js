@@ -157,6 +157,7 @@
 
     async function submitConnectorSettings({ form, uiToken }) {
       const config = connectorConfigFromForm(new FormData(form));
+      if (!previewMode) await root.NavaHostAccess?.ensureHostAccess(config.backendUrl);
       setBusy('Testing the connector and loading labeled fields…');
       const response = await sendRuntime({ type: 'DISCOVER_CONNECTOR', config });
       assertUiGeneration(uiToken);

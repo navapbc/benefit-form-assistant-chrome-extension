@@ -35,6 +35,7 @@
         agentPlanner.reset();
         state.agentRuntime = { status: 'checking', message: '' };
       } else {
+        await root.NavaHostAccess?.ensureHostAccess(document.getElementById('nava-api-base')?.value);
         const config = await agentPlanner.saveGatewayConfig({
           base: document.getElementById('nava-api-base')?.value,
           token: document.getElementById('nava-api-token')?.value,
