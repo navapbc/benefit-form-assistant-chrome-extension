@@ -31,6 +31,8 @@ jobs:
           cache-dependency-path: package-lock.json
       - name: Install locked dependencies
         run: npm ci --include=dev --no-audit --no-fund
+      - name: Lint source
+        run: npm run lint
       - name: Check source syntax and manifest
         run: npm run check
       - name: Check version sync and manifest references

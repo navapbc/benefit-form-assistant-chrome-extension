@@ -11,6 +11,7 @@
   /** Whitespace and edge-separator cleanup shared by row cells and extracted field values. */
   function cleanText(value) {
     return String(value ?? '')
+      // eslint-disable-next-line no-control-regex -- NUL bytes from PDF/DOCX text extraction
       .replace(/\u0000/g, '')
       .replace(/[\t ]+/g, ' ')
       .replace(/^\s*[-–—:|]+\s*|\s*[-–—:|]+\s*$/g, '')

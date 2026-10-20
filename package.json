@@ -5,6 +5,7 @@
   "description": "Local-first Chrome side-panel prototype for Nava's form-completion protocol.",
   "scripts": {
     "check": "node scripts/check-syntax.mjs",
+    "lint": "eslint .",
     "check:docs": "node scripts/check-doc-links.mjs",
     "check:package": "node scripts/package-extension.mjs",
     "connector:mock": "node connector-service/mock-server.mjs",
@@ -23,7 +24,9 @@
   },
   "devDependencies": {
     "@napi-rs/canvas": "^1.0.9",
+    "eslint": "^9.39.5",
     "fflate": "^0.8.3",
+    "globals": "^16.5.0",
     "pdfjs-dist": "^6.3.289",
     "tesseract.js": "^7.0.0"
   }
