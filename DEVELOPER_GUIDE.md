@@ -152,10 +152,16 @@ The production service contract and required security controls are documented in
 ## Checks
 
 ```bash
+npm run lint
+npm run typecheck
 npm run check
+npm run check:package
+npm run check:vendor
 npm test
 npm run eval:extraction
 ```
+
+[Contributing](CONTRIBUTING.md#checks-before-merging) explains what each check catches.
 
 ## Document intake behavior
 

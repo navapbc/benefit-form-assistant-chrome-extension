@@ -95,6 +95,7 @@ The demo shows an earlier local practice build. It illustrates the workflow and 
 
 ```sh
 npm ci
+npm run lint
 npm run check
 npm test
 ```
