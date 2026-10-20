@@ -2,7 +2,7 @@
 
 /**
  * deps:
- * - workQueueEngine: NavaWorkQueueEngine, whose buildQueue sanitizes and orders the merged audit.
+ * - workQueueEngine: the work-queue engine, whose buildQueue sanitizes and orders the merged audit.
  */
 function create(deps) {
   const {

@@ -2,8 +2,8 @@
 
 /**
  * deps:
- * - state, appRoot: panel state and the screen globalThis.
- * - format: NavaPanelFormat helpers; recertificationEngine: due dates, summaries, and notification drafts.
+ * - state, appRoot: panel state and the screen root.
+ * - format: panel-format helpers; recertificationEngine: due dates, summaries, and notification drafts.
  * - renderError(), recertificationById(): shared panel helpers.
  */
 function create(deps) {

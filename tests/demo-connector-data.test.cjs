@@ -26,6 +26,7 @@ function serviceWorkerDemoConnector(clock) {
   }
   const fakeChrome = { storage: { local: { async get() { return {}; } } } };
   const client = require('../background/connector-client.mjs').create({
+    chrome: fakeChrome,
     rules: coordinatorRules,
     connectorEngine,
     programCatalog,
@@ -33,18 +34,16 @@ function serviceWorkerDemoConnector(clock) {
     demoConnectorData: demoData,
     storageKeys: { CONNECTOR_STORAGE_KEY: 'nava:connector' },
   });
-  // The module reads the global Date and chrome when a request is handled, so each request runs under the fake clock.
+  // The module reads the global Date when a request is handled, so each request runs under the fake clock.
   return async (message) => {
-    const saved = { Date: globalThis.Date, chrome: globalThis.chrome };
+    const savedDate = globalThis.Date;
     globalThis.Date = ClockDate;
-    globalThis.chrome = fakeChrome;
     try {
       return await new Promise((resolve) => {
         assert.equal(client.routeConnectorMessage(message, {}, resolve), true);
       });
     } finally {
-      globalThis.Date = saved.Date;
-      globalThis.chrome = saved.chrome;
+      globalThis.Date = savedDate;
     }
   };
 }

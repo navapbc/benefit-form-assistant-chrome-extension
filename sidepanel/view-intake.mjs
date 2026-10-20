@@ -2,8 +2,8 @@
 
 /**
  * deps:
- * - state, appRoot, previewMode: panel state, the screen globalThis, and simulated-preview flag.
- * - format: NavaPanelFormat helpers.
+ * - state, appRoot, previewMode: panel state, the screen root, and simulated-preview flag.
+ * - format: panel-format helpers.
  * - engine: the form engine (value normalization); agentPlanner: the model runtime; programCatalog: known sites.
  * - renderError(), clientSummary(), managedConnector(): shared panel helpers.
  * - renderConnectorStatus(), connectorTitle(), connectorProvider(), connectorSourceId(): connector view helpers.

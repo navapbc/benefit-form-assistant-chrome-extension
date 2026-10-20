@@ -2,8 +2,8 @@
 
 /**
  * deps:
- * - state, appRoot, previewMode: panel state, the screen globalThis, and simulated-preview flag.
- * - format: NavaPanelFormat helpers; connectorEngine: provider catalog and canonical fields.
+ * - state, appRoot, previewMode: panel state, the screen root, and simulated-preview flag.
+ * - format: panel-format helpers; connectorEngine: provider catalog and canonical fields.
  * - renderError(), managedConnector(): shared panel helpers.
  * - renderRecordId(): the record-ID screen shown when no imported record is pending.
  */

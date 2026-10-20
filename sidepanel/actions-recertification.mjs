@@ -3,8 +3,8 @@
 /**
  * deps:
  * - state, render(), decoded(value): panel state, the screen, and the data-attribute decoder.
- * - SKIP_FINAL_RENDER, showScreen(view): the dispatcher handler contract (NavaUiDispatch.handlerContract).
- * - recertificationEngine: NavaRecertificationEngine, which re-normalizes a case after its intake answers change.
+ * - SKIP_FINAL_RENDER, showScreen(view): the dispatcher handler contract (ui-dispatch's handlerContract).
+ * - recertificationEngine: the recertification engine, which re-normalizes a case after its intake answers change.
  * - recertificationById(id), loadRecertifications(uiToken), saveRecertificationWorkspace(item), prepareRecertification(item, uiToken):
  *   the recertification caseload.
  */

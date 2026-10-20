@@ -32,7 +32,7 @@ GitHub's **Validate extension** job runs on pull requests and main pushes. It in
 | `typecheck` | TypeScript over the JavaScript, as a ratchet. `types/baseline.json` is empty, so any new type error fails. After fixing errors elsewhere, run `npm run typecheck -- --update`. |
 | `check` | Syntax of every first-party script and a valid `manifest.json`. |
 | `check:package` | The same version in `manifest.json`, `package.json`, and the lockfile; every file the manifest and side panel reference exists; icons are PNGs of their stated size. |
-| `check:modules` | Every static import in the ES-module sources resolves and the import graph has no cycles; a bad specifier would blank the whole side panel. |
+| `check:modules` | Every static import in the ES-module sources resolves, the import graph has no cycles, nothing awaits at top level in the worker or side-panel graph, and no module reads a `Nava*` global. A bad specifier would blank the whole side panel. |
 | `check:vendor` | Every file under `vendor/` matches its locked npm package, the English OCR model matches its pinned SHA-256, and `THIRD_PARTY_NOTICES.md` names the installed versions. After a dependency bump, run `npm run ocr:assets` and update the notices. |
 | `test` | The unit and integration suite. |
 | `eval:extraction` | The synthetic document-extraction gate. |
