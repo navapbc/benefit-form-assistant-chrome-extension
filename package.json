@@ -6,6 +6,7 @@
   "scripts": {
     "check": "node scripts/check-syntax.mjs",
     "lint": "eslint .",
+    "check:vendor": "node scripts/verify-vendor.mjs",
     "check:docs": "node scripts/check-doc-links.mjs",
     "check:package": "node scripts/package-extension.mjs",
     "connector:mock": "node connector-service/mock-server.mjs",

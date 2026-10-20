@@ -1,6 +1,7 @@
 import { copyFile, mkdir, stat } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { VENDORED } from './vendor-manifest.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const destination = path.join(root, 'vendor', 'tesseract');
@@ -13,18 +14,7 @@ await Promise.all([
   mkdir(licenseDestination, { recursive: true }),
 ]);
 
-const copies = [
-  ['node_modules/tesseract.js/dist/tesseract.esm.min.js', 'vendor/tesseract/tesseract.esm.min.js'],
-  ['node_modules/tesseract.js/dist/worker.min.js', 'vendor/tesseract/worker.min.js'],
-  ['node_modules/tesseract.js/LICENSE.md', 'vendor/licenses/TESSERACT-JS-LICENSE.txt'],
-  ['node_modules/tesseract.js-core/LICENSE', 'vendor/licenses/TESSERACT-CORE-LICENSE.txt'],
-  ['node_modules/tesseract.js-core/tesseract-core-lstm.wasm.js', 'vendor/tesseract/core/tesseract-core-lstm.wasm.js'],
-  ['node_modules/tesseract.js-core/tesseract-core-lstm.wasm', 'vendor/tesseract/core/tesseract-core-lstm.wasm'],
-  ['node_modules/tesseract.js-core/tesseract-core-simd-lstm.wasm.js', 'vendor/tesseract/core/tesseract-core-simd-lstm.wasm.js'],
-  ['node_modules/tesseract.js-core/tesseract-core-simd-lstm.wasm', 'vendor/tesseract/core/tesseract-core-simd-lstm.wasm'],
-  ['node_modules/tesseract.js-core/tesseract-core-relaxedsimd-lstm.wasm.js', 'vendor/tesseract/core/tesseract-core-relaxedsimd-lstm.wasm.js'],
-  ['node_modules/tesseract.js-core/tesseract-core-relaxedsimd-lstm.wasm', 'vendor/tesseract/core/tesseract-core-relaxedsimd-lstm.wasm'],
-];
+const copies = VENDORED;
 
 for (const [source, target] of copies) {
   await copyFile(path.join(root, source), path.join(root, target));
@@ -38,4 +28,4 @@ try {
   throw new Error(`Missing vendor/tesseract/lang-data/eng.traineddata.gz. Download the pinned English fast model before packaging. ${error.message}`);
 }
 
-console.log(`Bundled ${copies.length} OCR runtime assets and verified the English trained-data file.`);
+console.log(`Bundled ${copies.length} vendored assets and verified the English trained-data file.`);
