@@ -23,6 +23,8 @@ Things we decided to come back to. Add to the top of a section as you find more;
 
 ## Security and privacy
 
+- [ ] **Decide whether the side panel's Jev planner should apply site-adapter rules.** The panel has never loaded them in the planner, so declined WIC and IHSS fields become questions. The ES-module migration briefly changed that by accident (the planner then auto-approved those fields from site rules); it is restored by passing `siteAdapters: null` from `sidepanel/page-scan.mjs`. The evaluation harness still runs with adapters on, so it measures behavior the panel does not ship. Decide deliberately, then make the panel and the harness agree.
+
 - [ ] **Shared-API tenant key storage.** `navaApiToken` is stored in `chrome.storage.local` in plain text. Decide: move to session storage (re-enter each browser session), or accept it for the pilot and record that. Tied to the token scope, expiry, and rotation decisions in [PRODUCTION_GAPS.md](PRODUCTION_GAPS.md).
 - [ ] **Durable queue metadata is not encrypted** (documented in [WORK_QUEUE_SECURITY_AND_RECOVERY.md](WORK_QUEUE_SECURITY_AND_RECOVERY.md)). Revisit before any real-participant pilot.
 - [ ] **Optional-host permission prompt only works from a user gesture.** A run that reaches an unapproved site on its own stops with an "Allow access" error. Consider asking up front when an application is added.
