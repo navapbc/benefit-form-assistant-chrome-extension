@@ -19,7 +19,7 @@ function handlerContract(state) {
 
 /**
  * deps:
- * - state, appRoot: panel state and the screen globalThis that receives submit and change events.
+ * - state, appRoot: panel state and the screen root that receives submit and change events.
  * - render(), assertUiGeneration(token), currentUiGeneration(): the screen and the UI-generation guard, read at event time.
  * - agentActions, recertificationActions, intakeActions, connectorActions, applicationActions: each action module's
  *   click, submit and change groups. Tables take them in that order.
@@ -83,7 +83,7 @@ function create(deps) {
     ...CONNECTOR_CHANGE_HANDLERS,
   ]);
 
-  /** Installs the panel's click, submit and change listeners; the composition globalThis calls it once, after every table exists. */
+  /** Installs the panel's click, submit and change listeners; the composition root calls it once, after every table exists. */
   function installListeners() {
     document.addEventListener('click', (event) => {
       const button = /** @type {Element} */ (event.target).closest('[data-action]');

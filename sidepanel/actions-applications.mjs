@@ -3,7 +3,7 @@
 /**
  * deps:
  * - state, previewMode, render(), getActiveTab(), decoded(value): panel state, the screen, the active tab, the data-attribute decoder.
- * - SKIP_FINAL_RENDER, showScreen(view): the dispatcher handler contract (NavaUiDispatch.handlerContract).
+ * - SKIP_FINAL_RENDER, showScreen(view): the dispatcher handler contract (ui-dispatch's handlerContract).
  * - assertUiGeneration(token), withNewApplicationRun(application, action, options): run control.
  * - withApplicationLease, revokeApplicationRun, persist, exportAuditLog: coordinator writes.
  * - checkpoint(kind, label), setCheckpoint(application, kind, label, status), recordAudit(type, application, details): queue state.

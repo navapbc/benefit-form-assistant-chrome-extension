@@ -2,8 +2,8 @@
 
 /**
  * deps:
- * - state, appRoot: panel state and the screen globalThis.
- * - format: NavaPanelFormat helpers.
+ * - state, appRoot: panel state and the screen root.
+ * - format: panel-format helpers.
  * - isRunning(applicationId): whether an automated run currently owns the application (a cancelled run winding down
  *   does not count, so a card stops saying "Running automatically" the moment the caseworker stops it).
  * - renderError(), renderAgentRuntime(), firstName(): shared panel helpers.

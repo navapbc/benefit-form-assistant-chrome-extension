@@ -5,7 +5,7 @@ const RECERTIFICATION_WORKSPACE_KEY = 'nava:recertification-workspace';
 /**
  * deps:
  * - state, previewMode: panel state (recertifications, recertificationWorkspace, participant, apps) and the preview flag.
- * - recertificationEngine: NavaRecertificationEngine, which normalizes the caseload and merges saved answers.
+ * - recertificationEngine: the recertification engine, which normalizes the caseload and merges saved answers.
  * - sendRuntime(message), setBusy(message), render(): the service-worker transport and the screen.
  * - assertUiGeneration(token), currentUiGeneration(): the UI-generation guard, read at call time.
  * - commitParticipant(participant), persist(options): coordinator writes for the prepared client.

@@ -12,7 +12,7 @@ The extension now combines the modular legacy implementation with the newer Jev,
 | Form planning and API | `shared/agentic-planner.mjs`; `planner-inventory.mjs`, `planner-runtime.mjs`; CLI/TypeSafe transport in `model-bridge/`. |
 | Panel composition | `sidepanel/main.mjs` (the ES-module composition root); `view-*.mjs`, `actions-*.mjs`, application runner, runtime, scan, coordination, and run-control modules. `sidepanel/index.html` loads the vendored unzipper and `main.mjs`; the rest is imported. |
 | Documents and OCR | `sidepanel/document-parser.mjs`, `document-readers.mjs`, `ocr-engine.mjs`. |
-| Queue and renewals | `shared/work-queue-engine.mjs`, `recertification-engine.js`; panel renewal views/actions and caseload modules. |
+| Queue and renewals | `shared/work-queue-engine.mjs`, `recertification-engine.mjs`; panel renewal views/actions and caseload modules. |
 
 A file's name is not proof it is wired into Chrome. Preserve the manifest, the import graph (`npm run check:modules`) and the dynamic page-injection tests when moving modules.
 

@@ -5,7 +5,7 @@ const AGENT_PROVIDER_STORAGE_KEY = 'nava:agent-provider';
 /**
  * deps:
  * - state, previewMode: panel state (agentRuntime, agentProvider, plannerBase) and whether the panel runs without extension APIs.
- * - agentPlanner: NavaAgenticPlanner (prepare, configure, gatewayConfig, runtimeInfo, availability).
+ * - agentPlanner: the agentic planner (prepare, configure, gatewayConfig, runtimeInfo, availability).
  * - setBusy(message), setApplicationProgress(application, message): full-screen and per-application progress.
  * - assertUiGeneration(token), activeRunCount(): run control, read when the runtime changes.
  * - persist(options): saves the minted client link with its application.

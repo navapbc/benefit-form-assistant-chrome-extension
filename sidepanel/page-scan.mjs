@@ -3,7 +3,7 @@
 /**
  * deps:
  * - state, previewMode: panel state and whether the panel runs without extension APIs.
- * - engine, agentPlanner, scanAnalysis: the form engine, the agentic planner, and NavaScanAnalysis.
+ * - engine, agentPlanner, scanAnalysis: the form engine, the agentic planner, and the scan-analysis module.
  * - scanRecord: scanAnalysis.create(...) bound to the URL and provenance helpers.
  * - sendToTab(tab, message, options): the route-checked tab command transport.
  * - assertApprovedApplicationLocation, attachApplicationPolicy, urlPath, commandLocation, checkpointFromScan: route and checkpoint policy.

@@ -13,6 +13,7 @@
  */
 function create(deps) {
   const {
+    chrome = globalThis.chrome,
     rules,
     workQueueEngine,
     storageKeys,

@@ -2,8 +2,8 @@
 
 /**
  * deps:
- * - state, appRoot: panel state and the screen globalThis.
- * - format: NavaPanelFormat helpers.
+ * - state, appRoot: panel state and the screen root.
+ * - format: panel-format helpers.
  * - renderError(): shared panel helper; renderDashboard(): shown when the application is gone.
  */
 function create(deps) {

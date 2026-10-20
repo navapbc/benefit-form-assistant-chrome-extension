@@ -7,7 +7,7 @@ const control = (id) => /** @type {HTMLInputElement & HTMLSelectElement} */ (doc
 /**
  * deps:
  * - state, render(), assertUiGeneration(token): panel state, the screen, and the UI-generation guard.
- * - SKIP_FINAL_RENDER: the dispatcher outcome for handlers that render for themselves (NavaUiDispatch.handlerContract).
+ * - SKIP_FINAL_RENDER: the dispatcher outcome for handlers that render for themselves (ui-dispatch's handlerContract).
  * - prepareAgentRuntime(), saveAgentProvider(form, uiToken), mintClientLink(application): the planner runtime.
  * - enqueueApplicationBatch(ids): restarts automatic runs the missing planner interrupted.
  */

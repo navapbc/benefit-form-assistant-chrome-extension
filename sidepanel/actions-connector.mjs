@@ -7,7 +7,7 @@ const control = (id) => /** @type {HTMLInputElement & HTMLSelectElement} */ (doc
 /**
  * deps:
  * - state, previewMode, setBusy(message), sendRuntime(message), getActiveTab(): panel state, transport and the active tab.
- * - SKIP_FINAL_RENDER, showScreen(view): the dispatcher handler contract (NavaUiDispatch.handlerContract).
+ * - SKIP_FINAL_RENDER, showScreen(view): the dispatcher handler contract (ui-dispatch's handlerContract).
  * - connectorEngine, managedConnector(): provider definitions and canonical fields, and whether a managed connector is saved.
  * - assertUiGeneration(token), currentUiGeneration(), cancelAllRuns(): run control.
  * - withCoordinatorMutation, applyCoordinatorMetadata, scheduleCoordinatorSync, restore: coordinator sync.

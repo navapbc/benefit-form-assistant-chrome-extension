@@ -10,8 +10,8 @@ import * as applicationRuns from './application-runs.mjs';
 import * as connectorClient from './connector-client.mjs';
 import { createCaptchaService as defaultCreateCaptchaService } from './captcha-service.mjs';
 
-/** Registers every Chrome listener synchronously; nothing here may await before it returns. */
-export function startServiceWorker({ createCaptchaService = defaultCreateCaptchaService } = {}) {
+/** Registers every Chrome listener synchronously; nothing here may await before it returns. `chrome` is injectable so tests can run isolated workers. */
+export function startServiceWorker({ createCaptchaService = defaultCreateCaptchaService, chrome = globalThis.chrome } = {}) {
   const CONNECTOR_STORAGE_KEY = 'nava:connector';
   const QUEUE_STORAGE_KEY = 'nava:work-queue';
   const LEASE_STORAGE_KEY = 'nava:application-leases';
@@ -171,6 +171,7 @@ export function startServiceWorker({ createCaptchaService = defaultCreateCaptcha
   };
 
   const { routeSessionMessage } = clientSession.create({
+    chrome,
     rules: coordinatorRules,
     workQueueEngine,
     storageKeys,
@@ -182,6 +183,7 @@ export function startServiceWorker({ createCaptchaService = defaultCreateCaptcha
   });
 
   const { closeApplicationTab, routeApplicationRunMessage } = applicationRuns.create({
+    chrome,
     rules: coordinatorRules,
     workQueueEngine,
     storageKeys,
@@ -198,6 +200,7 @@ export function startServiceWorker({ createCaptchaService = defaultCreateCaptcha
   });
 
   const { routeConnectorMessage } = connectorClient.create({
+    chrome,
     rules: coordinatorRules,
     connectorEngine,
     programCatalog,

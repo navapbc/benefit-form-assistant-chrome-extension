@@ -69,11 +69,10 @@ async function backgroundHarness({ captchaServiceFactory = () => ({ handle: asyn
     },
     sidePanel: { async setPanelBehavior() {} },
   };
-  // The service-worker modules read the global `chrome` when a handler runs, so each harness installs its own.
-  globalThis.chrome = chrome;
+  // Each worker gets its own fake chrome; only the network stub is process-wide.
   globalThis.fetch = async () => { throw new Error('Unexpected network request'); };
   const { startServiceWorker } = await import(pathToFileURL(path.join(root, 'background/service-worker.mjs')).href);
-  startServiceWorker({ createCaptchaService: captchaServiceFactory });
+  startServiceWorker({ chrome, createCaptchaService: captchaServiceFactory });
 
   return {
     local,
@@ -951,23 +950,49 @@ test('a non-side-panel sender cannot write, lease, or save a connector', async (
   assert.deepEqual(harness.local.data, {});
 });
 
-test('the service worker registers every Chrome listener synchronously and no worker module awaits at top level', async () => {
+test('the service worker registers every Chrome listener synchronously and nothing the worker imports awaits at top level', async () => {
   const registered = [];
   const addListener = (name) => ({ addListener() { registered.push(name); } });
-  globalThis.chrome = {
+  const fakeChrome = {
     storage: { local: storageArea(), session: storageArea() },
     runtime: { id: EXTENSION_ID, onInstalled: addListener('onInstalled'), onStartup: addListener('onStartup'), onMessage: addListener('onMessage') },
     tabs: { onRemoved: addListener('tabs.onRemoved') },
     sidePanel: { async setPanelBehavior() {} },
   };
   const { startServiceWorker } = await import(pathToFileURL(path.join(root, 'background/service-worker.mjs')).href);
-  startServiceWorker({ createCaptchaService: () => ({ handle: async () => ({}), cancelApplications() {} }) });
+  startServiceWorker({ chrome: fakeChrome, createCaptchaService: () => ({ handle: async () => ({}), cancelApplications() {} }) });
   assert.deepEqual(registered.sort(), ['onInstalled', 'onMessage', 'onStartup', 'tabs.onRemoved']);
 
-  const workerFiles = ['background.js', ...fs.readdirSync(path.join(root, 'background')).map((name) => `background/${name}`)];
-  for (const file of workerFiles) {
-    const source = fs.readFileSync(path.join(root, file), 'utf8');
-    const topLevel = source.split('\n').filter((line) => line && !/^\s/.test(line) && !/^(\/\/|\/\*|\*)/.test(line));
-    assert.deepEqual(topLevel.filter((line) => /\bawait\b/.test(line)), [], `${file} must not await at top level`);
+  // The whole static import closure, parsed (not scanned line by line): shared engines and classic files count too.
+  const { findTopLevelAwait } = await import(pathToFileURL(path.join(root, 'scripts/check-modules.mjs')).href);
+  assert.deepEqual(findTopLevelAwait(root, ['background.js']), []);
+});
+
+test('each service worker uses the chrome it is given, so two workers never share storage or a global', async () => {
+  const saved = globalThis.chrome;
+  delete globalThis.chrome;
+  try {
+    const worker = async () => {
+      let onMessage;
+      const noop = { addListener() {} };
+      const fake = {
+        storage: { local: storageArea(), session: storageArea() },
+        runtime: { id: EXTENSION_ID, onInstalled: noop, onStartup: noop, onMessage: { addListener(listener) { onMessage = listener; } } },
+        tabs: { onRemoved: noop },
+        sidePanel: { async setPanelBehavior() {} },
+      };
+      const { startServiceWorker } = await import(pathToFileURL(path.join(root, 'background/service-worker.mjs')).href);
+      startServiceWorker({ chrome: fake, createCaptchaService: () => ({ handle: async () => ({}), cancelApplications() {} }) });
+      return { fake, ask: (message) => new Promise((resolve) => onMessage(message, SIDE_PANEL_SENDER, resolve)) };
+    };
+    const first = await worker();
+    const second = await worker();
+    const reply = await first.ask({ type: 'GET_ASSISTANT_STATE' });
+    assert.equal(reply.ok, true);
+    assert.ok(Object.keys(first.fake.storage.local.data).length > 0, 'the first worker wrote to its own storage');
+    assert.deepEqual(second.fake.storage.local.data, {}, 'the second worker saw none of it');
+    assert.equal(globalThis.chrome, undefined);
+  } finally {
+    globalThis.chrome = saved;
   }
 });

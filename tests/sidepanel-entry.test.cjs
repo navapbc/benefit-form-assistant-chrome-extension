@@ -8,14 +8,12 @@ const root = path.resolve(__dirname, '..');
 const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
 const modulesUnder = (directory) => fs.readdirSync(path.join(root, directory)).filter((name) => name.endsWith('.mjs')).map((name) => `${directory}/${name}`);
 
-test('no ES module reads a Nava global: dependencies come from imports, and only the facade touches the classic files', () => {
-  const sources = [...modulesUnder('sidepanel'), ...modulesUnder('shared'), ...modulesUnder('background')]
+test('no ES module reads a Nava global at any depth: dependencies come from imports, and only the facade touches the classic files', async () => {
+  const { findNavaGlobalReads } = await import(pathToFileURL(path.join(root, 'scripts/check-modules.mjs')).href);
+  const files = ['background.js', ...modulesUnder('sidepanel'), ...modulesUnder('shared'), ...modulesUnder('background')]
     .filter((file) => file !== 'shared/engines.mjs');
-  for (const file of sources) {
-    // Code injected into a page (indented `func:` bodies) legitimately reads the page's globals; module-level statements must not.
-    const topLevel = read(file).split('\n').filter((line) => /^(?:const|let|var|export|import|if|for)\b/.test(line));
-    assert.deepEqual(topLevel.filter((line) => /\b(?:globalThis|root)\.Nava[A-Z]/.test(line)), [], `${file} reads a Nava global`);
-  }
+  // Code the CAPTCHA service injects into an application page reads that page's own globals.
+  assert.deepEqual(findNavaGlobalReads(root, files, { 'background/captcha-service.mjs': ['NavaCaptchaFrame', 'NavaCaptchaEngine'] }), []);
   assert.equal(fs.existsSync(path.join(root, 'sidepanel/legacy-globals.mjs')), false, 'the migration bridge is gone');
 });
 

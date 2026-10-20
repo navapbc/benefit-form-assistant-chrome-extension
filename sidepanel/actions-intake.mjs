@@ -6,7 +6,7 @@ const control = (id) => /** @type {HTMLInputElement & HTMLSelectElement} */ (doc
 /**
  * deps:
  * - state, render(), setBusy(message), sendRuntime(message), getActiveTab(): panel state, the screen, transport and the active tab.
- * - SKIP_FINAL_RENDER, showScreen(view): the dispatcher handler contract (NavaUiDispatch.handlerContract).
+ * - SKIP_FINAL_RENDER, showScreen(view): the dispatcher handler contract (ui-dispatch's handlerContract).
  * - assertUiGeneration(token), currentUiGeneration(), cancelPendingUiWork(), cancelUiBoundRuns(), cancelAllRuns(): run control.
  * - commitParticipant(participant), persist(options), clearAssistantState(): coordinator writes.
  * - DEMO_RECORDS, parseDocument(file, options), clientSummary(): the fictional sample record, the document parser, and the
