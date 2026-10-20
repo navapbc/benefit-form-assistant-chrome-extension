@@ -8,6 +8,8 @@ const documents = [
   'README.md',
   'CONTRIBUTING.md',
   'docs/README.md',
+  'docs/RECENT_CHANGES.md',
+  'docs/TODO.md',
   'docs/FEATURE_GUIDE.md',
   'docs/TESTER_GUIDE.md',
   'docs/PRODUCTION_GAPS.md',

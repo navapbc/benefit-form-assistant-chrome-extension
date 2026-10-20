@@ -2,6 +2,11 @@
 
 Start with the first group. Everything else is reference or an evidence record for a specific build or date. Older results keep their original version labels, so check the date and version before treating one as current.
 
+## What changed and what is next
+
+- [Recent engineering changes](RECENT_CHANGES.md): high-level notes, newest first.
+- [Follow-up work](TODO.md): decisions deferred on purpose, such as adding a bundler.
+
 ## Use and test the extension
 
 - [Feature guide](FEATURE_GUIDE.md): what you can try, with setup steps and limits for each feature.
