@@ -132,6 +132,8 @@ function create(deps) {
     await prepareAgentRuntime({ application: progressApplication });
     const plan = await agentPlanner.plan({
       engine,
+      // The panel has never applied site-adapter rules in the planner (the page agent already merges field policies); keep that until it is decided deliberately.
+      siteAdapters: null,
       page: response.page,
       rawFields: response.fields,
       participant,

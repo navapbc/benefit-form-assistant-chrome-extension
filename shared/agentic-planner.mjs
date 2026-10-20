@@ -366,8 +366,7 @@ async function planThroughGateway(args, gateway) {
   };
 }
 
-function trustedSiteInventory(page, rawFields) {
-  const adapters = siteAdapters;
+function trustedSiteInventory(page, rawFields, adapters) {
   let url;
   try { url = new URL(page?.url); } catch { return rawFields || []; }
   return (rawFields || []).map((field) => ({ ...field,
@@ -393,10 +392,10 @@ function addJevUsage(before, after = {}) {
     providerReportedCostUsd: sumKnown('providerReportedCostUsd'), estimatedApiCostUsd: sumKnown('estimatedApiCostUsd') };
 }
 
-/** @param {{ engine: any, page: any, rawFields: any, participant: any, onProgress?: (update: object) => void, jevRecovery?: any }} args */
-async function planWithJev({ engine, page, rawFields, participant, onProgress, jevRecovery = {} }) {
+/** @param {{ engine: any, page: any, rawFields: any, participant: any, onProgress?: (update: object) => void, jevRecovery?: any, adapters?: any }} args */
+async function planWithJev({ engine, page, rawFields, participant, onProgress, jevRecovery = {}, adapters }) {
   const start = Date.now();
-  const policyFields = trustedSiteInventory(page, rawFields);
+  const policyFields = trustedSiteInventory(page, rawFields, adapters);
   const fields = redactSourceValues(engine, participant, groupedInventory(policyFields));
   const sources = sourceInventory(engine, participant);
   const available = new Set(sources.map((source) => source.purpose));
@@ -471,7 +470,6 @@ async function planWithJev({ engine, page, rawFields, participant, onProgress, j
   if (jevRecovery.trustedHints !== false) {
     let url;
     try { url = new URL(page?.url); } catch {}
-    const adapters = siteAdapters;
     eligible.forEach((field) => {
       const raw = rawFor(field.fieldKey);
       const policy = url && adapters?.fieldPolicy?.(url.hostname, url.pathname, raw || {});
@@ -579,10 +577,10 @@ async function reviewProposals(page, fields, sources, proposal, onProgress) {
 
 // Orchestration: resolve the runtime, redact the inventory, run the three roles, then keep only
 // what the local policy validator accepts.
-/** @param {{ engine?: any, page?: any, rawFields?: any[], participant?: any, onProgress?: (update: object) => void, jevRecovery?: any, signal?: AbortSignal }} [args] */
-async function plan({ engine, page, rawFields, participant, onProgress, jevRecovery, signal } = {}) {
+/** @param {{ engine?: any, page?: any, rawFields?: any[], participant?: any, onProgress?: (update: object) => void, jevRecovery?: any, signal?: AbortSignal, siteAdapters?: any }} [args] */
+async function plan({ engine, page, rawFields, participant, onProgress, jevRecovery, signal, siteAdapters: adapters = siteAdapters } = {}) {
   if (!engine?.canonicalizeParticipant || !engine?.buildAnalysis) throw new Error('The form engine is unavailable.');
-  if (runtimeInfo().provider === 'jev') return planWithJev({ engine, page, rawFields, participant, onProgress, jevRecovery });
+  if (runtimeInfo().provider === 'jev') return planWithJev({ engine, page, rawFields, participant, onProgress, jevRecovery, adapters });
   const gateway = await gatewayConfig();
   if (gateway) return planThroughGateway({ engine, page, rawFields, participant, onProgress, signal }, gateway);
   await prepare({ onProgress });
