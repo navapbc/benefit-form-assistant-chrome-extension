@@ -17,6 +17,7 @@ const documents = [
   'docs/archive/TEST_REPORT.md',
   'docs/FEATURE_GUIDE.md',
   'docs/TESTER_GUIDE.md',
+  'docs/ADDING_A_SITE.md',
   'docs/PRODUCTION_GAPS.md',
   'docs/TEST_RESULTS.md',
 ];

@@ -12,6 +12,7 @@ Start with the first group. Everything else is reference or an evidence record f
 
 - [Feature guide](FEATURE_GUIDE.md): what you can try, with setup steps and limits for each feature.
 - [Tester guide](TESTER_GUIDE.md): install, run a real WIC attempt, and report what happened.
+- [Adding your own site or program](ADDING_A_SITE.md): the files to change to point the extension at a different application.
 - [Release notes v0.16](RELEASE_NOTES_v0.16.md): the current tester build.
 - [Engineering review plan and production gaps](PRODUCTION_GAPS.md): what to verify and fix first.
 
