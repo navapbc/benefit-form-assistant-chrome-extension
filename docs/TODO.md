@@ -24,11 +24,13 @@ Added October 21, 2026 with the Developer mode switch ([change doc](changes/2026
 - [ ] The shared-API token is stored in plain text in `chrome.storage.local`.
 - [ ] A CAPTCHA `begin` already past the gate when the switch turns off could create a scope after `cancelAll` (very small window).
 - [ ] The switch is not a security boundary against a determined user (they can write the storage value). Treat it as a default, not a control.
+- [ ] `sidepanel/preview-runtime.mjs` answers the experimental message types with no developer-mode gate. Only the dispatcher protects preview mode. The preview handles no real data and always loads with the mode off.
+- [ ] With the mode off, the automatic queue does not check for a caseworker-started run, so a queued application can start while a card run is going (two runs at once). Caseworker-started runs do wait for the queue's run.
+- [ ] A side panel in another window applies a mode change even while it has a run going; the planner reconfiguration can stop that run. Consider refusing or deferring the change there.
 
 **Small deferred findings**
 
-- [ ] `analyzeCurrentTab` and recertification add applications without the one-workflow cap.
-- [ ] The handoff-pending card gives no hint to turn developer mode on.
+- [ ] `analyzeCurrentTab` and recertification add applications without the one-workflow-per-selection cap (`analyze-current` does wait while another application runs).
 - [ ] Render and bootstrap behavior is covered only by source-ordering tests because `sidepanel/main.mjs` has no test seam. Consider a pure `viewForRender` helper.
 - [ ] The step (a) assertion of the runtime-reset test is weak.
 - [ ] A few assertions in `tests/background-coordinator.test.cjs` are weak.
