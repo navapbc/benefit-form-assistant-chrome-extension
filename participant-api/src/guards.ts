@@ -6,10 +6,15 @@
 import { createHash } from 'node:crypto';
 
 export const WINDOW_MINUTES = 15;
-/** Failed sign-ins per email (whether or not the account exists) before it is locked for the rest of the window. */
-export const EMAIL_LIMIT = 5;
-/** Failed sign-ins per client address before it is locked for the rest of the window. */
+/** Sign-in attempts per (email, client address) pair in a window. Only that address is locked out of that account. */
+export const EMAIL_IP_LIMIT = 5;
+/** Sign-in attempts per client address in a window, across all emails. */
 export const IP_LIMIT = 30;
+/**
+ * Sign-in attempts per email in a window, across all addresses. High on purpose: it only bounds an attack spread over many
+ * addresses, and a low value would let a third party lock a known email out for everyone.
+ */
+export const EMAIL_LIMIT = 50;
 
 /**
  * Refuses a state-changing request that a browser page could have sent cross-site: a browser always sends Origin, so any
@@ -29,32 +34,38 @@ export function clientIp(forwardedFor: string | undefined): string {
   return last && last.length <= 64 ? last : 'unknown';
 }
 
-/** Keys the failures are counted under. The email is hashed so the table holds no addresses. */
-export const emailKey = (email: string): string => `email:${createHash('sha256').update(email.trim().toLowerCase()).digest('hex')}`;
+/** Keys the attempts are counted under. The email is hashed so the table holds no addresses. */
+const emailHash = (email: string): string => createHash('sha256').update(email.trim().toLowerCase()).digest('hex');
+export const emailKey = (email: string): string => `email:${emailHash(email)}`;
 export const ipKey = (ip: string): string => `ip:${ip}`;
+export const pairKey = (email: string, ip: string): string => `pair:${emailHash(email)}:${ip}`;
 
 type Queryable = { query(text: string, values?: unknown[]): Promise<{ rows: any[] }> };
 
-/** Failed-attempt counters in Postgres, so they hold across the Function's isolates and restarts. */
+/**
+ * Attempt counters in Postgres, so they hold across the Function's isolates and restarts.
+ *
+ * `reserve` counts the attempt and reads the count in one statement, before the request goes to Neon Auth, so parallel
+ * requests cannot all pass a check made before any of them is counted. A success gives the attempt back with `release` or
+ * `clear`; a failure simply keeps it counted.
+ */
 export function createLimiter(db: Queryable, windowMinutes: number = WINDOW_MINUTES) {
   return {
-    /** Seconds until `key` may try again, or 0 when it is under `limit`. */
-    async lockedFor(key: string, limit: number): Promise<number> {
+    /** Counts one attempt on `key`. Returns 0 when it is within `limit`, otherwise the seconds until the window ends. */
+    async reserve(key: string, limit: number): Promise<number> {
       const { rows } = await db.query(
-        `select failures, ceil(extract(epoch from (window_started + make_interval(mins => $2) - now())))::int as seconds
-           from auth_attempts where key = $1 and window_started > now() - make_interval(mins => $2)`,
-        [key, windowMinutes],
-      );
-      return rows[0] && rows[0].failures >= limit ? Math.max(1, rows[0].seconds) : 0;
-    },
-    async recordFailure(key: string): Promise<void> {
-      await db.query(
         `insert into auth_attempts (key, failures, window_started) values ($1, 1, now())
          on conflict (key) do update set
            failures = case when auth_attempts.window_started > now() - make_interval(mins => $2) then auth_attempts.failures + 1 else 1 end,
-           window_started = case when auth_attempts.window_started > now() - make_interval(mins => $2) then auth_attempts.window_started else now() end`,
+           window_started = case when auth_attempts.window_started > now() - make_interval(mins => $2) then auth_attempts.window_started else now() end
+         returning failures, ceil(extract(epoch from (window_started + make_interval(mins => $2) - now())))::int as seconds`,
         [key, windowMinutes],
       );
+      return rows[0].failures > limit ? Math.max(1, rows[0].seconds) : 0;
+    },
+    /** Gives one counted attempt back (after a success), never below zero. */
+    async release(key: string): Promise<void> {
+      await db.query('update auth_attempts set failures = greatest(failures - 1, 0) where key = $1', [key]);
     },
     async clear(key: string): Promise<void> {
       await db.query('delete from auth_attempts where key = $1', [key]);

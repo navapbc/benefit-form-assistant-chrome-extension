@@ -29,11 +29,15 @@ in `chrome.storage.session` and never talks to Neon Auth directly.
 - Request bodies and participant values are never logged. `participant_audit` records user, action and participant ID.
 - Every non-GET request must come from a listed extension origin (or carry no `Origin`, i.e. a non-browser client) and
   declare `application/json`; otherwise 403 or 415. `Origin: null` and other sites are refused.
-- `/auth/sign-in` counts failed attempts in the `auth_attempts` table: 5 per email (hashed, whether or not the account
-  exists) and 30 per client address in a 15-minute window, then 429 with `Retry-After`. A success clears the email's count.
-  The address is the last `X-Forwarded-For` entry, which the proxy adds; a client-supplied first entry is ignored.
-  Limits and the guard live in `participant-api/src/guards.ts`. Anyone can lock a known email out for a window by failing on
-  purpose; that is accepted for now. `/auth/token` has no limit (session tokens are high-entropy).
+- `/auth/sign-in` counts each attempt in the `auth_attempts` table **before** it reaches Neon Auth, in one atomic
+  statement, so a burst of parallel requests cannot all slip past a check. Three counters, 15-minute window, then 429 with
+  `Retry-After`: 5 per (email, client address) pair, 30 per address, and 50 per email across all addresses. The email is
+  hashed, and it is counted whether or not the account exists. A success clears the pair and gives the other two their
+  attempt back. The address is the last `X-Forwarded-For` entry, which the proxy adds; a client-supplied first entry is
+  ignored. Limits and logic live in `participant-api/src/guards.ts`.
+- A third party cannot lock someone out from their own address: the tight limit is per pair, so it only locks that address
+  out of that account. Spread across addresses it takes 50 failures to lock an email for everyone. `/auth/token` has no limit
+  (session tokens are high-entropy).
 
 ## Run it on a branch
 
