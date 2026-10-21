@@ -744,11 +744,13 @@ test('a cancelled run stops counting as running for the card, but still holds th
 });
 
 /** The planner runtime outside preview mode, over a recording planner and a chrome.storage.session stand-in. */
-function liveAgentRuntime({ developerMode, stored }) {
+function liveAgentRuntime({ developerMode, stored, gateway = null, agentRuntime = { status: 'ready' }, rejectCompanion = false }) {
   const configured = [];
   const storage = { 'nava:agent-provider': stored };
   const writes = [];
-  const state = { developerMode, agentProvider: { kind: 'chrome-local' }, agentRuntime: { status: 'ready' } };
+  const prepared = [];
+  const gatewayRequests = [];
+  const state = { developerMode, agentProvider: { kind: 'chrome-local' }, agentRuntime };
   globalThis.chrome = {
     storage: {
       session: {
@@ -762,18 +764,23 @@ function liveAgentRuntime({ developerMode, stored }) {
     state,
     previewMode: false,
     agentPlanner: {
-      configure: (config) => configured.push(config),
-      gatewayConfig: async () => null,
-      prepare: async () => ({ status: 'ready' }),
+      configure: (config) => {
+        if (rejectCompanion && config.kind === 'local-cli') throw new Error('Paste the pairing token printed by the local model companion.');
+        configured.push(config);
+      },
+      gatewayConfig: async () => gateway,
+      gatewayRequest: async (...args) => { gatewayRequests.push(args); return {}; },
+      prepare: async () => { prepared.push('nano'); return { status: 'ready' }; },
       runtimeInfo: () => ({ title: 'Test' }),
     },
     setBusy: () => {},
     setApplicationProgress: () => {},
     assertUiGeneration: () => {},
     activeRunCount: () => 0,
+    currentUiSignal: () => undefined,
     persist: async () => {},
   });
-  return { runtime, state, configured, storage, writes };
+  return { runtime, state, configured, storage, writes, prepared, gatewayRequests };
 }
 
 const jevProvider = { kind: 'local-cli', provider: 'jev', endpoint: 'http://127.0.0.1:4789', token: 'secret', model: 'jev-1.13.0' };
@@ -782,7 +789,7 @@ test('with developer mode off the planner uses Gemini Nano and leaves a stored e
   const off = liveAgentRuntime({ developerMode: false, stored: jevProvider });
   await off.runtime.restoreAgentProvider();
   assert.deepEqual(off.state.agentProvider, { kind: 'chrome-local' });
-  assert.deepEqual(off.configured, [{ kind: 'chrome-local' }]);
+  assert.deepEqual(off.configured, [{ kind: 'chrome-local', gateway: false }]);
   assert.deepEqual(off.writes, [], 'the stored provider is neither removed nor overwritten');
   assert.deepEqual(off.storage['nava:agent-provider'], jevProvider);
 
@@ -804,7 +811,7 @@ test('with developer mode off, using a model runtime applies Gemini Nano only an
     const off = liveAgentRuntime({ developerMode: false, stored: jevProvider });
     await off.runtime.saveAgentProvider(form, 0);
     assert.deepEqual(off.state.agentProvider, { kind: 'chrome-local' });
-    assert.deepEqual(off.configured, [{ kind: 'chrome-local' }]);
+    assert.deepEqual(off.configured, [{ kind: 'chrome-local', gateway: false }]);
     assert.deepEqual(off.writes, []);
     assert.deepEqual(off.storage['nava:agent-provider'], jevProvider);
 
@@ -816,6 +823,60 @@ test('with developer mode off, using a model runtime applies Gemini Nano only an
   } finally {
     globalThis.FormData = realFormData;
   }
+});
+
+const savedGateway = { base: 'https://api.example.test', endpoint: 'https://api.example.test/v1/plan', token: 'fake-tenant-key' };
+const sharedReady = () => ({ status: 'ready', shared: true, message: 'Planning runs on the shared API at https://api.example.test. Filling still happens in this tab.' });
+
+test('with developer mode off a saved shared planner API is not used: the runtime prepares and reports Gemini Nano', async () => {
+  const off = liveAgentRuntime({ developerMode: false, stored: undefined, gateway: savedGateway, agentRuntime: sharedReady() });
+  await off.runtime.restoreAgentProvider();
+  assert.deepEqual(off.configured, [{ kind: 'chrome-local', gateway: false }], 'the planner is told not to use the gateway');
+  assert.equal(off.state.agentRuntime.shared, undefined, 'the shared-API status is cleared');
+  await off.runtime.prepareAgentRuntime();
+  assert.deepEqual(off.prepared, ['nano'], 'Gemini Nano is prepared');
+  assert.equal(off.state.agentRuntime.shared, undefined);
+  assert.doesNotMatch(off.state.agentRuntime.message, /shared API/);
+  assert.match(off.state.agentRuntime.message, /Test is ready/);
+  assert.deepEqual(off.gatewayRequests, []);
+});
+
+test('with developer mode on a saved shared planner API still plans', async () => {
+  const on = liveAgentRuntime({ developerMode: true, stored: undefined, gateway: savedGateway, agentRuntime: { status: 'checking', message: '' } });
+  await on.runtime.restoreAgentProvider();
+  assert.deepEqual(on.configured, [{ kind: 'chrome-local' }], 'the on path configures exactly as before');
+  await on.runtime.prepareAgentRuntime();
+  assert.deepEqual(on.prepared, []);
+  assert.equal(on.state.agentRuntime.shared, true);
+  assert.match(on.state.agentRuntime.message, /Planning runs on the shared API at https:\/\/api\.example\.test/);
+});
+
+test('with developer mode off a client link is never minted through a saved shared API', async () => {
+  const application = { id: 'app-1', programIds: ['wic'], analysis: { gaps: [{ fieldKey: 'a', question: 'Q?' }] } };
+  const off = liveAgentRuntime({ developerMode: false, stored: undefined, gateway: savedGateway });
+  await assert.rejects(off.runtime.mintClientLink(application), { message: 'Developer mode is off.' });
+  assert.deepEqual(off.gatewayRequests, []);
+  assert.equal(application.clientLink, undefined);
+});
+
+test('turning developer mode off after a shared-API session resets the runtime even though the provider is unchanged', async () => {
+  const flip = liveAgentRuntime({ developerMode: true, stored: undefined, gateway: savedGateway, agentRuntime: { status: 'checking', message: '' } });
+  await flip.runtime.restoreAgentProvider();
+  await flip.runtime.prepareAgentRuntime();
+  assert.equal(flip.state.agentRuntime.shared, true);
+  flip.state.developerMode = false;
+  await flip.runtime.restoreAgentProvider();
+  assert.deepEqual(flip.state.agentRuntime, { status: 'checking', message: '' });
+  await flip.runtime.prepareAgentRuntime();
+  assert.deepEqual(flip.prepared, ['nano']);
+});
+
+test('a stored provider the planner rejects falls back to Gemini Nano and resets the runtime status', async () => {
+  const broken = liveAgentRuntime({ developerMode: true, stored: { ...jevProvider, token: 'short' }, rejectCompanion: true, agentRuntime: { status: 'ready', message: 'Jev decision model is ready.' } });
+  await broken.runtime.restoreAgentProvider();
+  assert.deepEqual(broken.state.agentProvider, { kind: 'chrome-local' });
+  assert.deepEqual(broken.state.agentRuntime, { status: 'checking', message: '' });
+  assert.deepEqual(broken.writes, [['remove', 'nava:agent-provider']]);
 });
 
 /** The program-choice submit handler over a recording opener. */

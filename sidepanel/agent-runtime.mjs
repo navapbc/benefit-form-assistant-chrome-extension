@@ -1,4 +1,5 @@
 // Planner runtime: the chosen model provider or the shared Nava planner gateway, planner start-up progress, and client links minted through the gateway for the open questions.
+import { DEVELOPER_MODE_OFF_MESSAGE } from '../shared/developer-mode.mjs';
 
 const AGENT_PROVIDER_STORAGE_KEY = 'nava:agent-provider';
 
@@ -49,7 +50,8 @@ function create(deps) {
   async function prepareAgentRuntime({ application = null } = {}) {
     if (previewMode) return { status: 'preview', agents: [] };
     if (!agentPlanner?.prepare) throw new Error('The agentic planner did not load. Reload the extension and try again.');
-    if (state.agentProvider.provider !== 'jev' && agentPlanner.gatewayConfig) {
+    // The shared planner API is experimental: with developer mode off a saved one is ignored, not removed.
+    if (state.developerMode && state.agentProvider.provider !== 'jev' && agentPlanner.gatewayConfig) {
       const gateway = await agentPlanner.gatewayConfig();
       if (gateway) {
         state.agentRuntime = {
@@ -88,11 +90,19 @@ function create(deps) {
     if (changed) state.agentRuntime = { status: 'checking', message: '' };
   }
 
+  /** Gemini Nano without the shared planner API, for developer mode off. A "ready" status reached on the shared API is reset. */
+  function applyCoreProvider() {
+    const changed = JSON.stringify(state.agentProvider) !== JSON.stringify({ kind: 'chrome-local' }) || state.agentRuntime?.shared;
+    state.agentProvider = { kind: 'chrome-local' };
+    agentPlanner.configure({ kind: 'chrome-local', gateway: false });
+    if (changed) state.agentRuntime = { status: 'checking', message: '' };
+  }
+
   async function restoreAgentProvider() {
     if (previewMode || !agentPlanner?.configure) return;
     if (!state.developerMode) {
-      // Gemini Nano only. A stored experimental provider stays in storage for when developer mode is turned on again.
-      applyProvider({ kind: 'chrome-local' });
+      // Gemini Nano only. A stored experimental provider or shared API stays in storage for when developer mode is turned on again.
+      applyCoreProvider();
       return;
     }
     let stored = null;
@@ -102,6 +112,7 @@ function create(deps) {
     } catch {
       state.agentProvider = { kind: 'chrome-local' };
       agentPlanner.configure(state.agentProvider);
+      state.agentRuntime = { status: 'checking', message: '' };
       if (stored) await chrome.storage.session.remove(AGENT_PROVIDER_STORAGE_KEY);
     }
   }
@@ -111,7 +122,7 @@ function create(deps) {
     if (!state.developerMode) {
       // Only Gemini Nano applies; the hidden companion and CAPTCHA fields are ignored and stored settings stay as they are.
       const nano = { kind: 'chrome-local' };
-      agentPlanner.configure(nano);
+      agentPlanner.configure({ ...nano, gateway: false });
       state.agentProvider = nano;
       state.agentRuntime = { status: 'checking', message: '' };
       setBusy('Connecting Chrome on-device AI…');
@@ -169,6 +180,7 @@ function create(deps) {
    * only, and the audit log on the API records that an application was added.
    */
   async function mintClientLink(application, { signal = currentUiSignal() } = {}) {
+    if (!state.developerMode) throw new Error(DEVELOPER_MODE_OFF_MESSAGE);
     const gateway = await agentPlanner.gatewayConfig();
     if (!gateway) throw new Error('Save the shared planner API address and a tenant key first.');
     const programIds = clientLinkPrograms(application.programIds);

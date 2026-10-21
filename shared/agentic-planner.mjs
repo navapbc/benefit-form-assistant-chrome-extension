@@ -1,7 +1,7 @@
 // Agentic planner: plans a page with the three model roles (mapper and gap analyst, then an independent reviewer) or the shared gateway, keeping only what the local policy validator accepts.
 import { compactText, groupedInventory, planningInventory, redactSourceValues, sourceInventory } from './planner-inventory.mjs';
 import {
-  ROLE_NAMES, availability, configure, decisionPlan, onReset, prepare, promptRole, reset, runtimeInfo, setBridgeFetchForTests, setRuntimeForTests,
+  ROLE_NAMES, availability, configure, decisionPlan, gatewayAllowed, onReset, prepare, promptRole, reset, runtimeInfo, setBridgeFetchForTests, setRuntimeForTests,
 } from './planner-runtime.mjs';
 import { siteAdapters } from './engines.mjs';
 
@@ -581,7 +581,7 @@ async function reviewProposals(page, fields, sources, proposal, onProgress) {
 async function plan({ engine, page, rawFields, participant, onProgress, jevRecovery, signal, siteAdapters: adapters = siteAdapters } = {}) {
   if (!engine?.canonicalizeParticipant || !engine?.buildAnalysis) throw new Error('The form engine is unavailable.');
   if (runtimeInfo().provider === 'jev') return planWithJev({ engine, page, rawFields, participant, onProgress, jevRecovery, adapters });
-  const gateway = await gatewayConfig();
+  const gateway = gatewayAllowed() ? await gatewayConfig() : null;
   if (gateway) return planThroughGateway({ engine, page, rawFields, participant, onProgress, signal }, gateway);
   await prepare({ onProgress });
   const { fields, sources } = planningInventory(engine, participant, rawFields);

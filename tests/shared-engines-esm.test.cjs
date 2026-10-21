@@ -10,7 +10,7 @@ const EXPORTED_KEYS = {
   'recertification-engine': ['REQUIREMENTS', 'daysUntil', 'dueDateLabel', 'mergeWorkspace', 'normalizeCase', 'normalizeCaseload', 'notificationPlan', 'summarize', 'urgencyFor'],
   'demo-connector-data': ['CLIENT_RECORDS', 'FORM_ID', 'RECERTIFICATION_CASELOAD', 'RECORD_ID', 'SCHEMA', 'isoDateOffset', 'recertificationCase', 'recordAttributes'],
   'planner-inventory': ['compactText', 'groupedInventory', 'planningInventory', 'redactSourceValues', 'sourceInventory'],
-  'planner-runtime': ['ROLE_NAMES', 'availability', 'configure', 'decisionPlan', 'onReset', 'prepare', 'promptRole', 'reset', 'runtimeInfo', 'setBridgeFetchForTests', 'setRuntimeForTests'],
+  'planner-runtime': ['ROLE_NAMES', 'availability', 'configure', 'decisionPlan', 'gatewayAllowed', 'onReset', 'prepare', 'promptRole', 'reset', 'runtimeInfo', 'setBridgeFetchForTests', 'setRuntimeForTests'],
   'agentic-planner': ['availability', 'clearGatewayConfig', 'configure', 'gatewayConfig', 'gatewayRequest', 'groupedInventory', 'normalizeGatewayBase', 'plan', 'prepare', 'reset', 'runtimeInfo', 'saveGatewayConfig', 'setBridgeFetchForTests', 'setRuntimeForTests'],
 };
 

@@ -310,6 +310,38 @@ test('a configured Nava API plans the page and the extension drops mappings the 
   }
 });
 
+test('a saved shared API is not used to plan while the gateway is turned off (developer mode off), and is used again when on', async () => {
+  const previousFetch = globalThis.fetch;
+  const previousChrome = globalThis.chrome;
+  const stored = { navaApiBase: 'https://api.test', navaApiToken: 'nava_test_secret' };
+  globalThis.chrome = { storage: { local: { async get(keys) { return Object.fromEntries(keys.filter((key) => key in stored).map((key) => [key, stored[key]])); } } } };
+  const sent = [];
+  globalThis.fetch = async (url) => {
+    sent.push(url);
+    return { ok: true, async json() { return { ok: true, plan: { purposeOverrides: {}, approved: [], rejected: [], gaps: [], metadata: {} } }; } };
+  };
+  const request = { engine, page: { domain: 'example.gov' }, rawFields, participant: { participant: { name: { first: 'Celeste' } } } };
+  try {
+    assert.ok(await planner.gatewayConfig(), 'the saved gateway settings are readable');
+    const runtime = runtimeFor();
+    planner.setRuntimeForTests(runtime);
+    planner.configure({ kind: 'chrome-local', gateway: false });
+    const off = await planner.plan(request);
+    assert.deepEqual(sent, [], 'no request reaches the shared API');
+    assert.equal(off.metadata.runtime, 'chrome-gemini-nano');
+    assert.ok(runtime.createCount > 0, 'the on-device model planned the page');
+    assert.deepEqual(stored, { navaApiBase: 'https://api.test', navaApiToken: 'nava_test_secret' }, 'the saved settings are kept');
+
+    planner.configure({ kind: 'chrome-local' });
+    await planner.plan(request);
+    assert.deepEqual(sent, ['https://api.test/v1/plan'], 'with the gateway allowed the shared API plans again');
+  } finally {
+    planner.configure({ kind: 'chrome-local' });
+    globalThis.fetch = previousFetch;
+    globalThis.chrome = previousChrome;
+  }
+});
+
 test('routes the same redacted three-role plan through a paired subscription companion', async () => {
   const calls = [];
   planner.setBridgeFetchForTests(async (url, options = {}) => {

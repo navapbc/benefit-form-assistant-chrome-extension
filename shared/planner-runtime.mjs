@@ -38,6 +38,8 @@ let roleChains = Object.fromEntries(ROLE_NAMES.map((role) => [role, Promise.reso
 let runtimeOverride = null;
 let bridgeFetchOverride = null;
 let providerConfig = { kind: 'chrome-local' };
+// Whether the shared planner API may plan. Only `gateway: false` turns it off (developer mode off); any other configure allows it.
+let gatewayEnabled = true;
 const resetListeners = new Set();
 
 function normalizeBridgeEndpoint(value) {
@@ -75,10 +77,16 @@ function normalizeProviderConfig(input = {}) {
 
 function configure(input = {}) {
   const next = normalizeProviderConfig(input);
+  gatewayEnabled = input?.gateway !== false;
   const changed = JSON.stringify(next) !== JSON.stringify(providerConfig);
   if (changed) reset();
   providerConfig = next;
   return runtimeInfo();
+}
+
+/** Whether the last configure allowed the shared planner API. */
+function gatewayAllowed() {
+  return gatewayEnabled;
 }
 
 function runtimeInfo() {
@@ -329,4 +337,4 @@ function setBridgeFetchForTests(fetcher) {
   bridgeFetchOverride = fetcher;
 }
 
-export { ROLE_NAMES, availability, configure, decisionPlan, onReset, prepare, promptRole, reset, runtimeInfo, setBridgeFetchForTests, setRuntimeForTests };
+export { ROLE_NAMES, availability, configure, decisionPlan, gatewayAllowed, onReset, prepare, promptRole, reset, runtimeInfo, setBridgeFetchForTests, setRuntimeForTests };

@@ -217,7 +217,7 @@ test('Back from questions aborts sharing through the actual click handler', asyn
   let started;
   const requested = new Promise((resolve) => { started = resolve; });
   globalThis.fetch = async () => { started(); return new Promise(() => {}); };
-  const context = clientLinkContext({ state: { apps: [], view: 'questions' } });
+  const context = clientLinkContext({ state: { apps: [], view: 'questions', developerMode: true } });
   const pending = context.result.mintClientLink(application());
   await requested;
   await context.click({ dataset: { action: 'back-dashboard' } });
