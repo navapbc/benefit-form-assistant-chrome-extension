@@ -1,15 +1,29 @@
 # Follow-up work
 
-Things we decided to come back to. Add to the top of a section as you find more; move an item to [RECENT_CHANGES.md](RECENT_CHANGES.md) when it ships. Last updated October 21, 2026 (participant directory and start-screen items added).
+Things we decided to come back to. Add to the top of a section as you find more; move an item to [RECENT_CHANGES.md](RECENT_CHANGES.md) when it ships. Last updated October 21, 2026 (open-source readiness items added).
+
+## Open-source readiness
+
+Added October 21, 2026 while preparing this repo as a reusable Nava open-source template ([PR 15](https://github.com/navapbc/benefit-form-assistant-chrome-extension/pull/15)). Done: license, `SECURITY.md`, code of conduct, Dependabot, templates, no shipped directory address, `.env.example`, `npm run extension:key`, [ADDING_A_SITE.md](ADDING_A_SITE.md). Still open:
+
+- [ ] **Legal sign-off on Apache-2.0** and the "Copyright 2026 Nava PBC" line in `LICENSE`.
+- [ ] **Turn on GitHub private vulnerability reporting** for the repo; `SECURITY.md` sends reporters there. Add a `CODEOWNERS` file once the team handle is known.
+- [ ] **Check branch protection on `main`** (required reviews and the "Validate extension" check). It cannot be seen from the repo.
+- [ ] **Public-facing docs pass.** The README and `docs/` still read as an internal Nava prototype: team one-pagers, installed-test logs, and [the Jev/Eve plan](JEV_EVE_ALIGNMENT_PLAN.md), which discusses the private `navapbc/ai-chatbot` repo. Keep the Nava branding; decide which evidence and planning docs are public, and move the rest to `docs/archive/`. Links to the old `gobrando/...` repos should also go.
+- [ ] **Add a secret scanner to CI** (for example gitleaks), alongside Dependabot.
+- [ ] **A template site adapter and fixture.** [ADDING_A_SITE.md](ADDING_A_SITE.md) describes the steps; a minimal example adapter, playbook and `demo/fixtures` page would let a reuser copy instead of read.
+- [ ] **Narrow the manifest by default.** `optional_host_permissions` allows `https://*/*`, and the fixed hosts are the California sites. Decide whether the template ships with only localhost and the demo fixtures.
+- [ ] **Document the threat model** in one short page: what stays on the device, what leaves, and what is stored where. Pieces exist in [WORK_QUEUE_SECURITY_AND_RECOVERY.md](WORK_QUEUE_SECURITY_AND_RECOVERY.md) and [MODEL_PROVIDERS.md](MODEL_PROVIDERS.md).
+- [ ] **Decide the experimental CAPTCHA feature's place in a public template** (abuse risk and Chrome Web Store policy).
 
 ## Participant directory (Neon)
 
 Added October 21, 2026 with the participant directory (see [RECENT_CHANGES.md](RECENT_CHANGES.md) and [the plan](JEV_EVE_ALIGNMENT_PLAN.md)). The Function and Auth run on the Neon `dev` branch. Its 7-day expiry (2026-10-28) was removed on October 21, 2026, so it no longer deletes itself.
 
-- [ ] **Move to a deliberate home for the directory.** The `dev` branch no longer expires (`neon branches set-expiration dev`), but it is still a dev branch holding the Function, Auth users and fictional data, and `DIRECTORY_URL` in `shared/directory-config.mjs` points at it. When the directory is shared beyond testing, pick a lasting branch or project, redeploy `participant-api/`, update the URL and `ALLOWED_ORIGINS`, and re-create the users and `directory_members` rows. Branches made later still get the 7-day expiry from `neon.ts`.
+- [ ] **Move to a deliberate home for the directory.** The `dev` branch no longer expires (`neon branches set-expiration dev`), but it is still a dev branch holding the Function, Auth users and fictional data, and Nava testers' gitignored `shared/directory-config.local.mjs` sets `DIRECTORY_URL` to it (no address ships in the repository). When the directory is shared beyond testing, pick a lasting branch or project, redeploy `participant-api/`, update the URL and `ALLOWED_ORIGINS`, and re-create the users and `directory_members` rows. Branches made later still get the 7-day expiry from `neon.ts`.
 - [ ] **Delete the development test account on the Neon branch before real use.** Its email and password are not in the repository (the repo is public): they sit in the gitignored `shared/directory-config.local.mjs`, which the sign-in card reads. Testers need that file from a teammate. Before real data, delete the account and its `directory_members` row in Neon.
 - [ ] **Real participant data needs a review first.** The `participants` table enforces `synthetic = true`. Before that changes: security and privacy review, data-processing terms, region, encryption, retention, and who may read which organization's records.
-- [ ] **Stable extension ID.** The API only answers listed `chrome-extension://` origins, and an unpacked extension's ID comes from its folder path. Add a `key` to the manifest, or list every tester's ID in `ALLOWED_ORIGINS`.
+- [ ] **Pin the extension ID for your fork.** `npm run extension:key` generates a key and prints the manifest `key` line and ID; add the `key` to `manifest.json` and the origin to `ALLOWED_ORIGINS` (see `participant-api/README.md`). The key is deliberately not committed, so each fork creates its own.
 - [ ] **User provisioning.** Sign-up is closed. Decide how users are invited and set a first password, and whether adding someone to `directory_members` is an admin screen or a SQL step.
 - [ ] **Tune and monitor the sign-in limits.** `/auth/sign-in` refuses foreign origins and non-JSON bodies, and counts attempts atomically before calling Neon Auth: 5 per (email, address), 30 per address, 50 per email, 15 minutes (see `participant-api/src/guards.ts`). Open: an attacker using 2 or more addresses can still lock a known email for everyone after 50 failures; a shared office address shares one address counter; `/auth/token` has no limit; old `auth_attempts` rows are never purged; nothing alerts on repeated lockouts; there is no progressive delay or CAPTCHA.
 - [ ] **Verify what the spike did not.** A real 15-minute token expiry with a sleeping service worker, and opening a found participant in the real side panel. Chrome's DevTools protocol cannot open the side panel, and the service worker rejects tab senders, so this is covered by unit tests only (fold into the real-Chrome end-to-end item above).

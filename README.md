@@ -89,7 +89,7 @@ For this sprint, record simple outcomes on the real site: **checkbox accepted: y
 
 ## Demo and development
 
-[Watch the recorded demo](docs/assets/nava-form-filling-assistant-demo.mp4) · [Developer guide](DEVELOPER_GUIDE.md) · [Contribution and release workflow](CONTRIBUTING.md)
+[Watch the recorded demo](docs/assets/nava-form-filling-assistant-demo.mp4) · [Developer guide](DEVELOPER_GUIDE.md) · [Contribution and release workflow](CONTRIBUTING.md) · [Adapt it to your own site](docs/ADDING_A_SITE.md) · [Security policy](SECURITY.md) · [License: Apache-2.0](LICENSE)
 
 The demo shows an earlier local practice build. It illustrates the workflow and does not establish current real-site accuracy.
 

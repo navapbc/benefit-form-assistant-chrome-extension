@@ -22,6 +22,12 @@ function create(deps) {
       </div>`;
   }
 
+  function notConfiguredBlock() {
+    return `
+      <h2 id="directory-heading">The client directory is not set up</h2>
+      <p class="field-hint">This copy of the assistant has no directory address. You can still enter client details, read a document, or use the sample client. To connect your organization's directory, see <code>participant-api/README.md</code>.</p>`;
+  }
+
   function signInBlock() {
     return `
       <h2 id="directory-heading">Sign in to search for a client</h2>
@@ -82,7 +88,7 @@ function create(deps) {
   /** The directory card for the start screen: sign-in when signed out, search when signed in. */
   function directorySection() {
     const directory = state.directory || {};
-    return `<section class="directory-card" aria-labelledby="directory-heading">${directory.signedIn ? findBlock(directory) : signInBlock()}</section>`;
+    return `<section class="directory-card" aria-labelledby="directory-heading">${directory.signedIn ? findBlock(directory) : directory.configured ? signInBlock() : notConfiguredBlock()}</section>`;
   }
 
   return { directorySection };

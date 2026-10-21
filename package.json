@@ -2,6 +2,7 @@
   "name": "nava-form-filling-assistant-chrome-extension",
   "version": "0.16.0",
   "private": true,
+  "license": "Apache-2.0",
   "description": "Local-first Chrome side-panel prototype for Nava's form-completion protocol.",
   "scripts": {
     "check": "node scripts/check-syntax.mjs",
@@ -24,6 +25,7 @@
     "model:eve": "npm --prefix model-bridge/eve run dev",
     "eval:captcha": "node scripts/summarize-captcha-metrics.mjs",
     "icons": "node scripts/generate-icons.mjs",
+    "extension:key": "node scripts/generate-extension-key.mjs",
     "package": "node scripts/package-extension.mjs --build"
   },
   "devDependencies": {

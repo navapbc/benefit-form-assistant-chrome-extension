@@ -184,9 +184,12 @@ test('the address provided by the code is used without saving one, and a saved a
   assert.equal((await client.config()).baseUrl, 'https://other.example');
 });
 
-test('the shipped config names an https directory and contains no account credentials', () => {
+test('the shipped config names no directory and contains no account credentials', async () => {
   const config = require('../shared/directory-config.mjs');
-  assert.equal(directoryModule.normalizeBase(config.DIRECTORY_URL), config.DIRECTORY_URL);
+  assert.equal(config.DIRECTORY_URL, '', 'no address points at anyone\'s infrastructure');
+  assert.equal(await config.loadDirectoryUrl(async () => { throw new Error('no local file'); }), '');
+  assert.equal(await config.loadDirectoryUrl(async () => ({ DIRECTORY_URL: ' https://directory.example ' })), 'https://directory.example');
+  assert.equal(await config.loadDirectoryUrl(async () => ({ DIRECTORY_URL: 5 })), '');
   assert.equal('DEV_TEST_ACCOUNT' in config, false, 'the repository is public: the test account lives in a gitignored local file');
   const fs = require('node:fs');
   const path = require('node:path');
@@ -210,4 +213,17 @@ test('the dev test account loads from the local file, and anything missing or ma
   ]) {
     assert.equal(await loadDevTestAccount(importer), null, label);
   }
+});
+
+test('a default address can come from an async loader and is resolved once, on first use', async () => {
+  let loads = 0;
+  const client = directoryModule.create({ storage: memoryStorage(), defaultBaseUrl: async () => { loads += 1; return 'https://loaded.example'; } });
+  assert.equal((await client.config()).baseUrl, 'https://loaded.example');
+  assert.equal((await client.status()).configured, true);
+  assert.equal(loads, 1);
+});
+
+test('an empty loader result leaves the directory unconfigured', async () => {
+  const client = directoryModule.create({ storage: memoryStorage(), defaultBaseUrl: async () => '' });
+  assert.equal((await client.status()).configured, false);
 });

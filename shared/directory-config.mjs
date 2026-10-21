@@ -1,13 +1,30 @@
 // Where the participant directory lives, and the optional development test account shown on its sign-in screen.
 //
-// The address is the Neon `dev` branch Function. It is development-only: point it at the real directory when there is one.
+// No directory address ships in the repository. Deploy `participant-api/` to your own project (see its README), then create
+// the gitignored file `shared/directory-config.local.mjs` exporting `DIRECTORY_URL` (an https address, or an http loopback
+// address for local development) and, optionally, `DEV_TEST_ACCOUNT = { email, password }`. Without it the participant
+// directory screen says it is not set up.
 //
-// The test account is NOT in the repository. The repo is public, so its email and password live in a gitignored file,
-// `shared/directory-config.local.mjs`, which exports `DEV_TEST_ACCOUNT = { email, password }`. When that file is present the
-// sign-in screen shows the account with a fill-in button; when it is absent nothing is shown. Release packages never include
-// it (scripts/shipped-files.mjs). See participant-api/README.md for how to create it.
+// The local file is never committed or packaged (.gitignore, scripts/shipped-files.mjs), so the account password and your
+// address stay out of a public repository. When a test account is present the sign-in screen shows it with a fill-in
+// button; when it is absent nothing is shown.
 
-export const DIRECTORY_URL = 'https://br-restless-sea-b5je523a-participants.compute.c-7.us-east-2.aws.neon.tech';
+/** The address the code provides by default: empty, so nothing points at anyone's infrastructure. */
+export const DIRECTORY_URL = '';
+
+/**
+ * The directory address from the gitignored local file, or '' when there is none. Never throws.
+ * @param {(specifier: string) => Promise<any>} [importer] loads the local file; replaced in tests.
+ * @returns {Promise<string>}
+ */
+export async function loadDirectoryUrl(importer = (specifier) => import(/* a variable keeps this optional */ specifier)) {
+  try {
+    const { DIRECTORY_URL: local } = await importer('./directory-config.local.mjs');
+    return typeof local === 'string' ? local.trim() : DIRECTORY_URL;
+  } catch {
+    return DIRECTORY_URL;
+  }
+}
 
 /**
  * The local development test account, or null when there is none. Never throws: a missing file, a bad shape or an
