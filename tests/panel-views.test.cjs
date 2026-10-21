@@ -308,7 +308,7 @@ test('application cards escape every text and attribute value that can come from
 
 test('the directory card signs in, then searches; it escapes names and encodes IDs', () => {
   const directoryViews = require('../sidepanel/view-directory.mjs');
-  const state = { directory: { signedIn: false, email: '', query: '', results: null }, devTestAccount: { email: 'dev@example.com', password: 'pw<1>' } };
+  const state = { directory: { configured: true, signedIn: false, email: '', query: '', results: null }, devTestAccount: { email: 'dev@example.com', password: 'pw<1>' } };
   const card = () => directoryViews.create({ state, format }).directorySection();
 
   let html = card();
@@ -322,7 +322,12 @@ test('the directory card signs in, then searches; it escapes names and encodes I
   assert.doesNotMatch(card(), /Development test account|directory-use-test-account/, 'no local account file means no note');
   state.devTestAccount = { email: 'dev@example.com', password: 'pw<1>' };
 
-  state.directory = { signedIn: true, email: 'ada@example.com', query: '', results: null };
+  state.directory = { configured: false, signedIn: false, email: '', query: '', results: null };
+  html = card();
+  assert.match(html, /directory is not set up/);
+  assert.doesNotMatch(html, /directory-signin-form|type="password"/, 'with no address there is nothing to sign in to');
+
+  state.directory = { configured: true, signedIn: true, email: 'ada@example.com', query: '', results: null };
   html = card();
   assert.match(html, /Search for a client/);
   assert.match(html, /Signed in as ada@example\.com/);
