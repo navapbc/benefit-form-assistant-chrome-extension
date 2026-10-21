@@ -127,7 +127,7 @@ A throwaway extension with a fixed ID, loaded into Chrome 155 with no host permi
 
 **Things the spike showed**
 
-- The password passes through the Function. That is our own infrastructure, but the Function must never log bodies, and `/auth/sign-in` needed rate limiting before real use; it now refuses foreign origins and non-JSON bodies and counts failures per email and per client address (see `participant-api/README.md`).
+- The password passes through the Function. That is our own infrastructure, but the Function must never log bodies, and `/auth/sign-in` needed rate limiting before real use; it now refuses foreign origins and non-JSON bodies and counts attempts atomically per email-and-address pair, per address and per email (see `participant-api/README.md`).
 - Store `sessionToken` in `chrome.storage.session` only. It is a 7-day credential.
 - A request made seconds after a deploy can still hit the previous version.
 - `neon checkout dev --create` points `.env.local` at the dev branch, which expired in 7 days by default; that expiry was removed on 2026-10-21. The Apricot-shaped mock tables exist on `production` only if you run `npm run connector:migrate` there; they were copied to `dev` at branch time.

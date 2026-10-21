@@ -6,7 +6,7 @@ Added a login-gated participant directory: a Neon Function and Postgres tables, 
 ## Changes made
 - Added `participant-api/` (Hono Function): sign-in broker (`/auth/sign-in`, `/auth/token`, `/auth/sign-out`), `GET /participants/{id}` and `POST /participants/search`. Schema in `participant-api/schema.sql`, notes in `participant-api/README.md`.
 - Added `neon.ts` (Auth on, one function, 7-day expiry for non-default branches) and the `@neon/*`, `hono`, `jose` and `pg` dependencies.
-- Sign-in guards (`participant-api/src/guards.ts`): non-GET requests need a listed origin (or none) and a JSON content type, and failed sign-ins are counted per hashed email and per client address in `auth_attempts` (5 and 30 per 15 minutes, then 429).
+- Sign-in guards (`participant-api/src/guards.ts`): non-GET requests need a listed origin (or none) and a JSON content type, and sign-in attempts are counted atomically, before the request reaches Neon Auth, per (hashed email, address) pair, per address and per email in `auth_attempts` (5, 30 and 50 per 15 minutes, then 429).
 - Access control: JWT issuer and audience checks, a `directory_members` table keyed by the verified user, an `organization_id` filter on every query, closed sign-up, and a `participant_audit` table that records user, action and ID but no values.
 - Added `shared/participant-directory.mjs` (client with refresh, one retry on 401, fixed error messages, tokens in `chrome.storage.session`), `shared/directory-config.mjs` (address, and a loader for the development test account from the gitignored `shared/directory-config.local.mjs`; release packages skip `*.local.mjs`), and `sidepanel/view-directory.mjs`.
 - Added a simulated directory for the extension-free preview (`sidepanel/preview-directory.mjs`).
