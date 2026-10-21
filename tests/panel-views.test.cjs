@@ -399,7 +399,9 @@ const GAP_APP = { id: 'gap', name: 'Gap app', status: 'needs_attention', tabId: 
 const READY_APP = { id: 'rdy', name: 'Ready app', status: 'ready_to_fill', tabId: 7 };
 const REVIEW_APP = { id: 'rev', name: 'Review app', status: 'ready_for_review', tabId: 8 };
 const OTHER_APP = { id: 'oth', name: 'Other app', status: 'not_started', tabId: 9 };
-const ALL_APPS = [CAPTCHA_APP, RUNNING_APP, GAP_APP, READY_APP, REVIEW_APP, OTHER_APP];
+const HANDOFF_APP = { id: 'hnd', name: 'Handoff app', status: 'handoff_pending', tabId: 10, owner: { state: 'pending', assignedTo: 'Intake' } };
+const EXPIRED_APP = { id: 'exp', name: 'Expired app', status: 'source_expired', tabId: 11 };
+const ALL_APPS = [CAPTCHA_APP, RUNNING_APP, GAP_APP, READY_APP, REVIEW_APP, OTHER_APP, HANDOFF_APP, EXPIRED_APP];
 
 /** Every core screen a caseworker can reach, rendered over one set of fixtures. */
 function coreScreens(developerMode) {
@@ -447,7 +449,7 @@ test('core controls remain with developer mode off, and a run can still be stopp
   const html = coreScreens(false);
   const dashboard = html.renderDashboard;
   const seen = new Set(hooksOf(dashboard));
-  for (const action of ['resume-human-checkpoint', 'fill', 'run', 'answer', 'review', 'add-application', 'export-audit', 'start-over', 'go-tab', 'scan-application']) {
+  for (const action of ['resume-human-checkpoint', 'fill', 'run', 'answer', 'review', 'add-application', 'export-audit', 'start-over', 'go-tab', 'scan-application', 'reload-source']) {
     assert.ok(seen.has(action), `${action} stays on the dashboard`);
   }
   assert.match(dashboard, /End this session/);
@@ -467,9 +469,13 @@ test('a CAPTCHA checkpoint shows the manual resume action when developer mode is
   assert.ok(actionsOf(view.appRoot.innerHTML).includes('start-over'));
 });
 
-test('a pending handoff shows no accept control when developer mode is off', () => {
+test('a pending handoff shows no accept control when developer mode is off, only a hint to turn it on', () => {
   const view = screens({ state: { developerMode: false } });
-  assert.deepEqual(actionsOf(view.applicationCard({ id: 'h', status: 'handoff_pending' })), []);
+  const off = view.applicationCard({ id: 'h', status: 'handoff_pending' });
+  assert.deepEqual(actionsOf(off), []);
+  assert.match(off, /Turn on Developer mode to accept this handoff/);
+  const on = screens({ state: { developerMode: true } }).applicationCard({ id: 'h', status: 'handoff_pending' });
+  assert.doesNotMatch(on, /Turn on Developer mode/);
 });
 
 test('the model runtime offers only Gemini Nano when developer mode is off', () => {

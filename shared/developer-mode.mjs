@@ -55,6 +55,7 @@ const EXPERIMENTAL_ACTIONS = readonlySet([
   'recertification-intake-form',
   'handoff-form',
   'connector-provider',
+  'captcha-provider',
 ]);
 
 /** `state.view` values that only exist for the experimental features. */

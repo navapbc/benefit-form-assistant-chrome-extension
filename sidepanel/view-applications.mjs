@@ -53,7 +53,7 @@ function create(deps) {
     } else if (application.status === 'source_expired') {
       actions = '<button class="small-button" type="button" data-action="reload-source">Reload client data</button>';
     } else if (application.status === 'handoff_pending') {
-      actions = !state.developerMode ? '' : `<button class="small-button" type="button" data-action="accept-handoff" data-app="${encoded(application.id)}">Accept handoff</button>`;
+      actions = !state.developerMode ? '<span class="field-hint">Turn on Developer mode to accept this handoff.</span>' : `<button class="small-button" type="button" data-action="accept-handoff" data-app="${encoded(application.id)}">Accept handoff</button>`;
     } else if (application.programSelectionRequired) {
       actions = '<button class="small-button" type="button" data-action="add-application">Choose programs in a new BenefitsCal application</button>';
     } else if (['captcha', 'otp'].includes(application.checkpoint?.kind) && application.tabId) {

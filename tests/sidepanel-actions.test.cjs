@@ -612,7 +612,8 @@ test('dismissing the welcome page remembers it and shows the right home screen',
 });
 
 // Developer mode: the dispatcher refuses every experimental action while the setting is off.
-const EXPERIMENTAL_CLICKS = [...developerMode.EXPERIMENTAL_ACTIONS].filter((name) => !name.endsWith('-form') && name !== 'connector-provider');
+const EXPERIMENTAL_CHANGE_IDS = ['connector-provider', 'captcha-provider'];
+const EXPERIMENTAL_CLICKS = [...developerMode.EXPERIMENTAL_ACTIONS].filter((name) => !name.endsWith('-form') && !EXPERIMENTAL_CHANGE_IDS.includes(name));
 const EXPERIMENTAL_FORMS = [...developerMode.EXPERIMENTAL_ACTIONS].filter((name) => name.endsWith('-form'));
 
 test('with developer mode off, onClick refuses every experimental action without running its handler', async () => {
@@ -651,10 +652,10 @@ test('with developer mode off, the change listener refuses experimental change h
     harness.installListeners();
     return { harness, change: listeners.change };
   };
-  for (const target of [{ id: 'connector-provider', dataset: {} }, { id: '', dataset: { captchaApp: 'app-1' }, checked: true }]) {
+  for (const target of [{ id: 'connector-provider', dataset: {} }, { id: 'captcha-provider', dataset: {} }, { id: '', dataset: { captchaApp: 'app-1' }, checked: true }]) {
     const { harness, change } = wire(false);
     let ran = 0;
-    harness.CHANGE_HANDLERS.set('connector-provider', () => { ran += 1; });
+    EXPERIMENTAL_CHANGE_IDS.forEach((id) => harness.CHANGE_HANDLERS.set(id, () => { ran += 1; }));
     change({ target });
     assert.equal(ran, 0, target.id || 'captcha');
     assert.equal(harness.state.error, 'Developer mode is off.');
@@ -665,6 +666,61 @@ test('with developer mode off, the change listener refuses experimental change h
   harness.CHANGE_HANDLERS.set('connector-provider', () => { ran += 1; });
   change({ target: { id: 'connector-provider', dataset: {} } });
   assert.equal(ran, 1);
+});
+
+// Every click action, submit form id and change-handler id the real dispatcher tables hold, decided one by one:
+// experimental (in shared/developer-mode.mjs) or core (this list). A new action fails here until it is placed.
+const CORE_ACTIONS = [
+  // click actions
+  'enable-agent', 'home', 'choose-details', 'use-sample-client', 'dismiss-welcome', 'show-welcome', 'directory-pick',
+  'directory-sign-out', 'directory-use-test-account', 'choose-document', 'back-choice', 'back-programs', 'back-document',
+  'change-client', 'back-dashboard', 'add-application', 'reload-source', 'export-audit', 'start-over', 'answer',
+  'answer-run', 'fill', 'run', 'review', 'rescan', 'go-tab', 'scan-application', 'resume', 'resume-current',
+  'resume-human-checkpoint', 'analyze-current', 'toggle-developer-mode',
+  // submit form ids
+  'model-provider-form', 'json-form', 'details-form', 'directory-signin-form', 'directory-find-form', 'document-form',
+  'document-review-form', 'program-form', 'questions-form',
+  // change-handler ids: the model-runtime select is drawn with developer mode off (Gemini Nano only)
+  'model-provider',
+];
+
+test('every real dispatcher action is either experimental or on the core list, and every experimental name has a handler', () => {
+  const { CLICK_ACTIONS, SUBMIT_ACTIONS, CHANGE_HANDLERS } = dispatchHarness();
+  const tables = [...CLICK_ACTIONS.keys(), ...SUBMIT_ACTIONS.keys(), ...CHANGE_HANDLERS.keys()];
+  const core = new Set(CORE_ACTIONS);
+  assert.equal(core.size, CORE_ACTIONS.length, 'no core name is listed twice');
+  for (const name of tables) {
+    const experimental = developerMode.EXPERIMENTAL_ACTIONS.has(name);
+    assert.ok(experimental !== core.has(name), `${name} must be on exactly one list`);
+  }
+  for (const name of [...developerMode.EXPERIMENTAL_ACTIONS, ...CORE_ACTIONS]) assert.ok(tables.includes(name), `${name} has no handler`);
+  assert.equal(developerMode.EXPERIMENTAL_ACTIONS.has('captcha-provider'), true, 'the CAPTCHA image runtime select is experimental');
+});
+
+test('with developer mode off no core action, form or change handler is refused', async () => {
+  const { CLICK_ACTIONS, SUBMIT_ACTIONS, CHANGE_HANDLERS } = dispatchHarness();
+  const refusal = developerMode.DEVELOPER_MODE_OFF_MESSAGE;
+  for (const action of CORE_ACTIONS.filter((name) => CLICK_ACTIONS.has(name))) {
+    const harness = dispatchHarness({ state: { developerMode: false, apps: [{ id: 'app-1' }], currentAppId: 'app-1' } });
+    await click(harness, action, { app: 'app-1' }).catch(() => {});
+    assert.notEqual(harness.state.error, refusal, action);
+  }
+  for (const id of CORE_ACTIONS.filter((name) => SUBMIT_ACTIONS.has(name))) {
+    const harness = dispatchHarness({ state: { developerMode: false } });
+    await harness.onSubmit({ id, fields: {} }, 7).catch(() => {});
+    assert.notEqual(harness.state.error, refusal, id);
+  }
+  for (const id of CORE_ACTIONS.filter((name) => CHANGE_HANDLERS.has(name))) {
+    const listeners = {};
+    const appRoot = { addEventListener: (type, callback) => { listeners[type] = callback; } };
+    const harness = dispatchHarness({ state: { developerMode: false }, appRoot });
+    harness.installListeners();
+    let ran = 0;
+    harness.CHANGE_HANDLERS.set(id, () => { ran += 1; });
+    listeners.change({ target: { id, dataset: {} } });
+    assert.equal(ran, 1, id);
+    assert.notEqual(harness.state.error, refusal, id);
+  }
 });
 
 test('toggle-developer-mode turning on stores true, sets the state and restores the agent provider', async () => {

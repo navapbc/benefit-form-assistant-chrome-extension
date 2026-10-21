@@ -30,8 +30,8 @@ test('write stores a strict boolean', async () => {
 test('the experimental lists contain exactly the spec\'s items', () => {
   const clicks = ['try-captcha', 'open-handoff', 'accept-handoff', 'pause', 'save-planner', 'disconnect-planner', 'client-link', 'choose-id', 'configure-connector', 'back-providers', 'select-provider', 'back-connector', 'local-connector-settings', 'reset-connector', 'back-record-id', 'confirm-connector-record', 'open-recertifications', 'back-recertifications', 'review-recertification', 'draft-recertification-outreach', 'complete-recertification-outreach', 'prepare-recertification'];
   const submits = ['record-form', 'connector-form', 'connector-mapping-form', 'recertification-intake-form', 'handoff-form'];
-  assert.deepEqual([...dev.EXPERIMENTAL_ACTIONS].sort(), [...clicks, ...submits, 'connector-provider'].sort());
-  for (const name of [...clicks, ...submits, 'connector-provider']) {
+  assert.deepEqual([...dev.EXPERIMENTAL_ACTIONS].sort(), [...clicks, ...submits, 'connector-provider', 'captcha-provider'].sort());
+  for (const name of [...clicks, ...submits, 'connector-provider', 'captcha-provider']) {
     assert.equal(dev.EXPERIMENTAL_ACTIONS.has(name), true, name);
     assert.equal(dev.isExperimentalAction(name), true, name);
   }
