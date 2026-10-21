@@ -9,3 +9,5 @@ This prototype vendors browser builds of these open-source libraries:
 - **tessdata_fast English model** (`vendor/tesseract/lang-data/eng.traineddata.gz`) — Apache License 2.0. The complete license text is in `vendor/licenses/TESSDATA-FAST-LICENSE.txt`. The pinned file's SHA-256 digest is `18c1ac52b75e35d44735fb6c2a60acfaf23033524653200738e98f0243edb75b`.
 
 The libraries and language model run entirely inside the extension. No parser or OCR asset is loaded from a CDN.
+
+This project's own code is released under the Apache License 2.0 (see `LICENSE`). The notices above cover only the third-party files vendored into `vendor/`.

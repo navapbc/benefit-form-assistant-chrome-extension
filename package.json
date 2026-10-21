@@ -2,6 +2,7 @@
   "name": "nava-form-filling-assistant-chrome-extension",
   "version": "0.16.0",
   "private": true,
+  "license": "Apache-2.0",
   "description": "Local-first Chrome side-panel prototype for Nava's form-completion protocol.",
   "scripts": {
     "check": "node scripts/check-syntax.mjs",
