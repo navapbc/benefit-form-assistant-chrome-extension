@@ -45,6 +45,13 @@ test('revoking or expiring an application blocks every subsequent CAPTCHA action
   const expired = await harness(); await expired.send('begin'); expired.state.now = 181001;
   await assert.rejects(expired.send('checkbox'), /expired/); assert.equal(expired.state.actCalls, 0);
 });
+test('cancelAll revokes every live scope', async () => {
+  const h = await harness(); await h.send('begin'); await h.send('observe');
+  h.service.cancelAll();
+  await assert.rejects(h.send('checkbox'), /expired|canceled/); assert.equal(h.state.actCalls, 0);
+  assert.deepEqual(h.state.revoked, ['scope-token']);
+  assert.doesNotThrow(() => h.service.cancelAll());
+});
 test('concurrent authorization requests cannot start two CAPTCHA scopes', async () => {
   const h = await harness();
   const results = await Promise.allSettled([h.send('begin'), h.send('begin')]);
