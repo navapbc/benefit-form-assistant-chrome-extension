@@ -4,6 +4,7 @@ import { Hono } from 'hono';
 import { createRemoteJWKSet, jwtVerify } from 'jose';
 import { Pool } from 'pg';
 import { attachDatabasePool, waitUntil } from '@neon/functions';
+import { EMAIL_LIMIT, IP_LIMIT, checkBrowserRequest, clientIp, createLimiter, emailKey, ipKey } from './guards.ts';
 
 const jwks = createRemoteJWKSet(new URL(process.env.NEON_AUTH_JWKS_URL!));
 const issuer = new URL(process.env.NEON_AUTH_BASE_URL!).origin;
@@ -18,6 +19,7 @@ const SESSION_COOKIE = '__Secure-neon-auth.session_token';
 
 const pool = new Pool({ connectionString: process.env.DATABASE_URL, max: 5 });
 attachDatabasePool(pool);
+const limiter = createLimiter(pool);
 
 type Env = { Variables: { userId: string; exp: number; orgId: string } };
 const app = new Hono<Env>();
@@ -34,6 +36,9 @@ app.use('*', async (c, next) => {
     c.header('Vary', 'Origin');
   }
   if (c.req.method === 'OPTIONS') return c.body(null, allowed ? 204 : 403);
+  // A browser page must come from a listed origin and send JSON; see guards.ts.
+  const refused = checkBrowserRequest({ method: c.req.method, origin, contentType: c.req.header('content-type') }, allowedOrigins);
+  if (refused) return c.json({ ok: false, error: refused.error }, refused.status);
   await next();
 });
 
@@ -49,12 +54,27 @@ const mintToken = async (sessionToken: string): Promise<string | null> => {
 app.post('/auth/sign-in', async (c) => {
   const { email, password } = await c.req.json<{ email?: string; password?: string }>().catch(() => ({} as { email?: string; password?: string }));
   if (typeof email !== 'string' || typeof password !== 'string' || !email || !password) return c.json({ ok: false, error: 'Email and password are required.' }, 400);
+  // Failed attempts are counted per email (hashed, whether or not the account exists, so this does not reveal accounts)
+  // and per client address, before the request reaches Neon Auth.
+  const keys = [[emailKey(email), EMAIL_LIMIT], [ipKey(clientIp(c.req.header('x-forwarded-for'))), IP_LIMIT]] as const;
+  for (const [key, limit] of keys) {
+    const wait = await limiter.lockedFor(key, limit);
+    if (wait) {
+      c.header('Retry-After', String(wait));
+      return c.json({ ok: false, error: 'Too many sign-in attempts. Try again later.' }, 429);
+    }
+  }
+  const fail = async () => {
+    await Promise.all(keys.map(([key]) => limiter.recordFailure(key)));
+    return c.json({ ok: false, error: 'Sign-in failed.' }, 401);
+  };
   const res = await fetch(`${authBase}/sign-in/email`, { method: 'POST', headers: { 'content-type': 'application/json', origin: authOrigin }, body: JSON.stringify({ email, password }) });
-  if (!res.ok) return c.json({ ok: false, error: 'Sign-in failed.' }, 401);
+  if (!res.ok) return fail();
   const cookie = res.headers.getSetCookie().find((h) => h.startsWith(`${SESSION_COOKIE}=`));
   const sessionToken = cookie?.slice(SESSION_COOKIE.length + 1).split(';')[0];
   const token = sessionToken ? await mintToken(sessionToken) : null;
-  if (!sessionToken || !token) return c.json({ ok: false, error: 'Sign-in failed.' }, 401);
+  if (!sessionToken || !token) return fail();
+  await limiter.clear(keys[0][0]);
   return c.json({ ok: true, token, sessionToken });
 });
 

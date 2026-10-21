@@ -27,7 +27,13 @@ in `chrome.storage.session` and never talks to Neon Auth directly.
 - Sign-up is closed: `neon neon-auth config email-password update --disable-sign-up`. Create users with
   `neon neon-auth user create`, then add them to `directory_members`.
 - Request bodies and participant values are never logged. `participant_audit` records user, action and participant ID.
-- The sign-in route has no rate limit yet. Add one before real use.
+- Every non-GET request must come from a listed extension origin (or carry no `Origin`, i.e. a non-browser client) and
+  declare `application/json`; otherwise 403 or 415. `Origin: null` and other sites are refused.
+- `/auth/sign-in` counts failed attempts in the `auth_attempts` table: 5 per email (hashed, whether or not the account
+  exists) and 30 per client address in a 15-minute window, then 429 with `Retry-After`. A success clears the email's count.
+  The address is the last `X-Forwarded-For` entry, which the proxy adds; a client-supplied first entry is ignored.
+  Limits and the guard live in `participant-api/src/guards.ts`. Anyone can lock a known email out for a window by failing on
+  purpose; that is accepted for now. `/auth/token` has no limit (session tokens are high-entropy).
 
 ## Run it on a branch
 

@@ -23,3 +23,10 @@ create table if not exists directory_members (
   user_id         text primary key,
   organization_id text not null
 );
+
+-- Failed sign-in counters (hashed email or client address) for the sign-in broker's rate limit.
+create table if not exists auth_attempts (
+  key            text primary key,
+  failures       integer     not null,
+  window_started timestamptz not null
+);
