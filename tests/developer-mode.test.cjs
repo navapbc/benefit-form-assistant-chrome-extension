@@ -92,3 +92,13 @@ test('forEach and the iterators do not hand out the private set', () => {
     assert.deepEqual([...set], before);
   }
 });
+
+test('a storage change names the new mode only for the developer-mode key in local storage; anything but true is off', () => {
+  assert.equal(dev.developerModeFromChange({ 'nava:developer-mode': { newValue: true, oldValue: false } }, 'local'), true);
+  assert.equal(dev.developerModeFromChange({ 'nava:developer-mode': { newValue: false, oldValue: true } }, 'local'), false);
+  assert.equal(dev.developerModeFromChange({ 'nava:developer-mode': { oldValue: true } }, 'local'), false, 'a removed key means off');
+  assert.equal(dev.developerModeFromChange({ 'nava:developer-mode': { newValue: 'true' } }, 'local'), false);
+  assert.equal(dev.developerModeFromChange({ 'nava:developer-mode': { newValue: true } }, 'session'), null);
+  assert.equal(dev.developerModeFromChange({ 'nava:assistant-coordinator': { newValue: {} } }, 'local'), null);
+  assert.equal(dev.developerModeFromChange(undefined, 'local'), null);
+});

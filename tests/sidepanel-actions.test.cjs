@@ -139,11 +139,14 @@ function dispatchHarness(overrides = {}) {
     async get(key) { return key in stored ? { [key]: stored[key] } : {}; },
     async set(values) { calls.push(['store.set', values]); Object.assign(stored, values); },
   };
+  const captchaAuthorizations = overrides.captchaAuthorizations || new Set();
   const developerActions = createDeveloperActions({
     state: context.state,
     store,
     activeRunCount: overrides.activeRunCount || (() => 0),
     restoreAgentProvider: async () => { calls.push(['restoreAgentProvider', context.state.developerMode]); },
+    captchaAuthorizations,
+    canonicalHomeView: context.canonicalHomeView,
   });
   const { onClick, onSubmit, CLICK_ACTIONS, SUBMIT_ACTIONS, CHANGE_HANDLERS, installListeners } = uiDispatch.create({
     ...deps,
@@ -181,6 +184,8 @@ function dispatchHarness(overrides = {}) {
     state: context.state,
     calls,
     elements,
+    captchaAuthorizations,
+    applyDeveloperMode: developerActions.applyDeveloperMode,
   };
 }
 
@@ -676,12 +681,56 @@ test('toggle-developer-mode turning off stores false, restores the provider and 
   await click(harness, 'toggle-developer-mode');
   assert.deepEqual(harness.stored, { 'nava:developer-mode': false });
   assert.equal(harness.state.developerMode, false);
-  assert.equal(harness.state.view, 'choice');
+  assert.equal(harness.state.view, 'programs', 'an experimental view lands on the canonical home');
   assert.ok(callNames(harness.calls).includes('restoreAgentProvider'));
 
   const other = dispatchHarness({ state: { developerMode: true, view: 'dashboard' } });
   await click(other, 'toggle-developer-mode');
   assert.equal(other.state.view, 'dashboard');
+});
+
+test('turning developer mode off clears CAPTCHA authorizations; turning it on keeps them', async () => {
+  const off = dispatchHarness({ state: { developerMode: true }, captchaAuthorizations: new Set(['app-1']) });
+  await click(off, 'toggle-developer-mode');
+  assert.equal(off.captchaAuthorizations.size, 0);
+  const on = dispatchHarness({ state: { developerMode: false }, captchaAuthorizations: new Set(['app-1']) });
+  await click(on, 'toggle-developer-mode');
+  assert.deepEqual([...on.captchaAuthorizations], ['app-1']);
+});
+
+test('a change made in another side panel applies here: state, planner, CAPTCHA authorizations and view', async () => {
+  const harness = dispatchHarness({ state: { developerMode: true, view: 'recertifications' }, captchaAuthorizations: new Set(['app-1']) });
+  assert.equal(await harness.applyDeveloperMode(false), true);
+  assert.equal(harness.state.developerMode, false);
+  assert.deepEqual(harness.calls.filter(([name]) => name === 'restoreAgentProvider'), [['restoreAgentProvider', false]]);
+  assert.equal(harness.captchaAuthorizations.size, 0);
+  assert.equal(harness.state.view, 'programs');
+  assert.deepEqual(harness.stored, {}, 'a change observed from storage is not written back');
+  assert.equal(await harness.applyDeveloperMode(false), false, 'the same value again is a no-op');
+  assert.equal(harness.calls.filter(([name]) => name === 'restoreAgentProvider').length, 1);
+  assert.equal(await harness.applyDeveloperMode(true), true);
+  assert.equal(harness.state.developerMode, true);
+  assert.deepEqual(harness.calls.filter(([name]) => name === 'restoreAgentProvider').at(-1), ['restoreAgentProvider', true]);
+});
+
+test('the panel that toggles applies the change once, whether its own storage echo arrives during or after the write', async () => {
+  for (const echoDuringWrite of [true, false]) {
+    let harness;
+    const echoes = [];
+    const store = {
+      async get() { return {}; },
+      async set(values) {
+        if (echoDuringWrite) echoes.push(harness.applyDeveloperMode(values['nava:developer-mode'] === true));
+      },
+    };
+    harness = dispatchHarness({ state: { developerMode: true, view: 'handoff' }, store });
+    await click(harness, 'toggle-developer-mode');
+    if (!echoDuringWrite) echoes.push(harness.applyDeveloperMode(false));
+    await Promise.all(echoes);
+    assert.equal(harness.state.developerMode, false);
+    assert.equal(harness.calls.filter(([name]) => name === 'restoreAgentProvider').length, 1, `echo during write: ${echoDuringWrite}`);
+    assert.equal(harness.state.view, 'programs');
+  }
 });
 
 test('toggle is refused while runs are active', async () => {

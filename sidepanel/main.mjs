@@ -42,7 +42,7 @@ import * as connectorActionsModule from './actions-connector.mjs';
 import * as applicationActionsModule from './actions-applications.mjs';
 import * as developerActionsModule from './actions-developer.mjs';
 import * as uiDispatchModule from './ui-dispatch.mjs';
-import { readDeveloperMode, isExperimentalView } from '../shared/developer-mode.mjs';
+import { readDeveloperMode, isExperimentalView, developerModeFromChange } from '../shared/developer-mode.mjs';
 
 const appRoot = document.getElementById('app');
 const {
@@ -482,7 +482,7 @@ function canonicalHomeView() {
 }
 
 function render() {
-  if (!state.developerMode && isExperimentalView(state.view)) state.view = 'choice';
+  if (!state.developerMode && isExperimentalView(state.view)) state.view = canonicalHomeView();
   const renderView = {
     connector: renderConnectorSetup,
     providers: renderProviderCatalog,
@@ -588,6 +588,8 @@ const developerActions = developerActionsModule.create({
   store: developerStore,
   activeRunCount: runControl.activeRunCount,
   restoreAgentProvider,
+  captchaAuthorizations,
+  canonicalHomeView,
 });
 const { restoreConnector } = connectorActions;
 const { installListeners } = uiDispatchModule.create({
@@ -618,6 +620,16 @@ async function refreshActiveTab() {
 
 if (!previewMode) {
   chrome.storage.onChanged.addListener((changes, areaName) => {
+    // Developer mode turned on or off here or in another window's side panel: apply it to this panel too.
+    const developerMode = developerModeFromChange(changes, areaName);
+    if (developerMode !== null) {
+      developerActions.applyDeveloperMode(developerMode)
+        .then((changed) => { if (changed) render(); })
+        .catch((error) => {
+          state.error = error?.message || String(error);
+          render();
+        });
+    }
     if (areaName !== 'local' || !changes[COORDINATOR_STORAGE_KEY]?.newValue) return;
     observeCoordinator(changes[COORDINATOR_STORAGE_KEY].newValue);
   });

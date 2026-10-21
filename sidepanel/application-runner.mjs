@@ -334,7 +334,8 @@ function create(deps) {
     if (!run.background) state.view = stop.final ? 'review' : 'dashboard';
     assertApplicationRun(current, runToken);
     await persist({ applicationIds: [current.id] });
-    if (stop.kind === 'captcha' && captchaAuthorizations.has(current.id)) {
+    // CAPTCHA attempts are experimental: with developer mode off an earlier authorization never starts one.
+    if (stop.kind === 'captcha' && state.developerMode && captchaAuthorizations.has(current.id)) {
       captchaAuthorizations.delete(current.id);
       await tryCaptcha(current, { runToken });
     }

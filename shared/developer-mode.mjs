@@ -103,6 +103,18 @@ async function writeDeveloperMode(storage, enabled) {
   await storage.set({ [STORAGE_KEY]: Boolean(enabled) });
 }
 
+/**
+ * The developer mode a `chrome.storage.onChanged` event sets, or null when the event does not change it.
+ * Only a new value of `true` means on; a removed or other value means off.
+ * @param {Record<string, { newValue?: unknown }> | undefined} changes
+ * @param {string} areaName
+ * @returns {boolean | null}
+ */
+function developerModeFromChange(changes, areaName) {
+  if (areaName !== 'local' || !changes || !Object.prototype.hasOwnProperty.call(changes, STORAGE_KEY)) return null;
+  return changes[STORAGE_KEY]?.newValue === true;
+}
+
 /** @param {unknown} name */
 const isExperimentalAction = (name) => EXPERIMENTAL_ACTIONS.has(/** @type {string} */ (name));
 /** @param {unknown} view */
@@ -118,6 +130,7 @@ export {
   EXPERIMENTAL_MESSAGE_TYPES,
   readDeveloperMode,
   writeDeveloperMode,
+  developerModeFromChange,
   isExperimentalAction,
   isExperimentalView,
   isExperimentalMessage,
