@@ -1,6 +1,6 @@
 # Extraction quality evaluation
 
-Generated: 2026-10-21T18:53:12.412Z
+Generated: 2026-09-24T15:03:30.953Z
 
 Result: **PASS**
 
@@ -14,11 +14,11 @@ Result: **PASS**
 
 | Fixture | Field-set result | Proposed fields | Withheld | Mean OCR confidence | Corrected rotation | Runtime |
 | --- | --- | ---: | ---: | ---: | ---: | ---: |
-| clean-client | Safe omission | 9 | 1 | 95% | 0° | 0.3s |
-| low-contrast-client | Safe omission | 4 | 1 | 95% | 0° | 0.1s |
-| rotated-business | Exact | 7 | 0 | 95% | 270° | 0.5s |
-| table-business | Safe omission | 6 | 1 | 95% | 0° | 0.2s |
-| bilingual-client | Exact | 5 | 0 | 93% | 0° | 0.2s |
+| clean-client | Safe omission | 9 | 1 | 95% | 0° | 0.4s |
+| low-contrast-client | Safe omission | 4 | 1 | 95% | 0° | 0.2s |
+| rotated-business | Exact | 7 | 0 | 95% | 270° | 0.8s |
+| table-business | Safe omission | 6 | 1 | 95% | 0° | 0.3s |
+| bilingual-client | Exact | 5 | 0 | 93% | 0° | 0.3s |
 | unsupported-handwriting | Exact | 0 | 0 | 95% | 0° | 0.1s |
 
 The corpus contains only synthetic fictional records. OCR runs locally with the pinned English fast model. The base confidence floor is 70%; email uses 94%, SSN/EIN uses 90%, and suspicious name artifacts are withheld. “Safe omission” means one or more expected fields were withheld, while no wrong value was accepted. The unsupported handwriting fixture is expected to produce no fields. The JSON companion contains masked per-field results and page-region provenance.
