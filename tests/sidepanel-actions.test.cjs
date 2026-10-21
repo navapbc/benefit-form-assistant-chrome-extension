@@ -13,6 +13,8 @@ const createRecertificationActions = require('../sidepanel/actions-recertificati
 const createIntakeActions = require('../sidepanel/actions-intake.mjs').create;
 const createConnectorActions = require('../sidepanel/actions-connector.mjs').create;
 const createApplicationActions = require('../sidepanel/actions-applications.mjs').create;
+const createDeveloperActions = require('../sidepanel/actions-developer.mjs').create;
+const developerMode = require('../shared/developer-mode.mjs');
 
 // Every data-action and form id the panel handled before the handler tables existed.
 const CLICK_ACTION_NAMES = [
@@ -23,7 +25,7 @@ const CLICK_ACTION_NAMES = [
   'confirm-connector-record', 'back-programs', 'back-document', 'change-client', 'back-dashboard', 'add-application',
   'reload-source', 'export-audit', 'start-over', 'answer', 'answer-run', 'fill', 'run', 'review', 'rescan',
   'go-tab', 'scan-application', 'resume', 'resume-current', 'resume-human-checkpoint', 'open-handoff', 'pause',
-  'accept-handoff', 'analyze-current',
+  'accept-handoff', 'analyze-current', 'toggle-developer-mode',
 ];
 const SUBMIT_FORM_IDS = [
   'model-provider-form', 'recertification-intake-form', 'handoff-form', 'connector-form', 'connector-mapping-form',
@@ -71,6 +73,7 @@ function dispatchHarness(overrides = {}) {
       view: 'dashboard',
       apps: [],
       currentAppId: null,
+      developerMode: true,
       participant: { record_id: '1' },
       connectorDraft: { provider: 'x' },
       connectorSchema: [{}],
@@ -84,7 +87,8 @@ function dispatchHarness(overrides = {}) {
     previewMode: true,
     currentUiGeneration: () => 0,
     DEMO_RECORDS: { 339619: { record_id: '339619', participant: { name: { first: 'Celeste' } } } },
-    document: { getElementById: (id) => elements[id] || null },
+    appRoot: overrides.appRoot,
+    document: { getElementById: (id) => elements[id] || null, addEventListener() {} },
     Event: class {
       constructor(type, init = {}) {
         this.type = type;
@@ -130,17 +134,32 @@ function dispatchHarness(overrides = {}) {
   const intakeActions = createIntakeActions(deps);
   const connectorActions = createConnectorActions(deps);
   const applicationActions = createApplicationActions(deps);
-  const { onClick, onSubmit, CLICK_ACTIONS, SUBMIT_ACTIONS } = uiDispatch.create({
+  const stored = {};
+  const store = overrides.store || {
+    async get(key) { return key in stored ? { [key]: stored[key] } : {}; },
+    async set(values) { calls.push(['store.set', values]); Object.assign(stored, values); },
+  };
+  const developerActions = createDeveloperActions({
+    state: context.state,
+    store,
+    activeRunCount: overrides.activeRunCount || (() => 0),
+    restoreAgentProvider: async () => { calls.push(['restoreAgentProvider', context.state.developerMode]); },
+  });
+  const { onClick, onSubmit, CLICK_ACTIONS, SUBMIT_ACTIONS, CHANGE_HANDLERS, installListeners } = uiDispatch.create({
     ...deps,
     agentActions,
     recertificationActions,
     intakeActions,
     connectorActions,
     applicationActions,
+    developerActions,
   });
   return {
     onClick,
     onSubmit,
+    CHANGE_HANDLERS,
+    installListeners,
+    stored,
     answersFromQuestionsForm: applicationActions.answersFromQuestionsForm,
     CLICK_ACTIONS,
     SUBMIT_ACTIONS,
@@ -150,6 +169,7 @@ function dispatchHarness(overrides = {}) {
       intakeActions.INTAKE_CLICK_ACTIONS,
       connectorActions.CONNECTOR_CLICK_ACTIONS,
       applicationActions.APPLICATION_CLICK_ACTIONS,
+      developerActions.DEVELOPER_CLICK_ACTIONS,
     ],
     groupedSubmitActions: [
       agentActions.AGENT_SUBMIT_ACTIONS,
@@ -584,4 +604,91 @@ test('dismissing the welcome page remembers it and shows the right home screen',
   await click(harness, 'dismiss-welcome');
   assert.deepEqual(marks, ['seen']);
   assert.equal(harness.state.view, 'programs');
+});
+
+// Developer mode: the dispatcher refuses every experimental action while the setting is off.
+const EXPERIMENTAL_CLICKS = [...developerMode.EXPERIMENTAL_ACTIONS].filter((name) => !name.endsWith('-form') && name !== 'connector-provider');
+const EXPERIMENTAL_FORMS = [...developerMode.EXPERIMENTAL_ACTIONS].filter((name) => name.endsWith('-form'));
+
+test('with developer mode off, onClick refuses every experimental action without running its handler', async () => {
+  assert.ok(EXPERIMENTAL_CLICKS.length > 20);
+  for (const action of EXPERIMENTAL_CLICKS) {
+    const harness = dispatchHarness({ state: { developerMode: false, view: 'choice' } });
+    await click(harness, action);
+    assert.equal(harness.state.error, 'Developer mode is off.', action);
+    assert.deepEqual(harness.calls, [['render']], action);
+    assert.equal(harness.state.view, 'choice', action);
+  }
+});
+
+test('with developer mode on, onClick runs an experimental handler', async () => {
+  const harness = dispatchHarness({ state: { developerMode: true } });
+  await click(harness, 'back-recertifications');
+  assert.equal(harness.state.view, 'recertifications');
+  assert.notEqual(harness.state.error, 'Developer mode is off.');
+});
+
+test('with developer mode off, onSubmit refuses every experimental form id', async () => {
+  assert.ok(EXPERIMENTAL_FORMS.length >= 4);
+  for (const id of EXPERIMENTAL_FORMS) {
+    const harness = dispatchHarness({ state: { developerMode: false } });
+    await harness.onSubmit({ id, fields: {} }, 7);
+    assert.equal(harness.state.error, 'Developer mode is off.', id);
+    assert.deepEqual(callNames(harness.calls).filter((name) => name !== 'assertUiGeneration'), ['render'], id);
+  }
+});
+
+test('with developer mode off, the change listener refuses experimental change handlers and captcha authorizations', () => {
+  const wire = (developerModeOn) => {
+    const listeners = {};
+    const appRoot = { addEventListener: (type, callback) => { listeners[type] = callback; } };
+    const harness = dispatchHarness({ state: { developerMode: developerModeOn }, appRoot });
+    harness.installListeners();
+    return { harness, change: listeners.change };
+  };
+  for (const target of [{ id: 'connector-provider', dataset: {} }, { id: '', dataset: { captchaApp: 'app-1' }, checked: true }]) {
+    const { harness, change } = wire(false);
+    let ran = 0;
+    harness.CHANGE_HANDLERS.set('connector-provider', () => { ran += 1; });
+    change({ target });
+    assert.equal(ran, 0, target.id || 'captcha');
+    assert.equal(harness.state.error, 'Developer mode is off.');
+    assert.ok(callNames(harness.calls).includes('render'));
+  }
+  const { harness, change } = wire(true);
+  let ran = 0;
+  harness.CHANGE_HANDLERS.set('connector-provider', () => { ran += 1; });
+  change({ target: { id: 'connector-provider', dataset: {} } });
+  assert.equal(ran, 1);
+});
+
+test('toggle-developer-mode turning on stores true, sets the state and restores the agent provider', async () => {
+  const harness = dispatchHarness({ state: { developerMode: false } });
+  await click(harness, 'toggle-developer-mode');
+  assert.deepEqual(harness.stored, { 'nava:developer-mode': true });
+  assert.equal(harness.state.developerMode, true);
+  assert.deepEqual(callNames(harness.calls).filter((name) => name === 'restoreAgentProvider'), ['restoreAgentProvider']);
+  assert.equal(harness.state.error, '');
+});
+
+test('toggle-developer-mode turning off stores false, restores the provider and leaves an experimental view', async () => {
+  const harness = dispatchHarness({ state: { developerMode: true, view: 'handoff' } });
+  await click(harness, 'toggle-developer-mode');
+  assert.deepEqual(harness.stored, { 'nava:developer-mode': false });
+  assert.equal(harness.state.developerMode, false);
+  assert.equal(harness.state.view, 'choice');
+  assert.ok(callNames(harness.calls).includes('restoreAgentProvider'));
+
+  const other = dispatchHarness({ state: { developerMode: true, view: 'dashboard' } });
+  await click(other, 'toggle-developer-mode');
+  assert.equal(other.state.view, 'dashboard');
+});
+
+test('toggle is refused while runs are active', async () => {
+  const harness = dispatchHarness({ state: { developerMode: false }, activeRunCount: () => 1 });
+  await click(harness, 'toggle-developer-mode');
+  assert.equal(harness.state.error, 'Wait for the active application runs to pause before changing developer mode.');
+  assert.equal(harness.state.developerMode, false);
+  assert.deepEqual(harness.stored, {});
+  assert.ok(!callNames(harness.calls).includes('restoreAgentProvider'));
 });

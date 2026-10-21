@@ -127,6 +127,11 @@ function create(deps) {
           ${renderAgentRuntime()}
         </div>
         <p><button class="link-button" type="button" data-action="show-welcome">How this works and what keeps you in control</button></p>
+        <details class="settings-disclosure"><summary>Developer mode</summary>
+          <p>Turns on experimental features that are still being tested.</p>
+          <p class="runtime-status" role="status">Developer mode is ${state.developerMode ? 'on' : 'off'}.</p>
+          <button class="secondary-button" type="button" data-action="toggle-developer-mode" aria-pressed="${state.developerMode ? 'true' : 'false'}">${escapeHtml(state.developerMode ? 'Turn off' : 'Turn on')}</button>
+        </details>
       </section>`;
   }
 

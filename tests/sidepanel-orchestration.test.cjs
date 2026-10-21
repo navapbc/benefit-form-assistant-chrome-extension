@@ -259,3 +259,20 @@ test('review evidence is deduplicated by stable DOM identity while keeping the l
     [{ fieldKey: 'field:2:0', identityKey: 'id:name', value: 'Synthetic', matchesRecord: true }]);
   assert.equal(evidence.length, 1); assert.equal(evidence[0].fieldKey, 'field:2:0');
 });
+
+test('render falls back to the start screen for an experimental view while developer mode is off', () => {
+  const render = section('function render() {', 'renderView();');
+  const guard = render.indexOf('!state.developerMode && isExperimentalView(state.view)');
+  assert.ok(guard >= 0, 'render() checks developer mode before choosing a view');
+  assert.ok(guard < render.indexOf('renderView = {'), 'the check runs before the view is chosen');
+  assert.match(render, /state\.view = 'choice'/);
+  assert.match(panel, /\|\| renderChoice;/, 'unknown views render the start screen');
+});
+
+test('bootstrap reads developer mode before restoring anything, over a store that cannot fail open', () => {
+  const boot = section('async function bootstrap() {', 'bootstrap();');
+  assert.ok(boot.indexOf('state.developerMode = await readDeveloperMode(developerStore)') >= 0);
+  assert.ok(boot.indexOf('readDeveloperMode') < boot.indexOf('restoreConnector()'));
+  assert.match(panel, /developerMode: false,/);
+  assert.match(panel, /previewMode \? previewDirectory\.memoryStorage\(\)\.local : chrome\.storage\.local/);
+});

@@ -286,6 +286,20 @@ test('intake screens offer every client source and analyze only regular web page
   assert.match(view.appRoot.innerHTML, /forms\.example/);
 });
 
+test('the start screen shows the Developer mode switch in both states', () => {
+  for (const developerMode of [false, true]) {
+    const view = screens({ state: { developerMode } });
+    view.renderChoice();
+    const start = view.appRoot.innerHTML;
+    assert.match(start, /<details class="settings-disclosure"><summary>Developer mode<\/summary>/);
+    assert.match(start, /data-action="toggle-developer-mode"/);
+    assert.match(start, /Turns on experimental features that are still being tested\./);
+    assert.match(start, developerMode ? /Developer mode is on/ : /Developer mode is off/);
+    assert.match(start, developerMode ? /Turn off/ : /Turn on/);
+    assert.match(start, /aria-pressed="/);
+  }
+});
+
 test('application cards escape every text and attribute value that can come from a page, record, or handoff', () => {
   const hostile = '"><img src=x onerror=alert(1)>';
   const view = screens({ state: { agentProvider: { kind: 'chrome-local' } } });

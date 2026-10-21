@@ -20,6 +20,7 @@ const recertificationActionsModule = require('../sidepanel/actions-recertificati
 const intakeActionsModule = require('../sidepanel/actions-intake.mjs');
 const connectorActionsModule = require('../sidepanel/actions-connector.mjs');
 const applicationActionsModule = require('../sidepanel/actions-applications.mjs');
+const developerActionsModule = require('../sidepanel/actions-developer.mjs');
 const uiDispatchModule = require('../sidepanel/ui-dispatch.mjs');
 
 const MODULES = {
@@ -36,6 +37,7 @@ const MODULES = {
   'sidepanel/actions-intake.mjs': intakeActionsModule,
   'sidepanel/actions-connector.mjs': connectorActionsModule,
   'sidepanel/actions-applications.mjs': applicationActionsModule,
+  'sidepanel/actions-developer.mjs': developerActionsModule,
   'sidepanel/ui-dispatch.mjs': uiDispatchModule,
 };
 
@@ -675,7 +677,7 @@ test('change events reach only their own select handlers; prototype ids do nothi
     querySelector: (selector) => (selector === 'label[for="connector-source-id"]' ? sourceLabel : null),
     addEventListener: (type, listener) => { listeners[`document:${type}`] = listener; },
   };
-  const state = { view: 'choice', error: '' };
+  const state = { view: 'choice', error: '', developerMode: true };
   const contract = uiDispatchModule.handlerContract(state);
   const deps = { ...contract, state, connectorEngine, managedConnector: () => false };
   const dispatch = uiDispatchModule.create({
@@ -689,6 +691,7 @@ test('change events reach only their own select handlers; prototype ids do nothi
     intakeActions: intakeActionsModule.create(deps),
     connectorActions: connectorActionsModule.create(deps),
     applicationActions: applicationActionsModule.create(deps),
+    developerActions: developerActionsModule.create({ state, store: {}, activeRunCount: () => 0, restoreAgentProvider: async () => {} }),
   });
   dispatch.installListeners();
   assert.deepEqual(Object.keys(listeners).sort(), ['change', 'document:click', 'submit']);
