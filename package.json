@@ -25,6 +25,7 @@
     "model:eve": "npm --prefix model-bridge/eve run dev",
     "eval:captcha": "node scripts/summarize-captcha-metrics.mjs",
     "icons": "node scripts/generate-icons.mjs",
+    "extension:key": "node scripts/generate-extension-key.mjs",
     "package": "node scripts/package-extension.mjs --build"
   },
   "devDependencies": {

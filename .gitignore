@@ -18,3 +18,6 @@ dist/
 
 # Local-only overrides (never committed or packaged), e.g. the development test account
 shared/*.local.mjs
+
+# Extension signing keys (see scripts/generate-extension-key.mjs)
+*.pem

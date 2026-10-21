@@ -67,7 +67,10 @@ Without that file the card shows no note. Ask a teammate for the current account
 (`neon neon-auth user create`, then add the user to `directory_members`). Release packages skip every `*.local.mjs` file.
 
 `ALLOWED_ORIGINS` is a comma-separated list of extension origins. An unpacked extension's ID comes from its folder path,
-so every tester has a different one unless the manifest carries a fixed `key`. Add each ID, or fix the ID first.
+so every tester has a different one unless the manifest carries a fixed `key`. Run `npm run extension:key` once: it writes
+a private key (gitignored, keep it out of git), prints the `key` line to add to `manifest.json`, and prints the extension ID to
+list as `chrome-extension://<id>`. Every tester who loads that manifest then gets the same ID. Generate your own key for each
+fork; the Chrome Web Store assigns its own ID and ignores the `key` for published builds.
 
 Data in `participants` is fictional (`synthetic` is enforced by a check constraint). Real participant data needs a
 security review first. A request made seconds after a deploy can still be served by the previous version.
