@@ -347,6 +347,7 @@ const captchaRuns = captchaRunsModule.create({
 // Automatic runs take opened program tabs through the runner; the recertification caseload prepares cases into them.
 const automaticRuns = automaticRunsModule.create({
   ...panelBase,
+  isDeveloperMode: () => state.developerMode,
   ...runControl,
   ...coordinatorSync,
   ...coordinatorWrites,

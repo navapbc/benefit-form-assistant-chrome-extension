@@ -294,7 +294,7 @@ test('resumable work queue persists only sanitized metadata and verifies before 
   assert.match(leaseRetrySource, /setTimeout/);
   assert.match(leaseRetrySource, /enqueueApplicationBatch\(\[applicationId\]\)/);
   assert.match(panel, /const APPLICATION_LEASE_MS = 2 \* 60 \* 1000/);
-  assert.match(panel, /automaticWorkersActive < MAX_PARALLEL_APPLICATIONS/);
+  assert.match(panel, /automaticWorkersActive < \(isDeveloperMode\(\) \? MAX_PARALLEL_APPLICATIONS : 1\)/);
   assert.match(panel, /automaticRunQueue\.shift\(\)/);
   assert.match(targetedSyncSource, /ids\.forEach[\s\S]*cancelApplicationRun/);
   assert.doesNotMatch(

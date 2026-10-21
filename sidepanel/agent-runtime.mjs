@@ -82,6 +82,12 @@ function create(deps) {
 
   async function restoreAgentProvider() {
     if (previewMode || !agentPlanner?.configure) return;
+    if (!state.developerMode) {
+      // Gemini Nano only. A stored experimental provider stays in storage for when developer mode is turned on again.
+      state.agentProvider = { kind: 'chrome-local' };
+      agentPlanner.configure(state.agentProvider);
+      return;
+    }
     let stored = null;
     try {
       stored = (await chrome.storage.session.get(AGENT_PROVIDER_STORAGE_KEY))[AGENT_PROVIDER_STORAGE_KEY] || null;
@@ -96,6 +102,17 @@ function create(deps) {
 
   async function saveAgentProvider(form, uiToken) {
     if (activeRunCount()) throw new Error('Wait for the active application runs to pause before changing the model runtime.');
+    if (!state.developerMode) {
+      // Only Gemini Nano applies; the hidden companion and CAPTCHA fields are ignored and stored settings stay as they are.
+      const nano = { kind: 'chrome-local' };
+      agentPlanner.configure(nano);
+      state.agentProvider = nano;
+      state.agentRuntime = { status: 'checking', message: '' };
+      setBusy('Connecting Chrome on-device AI…');
+      await prepareAgentRuntime();
+      assertUiGeneration(uiToken);
+      return;
+    }
     const data = new FormData(form);
     const selected = String(data.get('modelProvider') || 'chrome-local');
     const config = selected === 'chrome-local'
