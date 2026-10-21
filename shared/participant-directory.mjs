@@ -45,12 +45,20 @@ function tokenClaims(token) {
 /**
  * deps:
  * - fetchImpl: fetch; storage: { local, session } with chrome.storage-style get/set/remove.
- * - defaultBaseUrl: the directory address the code provides (shared/directory-config.mjs); a saved address overrides it.
+ * - defaultBaseUrl: the directory address the code provides (shared/directory-config.mjs), or an async function returning it; a saved address overrides it.
  * - now(): current time in ms; timeoutMs: per-request limit.
- * @param {{ fetchImpl?: typeof fetch, storage?: any, defaultBaseUrl?: string, now?: () => number, timeoutMs?: number, allowLoopbackHttp?: boolean }} [deps]
+ * @param {{ fetchImpl?: typeof fetch, storage?: any, defaultBaseUrl?: string | (() => Promise<string>), now?: () => number, timeoutMs?: number, allowLoopbackHttp?: boolean }} [deps]
  */
 function create({ fetchImpl = globalThis.fetch, storage, defaultBaseUrl = '', now = () => Date.now(), timeoutMs = 15_000, allowLoopbackHttp = false } = {}) {
-  const provided = defaultBaseUrl ? normalizeBase(defaultBaseUrl, { allowLoopbackHttp: true }) : '';
+  // The provided address may come from an async loader (a gitignored local file), so it is resolved on first use.
+  let provided = null;
+  async function providedBase() {
+    if (provided === null) {
+      const value = typeof defaultBaseUrl === 'function' ? await defaultBaseUrl() : defaultBaseUrl;
+      provided = value ? normalizeBase(value, { allowLoopbackHttp: true }) : '';
+    }
+    return provided;
+  }
 
   let refreshing = null;
 
@@ -84,7 +92,7 @@ function create({ fetchImpl = globalThis.fetch, storage, defaultBaseUrl = '', no
 
   async function config() {
     const saved = await read('local', CONFIG_KEY);
-    return { baseUrl: typeof saved?.baseUrl === 'string' && saved.baseUrl ? saved.baseUrl : provided };
+    return { baseUrl: typeof saved?.baseUrl === 'string' && saved.baseUrl ? saved.baseUrl : await providedBase() };
   }
 
   async function clearSession() {

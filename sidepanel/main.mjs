@@ -123,7 +123,7 @@ const PREVIEW_RAW_RECORD = {
 // The participant directory: the only intake path that needs a sign-in. The preview simulates it in memory.
 const directory = participantDirectoryModule.create(previewMode
   ? { storage: previewDirectory.memoryStorage(), fetchImpl: previewDirectory.previewDirectoryFetch(demoConnectorData.CLIENT_RECORDS), defaultBaseUrl: 'https://directory.preview.invalid' }
-  : { storage: { local: chrome.storage.local, session: chrome.storage.session }, defaultBaseUrl: await loadDirectoryUrl() });
+  : { storage: { local: chrome.storage.local, session: chrome.storage.session }, defaultBaseUrl: loadDirectoryUrl });
 
 // The welcome page shows once per browser session. Previews remember it only for the life of the page.
 const WELCOME_KEY = 'nava:welcome-seen';

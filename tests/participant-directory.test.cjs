@@ -214,3 +214,16 @@ test('the dev test account loads from the local file, and anything missing or ma
     assert.equal(await loadDevTestAccount(importer), null, label);
   }
 });
+
+test('a default address can come from an async loader and is resolved once, on first use', async () => {
+  let loads = 0;
+  const client = directoryModule.create({ storage: memoryStorage(), defaultBaseUrl: async () => { loads += 1; return 'https://loaded.example'; } });
+  assert.equal((await client.config()).baseUrl, 'https://loaded.example');
+  assert.equal((await client.status()).configured, true);
+  assert.equal(loads, 1);
+});
+
+test('an empty loader result leaves the directory unconfigured', async () => {
+  const client = directoryModule.create({ storage: memoryStorage(), defaultBaseUrl: async () => '' });
+  assert.equal((await client.status()).configured, false);
+});
