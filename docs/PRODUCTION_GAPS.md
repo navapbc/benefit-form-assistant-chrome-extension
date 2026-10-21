@@ -114,4 +114,4 @@ npm run check
 npm test
 ```
 
-Use the [local fixture](TESTER_GUIDE.md#additional-engineering-checks) for a fast setup check or a focused regression. Use the retained [error catalog](BENCHMARK_ERRORS.md) to reproduce known defects. Keep real-site attempts as the primary evidence for product quality. Older [production](PRODUCTION_READINESS.md) and [release](RELEASE_VERIFICATION.md) reports describe earlier builds; their counts are historical.
+Use the [local fixture](TESTER_GUIDE.md#additional-engineering-checks) for a fast setup check or a focused regression. Use the retained [error catalog](BENCHMARK_ERRORS.md) to reproduce known defects. Keep real-site attempts as the primary evidence for product quality. Older [production](archive/PRODUCTION_READINESS.md) and [release](archive/RELEASE_VERIFICATION.md) reports describe earlier builds; their counts are historical.

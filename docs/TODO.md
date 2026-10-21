@@ -1,6 +1,6 @@
 # Follow-up work
 
-Things we decided to come back to. Add to the top of a section as you find more; move an item to [RECENT_CHANGES.md](RECENT_CHANGES.md) when it ships. Last updated October 20, 2026.
+Things we decided to come back to. Add to the top of a section as you find more; move an item to [RECENT_CHANGES.md](RECENT_CHANGES.md) when it ships. Last updated October 21, 2026.
 
 ## Build and layout
 
@@ -19,7 +19,6 @@ Things we decided to come back to. Add to the top of a section as you find more;
 - [ ] **Stricter typing.** The type check passes at zero errors with loose settings. Turning on `noImplicitAny` needs annotations across many functions; do it per directory with the existing ratchet.
 - [ ] **Service-worker in-memory state.** `activeCommandTargets` and the CAPTCHA scopes live in memory. A worker restart still cancels by persisted tab ID and the CAPTCHA scopes fail closed, so this is low risk; persist them if document-level cancellation must survive a restart.
 - [ ] **`.then()` chains.** About 15 remain, mostly the serialized-queue pattern. Left on purpose.
-- [ ] **Placeholder icons.** `icons/` is a generated placeholder; replace it with a designed icon before a store submission.
 
 ## Security and privacy
 
@@ -35,9 +34,17 @@ Things we decided to come back to. Add to the top of a section as you find more;
 - [ ] **A real-Chrome end-to-end test in CI** (Playwright or Puppeteer loading the unpacked extension against the demo fixtures). Today only Node tests run.
 - [ ] **Chrome Web Store readiness:** privacy policy, a plain-English justification for each permission and host permission, screenshots, and a decision on the experimental CAPTCHA feature's policy exposure.
 - [ ] **Forms inside iframes.** The page agent has `all_frames: false`, so iframe forms are not covered.
-- [ ] **Preview mode in a packaged build.** The side panel's preview fetches `../demo/fixtures/…`, which the release zip omits.
-- [ ] **Chrome check after the ES-module migration.** The preview page and the parser demo were checked in the in-app browser (no console errors), but the unpacked extension was not: reload it, open the side panel, scan the extensive demo, and check both the side panel and service-worker consoles.
 
 ## Docs
 
-- [ ] **Archive more historical docs.** `PRODUCTION_READINESS`, `RELEASE_VERIFICATION`, and `TEST_REPORT` are still linked as evidence from `PRODUCTION_GAPS.md` and the developer guide, so they stayed in `docs/`. Move them to `docs/archive/` when those links are updated.
+- [ ] **Review the archived evidence docs for production gaps.** [PRODUCTION_READINESS](archive/PRODUCTION_READINESS.md), [RELEASE_VERIFICATION](archive/RELEASE_VERIFICATION.md), and [TEST_REPORT](archive/TEST_REPORT.md) were moved to `docs/archive/` but kept on purpose, so the team can read them for requirements we have missed. Add anything real to the lists above, then archive-and-retire what is fully covered.
+
+## Production validation (from the archived readiness doc)
+
+Carried over from "Production validation still required" in [PRODUCTION_READINESS](archive/PRODUCTION_READINESS.md); none of it is done.
+
+- [ ] A client-approved Apricot sandbox or test tenant, with synthetic records that match production schemas, field IDs, access controls, freshness, pagination, rate limits, and schema drift.
+- [ ] A sanctioned BenefitsCal or agency-owned non-production application run through every supported household composition and checkpoint, without creating a real submission.
+- [ ] Authenticated organization connections, server-side secret custody, tenant isolation, revocation, audit and retention controls, and mapping re-review when a schema changes.
+- [ ] Household-member repeaters, document uploads, address validation, dynamic conditional questions, account creation and login, save-and-return, renewals, case identifiers, and accessibility with assistive technology.
+- [ ] Privacy, security, legal, accessibility, incident-response, and human-factors reviews.

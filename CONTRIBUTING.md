@@ -49,6 +49,6 @@ After changing extension behavior, update `manifest.json`, `package.json`, and t
 
 Use the [tester guide](docs/TESTER_GUIDE.md) on the actual WIC, IHSS and BenefitsCal routes, plus feature checks from the [feature guide](docs/FEATURE_GUIDE.md). Publish live-site outcomes separately from unit tests, local practice forms and saved-field planning. A passing CI run is not an installed-browser or production certification.
 
-`npm run package` writes `dist/nava-form-filling-assistant-<version>.zip` containing only the runtime files (not docs, tests, evaluation, or demo pages); `npm run icons` regenerates the placeholder icons. Host access is limited to the pilot sites and loopback; the extension asks for any other site when someone first uses it there.
+`npm run package` writes `dist/nava-form-filling-assistant-<version>.zip` containing only the runtime files (not docs, tests, evaluation, or demo pages); `npm run icons` re-renders the icons from `icons/source/nava-logo.svg`. Host access is limited to the pilot sites and loopback; the extension asks for any other site when someone first uses it there.
 
 There is no hosted deployment or Chrome Web Store release in this repository's CI. The extension is distributed as source for unpacked loading; its optional API service has its own repository and deployment lifecycle.

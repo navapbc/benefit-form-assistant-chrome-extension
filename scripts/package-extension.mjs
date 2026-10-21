@@ -4,15 +4,17 @@ import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { zipSync } from 'fflate';
 import { findUnshippedImports } from './check-modules.mjs';
+import { SHIPPED } from './shipped-files.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const SHIPPED = ['manifest.json', 'background.js', 'background', 'content', 'shared', 'sidepanel', 'vendor', 'icons'];
 const EXCLUDED_NAMES = new Set(['.DS_Store']);
+const EXCLUDED_PATHS = new Set(['icons/source']); // the logo the icons are rendered from, not needed at run time
 const read = (file) => readFileSync(join(root, file), 'utf8');
 const manifest = JSON.parse(read('manifest.json'));
 const problems = [];
 
 function shippedFiles(path) {
+  if (EXCLUDED_PATHS.has(path.split('\\').join('/'))) return [];
   const absolute = join(root, path);
   if (!existsSync(absolute)) return [];
   if (statSync(absolute).isFile()) return [path];

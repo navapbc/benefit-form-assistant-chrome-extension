@@ -24,7 +24,7 @@ The v0.15 batch compares the frozen v0.14 planner with a retry-only variant and 
 | Controlled v0.15 default | **10/12 safe; 1 false question** | **0.409 s median** | 159,816 / 58,502; $0.006712 total |
 | Real-browser WIC fixture | **8/8 safe; zero incorrect answers or unexpected questions** | **8.994 s median** | 122,854 / 48,322; $0.005160 total |
 
-The default passed every WIC and IHSS diagnostic case. Both CalFresh diagnostic repeats still failed the `Stable housing` to homelessness `No` transformation; one also varied on county confidence. Complete WIC fixture records reached final review, while incomplete records paused only on the expected missing fields. There were no operator answer repairs. No CAPTCHA or Submit action was present. [Full methods, per-run metrics and error attribution](JEV_RECOVERY_V015.md).
+The default passed every WIC and IHSS diagnostic case. Both CalFresh diagnostic repeats still failed the `Stable housing` to homelessness `No` transformation; one also varied on county confidence. Complete WIC fixture records reached final review, while incomplete records paused only on the expected missing fields. There were no operator answer repairs. No CAPTCHA or Submit action was present. [Full methods, per-run metrics and error attribution](../JEV_RECOVERY_V015.md).
 
 ### Version 0.9.4 agentic, WIC-correctness, recovery, and human-checkpoint regression
 

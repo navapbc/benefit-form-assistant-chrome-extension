@@ -2,6 +2,13 @@
 
 High-level notes on what changed in the extension's code and tooling, newest first. For tester-facing release notes see [RELEASE_NOTES_v0.16.md](RELEASE_NOTES_v0.16.md); for what is still to do see [TODO.md](TODO.md). The extension's version is still 0.16.0; these changes did not alter form-filling behavior.
 
+## October 21, 2026
+
+**Small cleanups**
+- The extension icons are now the Nava logo, rendered from `icons/source/nava-logo.svg` by `npm run icons`.
+- The release package includes `demo/fixtures` (fictional sample documents), so the side panel's preview mode works from a packaged build; a test checks that anything the panel fetches at run time is shipped.
+- `PRODUCTION_READINESS`, `RELEASE_VERIFICATION`, and `TEST_REPORT` moved to `docs/archive/`; they are kept on purpose for a production-gap review (see [TODO.md](TODO.md#docs)).
+
 ## October 20, 2026
 
 **Module guards hardened.** `check:modules` now parses the code (TypeScript's parser) instead of scanning lines: it finds top-level `await` anywhere in the worker and side-panel import closure, and a `Nava*` global read at any depth. `findUnshippedImports` checks the exact shipped file list, `startServiceWorker` takes the `chrome` object it uses (so worker tests no longer share a global), and stale names in comments and docs are fixed.
