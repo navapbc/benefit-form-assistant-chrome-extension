@@ -6,6 +6,7 @@ Start with the first group. Everything else is reference or an evidence record f
 
 - [Recent engineering changes](RECENT_CHANGES.md): high-level notes, newest first.
 - [Follow-up work](TODO.md): decisions deferred on purpose, such as adding a bundler.
+- Change documents ([docs/changes](changes/2026-10-21-add-participant-directory.md)): one short write-up per change, with how to verify it.
 
 ## Use and test the extension
 
