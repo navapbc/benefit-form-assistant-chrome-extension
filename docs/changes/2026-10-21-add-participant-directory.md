@@ -17,7 +17,7 @@ Before, a client could only come from pasted JSON, a document, or the fictional 
 
 Neon Auth rejects `chrome-extension://` origins, so the extension cannot sign in directly; the Function signs in server-side and returns a 15-minute token. A security review found that any signed-in user could read every participant; the membership and organization checks fix that.
 
-The data is fictional (`synthetic` is enforced). The Function runs on a dev branch that expires 2026-10-28.
+The data is fictional (`synthetic` is enforced). The Function runs on the Neon `dev` branch; its 7-day expiry was removed afterwards with `neon branches set-expiration dev`.
 
 ## How to run / verify
 ```bash

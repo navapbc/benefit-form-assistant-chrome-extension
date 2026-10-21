@@ -130,7 +130,7 @@ A throwaway extension with a fixed ID, loaded into Chrome 155 with no host permi
 - The password passes through the Function. That is our own infrastructure, but the Function must never log bodies, and `/auth/sign-in` needs rate limiting before real use.
 - Store `sessionToken` in `chrome.storage.session` only. It is a 7-day credential.
 - A request made seconds after a deploy can still hit the previous version.
-- `neon checkout dev --create` points `.env.local` at the dev branch, which expires in 7 days (2026-10-28). The Apricot-shaped mock tables exist on `production` only if you run `npm run connector:migrate` there; they were copied to `dev` at branch time.
+- `neon checkout dev --create` points `.env.local` at the dev branch, which expired in 7 days by default; that expiry was removed on 2026-10-21. The Apricot-shaped mock tables exist on `production` only if you run `npm run connector:migrate` there; they were copied to `dev` at branch time.
 
 **What this retires.** Neon-side, the Apricot-shaped mock store and `connector-service/` become unnecessary once the Function exists. Extension-side, the provider catalog, schema/mapping review and the Apricot connector settings can be replaced by a simple "Find a participant" screen. The recertification caseload currently reads from the connector, so decide whether it reads from this database too.
 

@@ -4,9 +4,9 @@ Things we decided to come back to. Add to the top of a section as you find more;
 
 ## Participant directory (Neon)
 
-Added October 21, 2026 with the participant directory (see [RECENT_CHANGES.md](RECENT_CHANGES.md) and [the plan](JEV_EVE_ALIGNMENT_PLAN.md)). The Function and Auth run on a **dev branch that expires 2026-10-28**.
+Added October 21, 2026 with the participant directory (see [RECENT_CHANGES.md](RECENT_CHANGES.md) and [the plan](JEV_EVE_ALIGNMENT_PLAN.md)). The Function and Auth run on the Neon `dev` branch. Its 7-day expiry (2026-10-28) was removed on October 21, 2026, so it no longer deletes itself.
 
-- [ ] **Move off the expiring dev branch.** `DIRECTORY_URL` in `shared/directory-config.mjs` points at it. Pick a lasting branch or project, redeploy `participant-api/`, update the URL and `ALLOWED_ORIGINS`, and re-add `directory_members` rows. The throwaway users go with the branch.
+- [ ] **Move to a deliberate home for the directory.** The `dev` branch no longer expires (`neon branches set-expiration dev`), but it is still a dev branch holding the Function, Auth users and fictional data, and `DIRECTORY_URL` in `shared/directory-config.mjs` points at it. When the directory is shared beyond testing, pick a lasting branch or project, redeploy `participant-api/`, update the URL and `ALLOWED_ORIGINS`, and re-create the users and `directory_members` rows. Branches made later still get the 7-day expiry from `neon.ts`.
 - [ ] **Remove the development test account before real use.** `DEV_TEST_ACCOUNT` (same file) shows an email and password on the sign-in card. Set it to `null`; the note and button disappear.
 - [ ] **Real participant data needs a review first.** The `participants` table enforces `synthetic = true`. Before that changes: security and privacy review, data-processing terms, region, encryption, retention, and who may read which organization's records.
 - [ ] **Stable extension ID.** The API only answers listed `chrome-extension://` origins, and an unpacked extension's ID comes from its folder path. Add a `key` to the manifest, or list every tester's ID in `ALLOWED_ORIGINS`.

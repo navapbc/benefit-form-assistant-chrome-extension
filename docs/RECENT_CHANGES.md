@@ -8,7 +8,7 @@ High-level notes on what changed in the extension's code and tooling, newest fir
 - A Neon Function (`participant-api/`) lets a signed-in user find a participant by ID or name. Sign-in goes through the Function because Neon Auth rejects `chrome-extension://` origins. JWTs are checked for issuer and audience, and every query is filtered by the caller's organization through `directory_members`. Sign-up is closed.
 - The side panel gets sign-in and search (`shared/participant-directory.mjs`, `sidepanel/view-directory.mjs`). Tokens stay in `chrome.storage.session`. The address and a development test account live in `shared/directory-config.mjs`.
 - Only this path needs a login. Typing details, sample clients and document upload do not.
-- The Function runs on a Neon `dev` branch that expires 2026-10-28 (see [TODO.md](TODO.md#participant-directory-neon)).
+- The Function runs on the Neon `dev` branch. Its 7-day expiry was removed, so it stays until deleted (see [TODO.md](TODO.md#participant-directory-neon)).
 
 **Start screen reworked** ([change doc](changes/2026-10-21-rework-start-screen.md))
 - The first screen is "Find your client": sign in, then search by name or ID. Other ways to start are Enter client details (four sample clients, a typed form, and a pasted record under Advanced) and Upload a document.
