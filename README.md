@@ -26,6 +26,8 @@ Use fictional test records on the real forms; do not file a test application. Th
 
 ## What is included?
 
+Experimental features (CAPTCHA, companion model options, connectors, renewals, handoff, concurrent applications) are off by default and are turned on with the **Developer mode** switch on the start screen; see the [change doc](docs/changes/2026-10-21-add-developer-mode.md).
+
 | Feature | What you can do | How to try it |
 |---|---|---|
 | **Local AI with Gemini Nano** | Plan form answers on the device, with **$0 model API charge**. Compatible hardware/downloads and device costs still apply. | Select Nano in **Model runtime**, then enable it. |

@@ -98,3 +98,13 @@ These settle questions a first reader would otherwise have to guess at. The firs
 5. **Model runtime when off (my call).** The dropdown lists only Gemini Nano. A stored Codex, Claude, Jev or shared-API choice is not used by the planner (it behaves as Nano) and is not overwritten, so turning the switch back on restores it.
 6. **First paint (my call).** The panel reads the setting before its first render. Its start-up is already asynchronous (`bootstrap` in `sidepanel/main.mjs`), so no top-level `await` is needed. The panel renders nothing experimental until the read finishes; an unreadable value means off.
 7. **The action tables do exist (answered from the code).** `sidepanel/ui-dispatch.mjs` builds its click, submit and change tables from the agent, recertification, intake, connector and application groups. Some tables mix core and experimental actions (for example `pause`, `open-handoff` and `accept-handoff` sit with core application actions), so the builder gates by individual action name, not by whole table.
+
+## Resolved at build time
+
+- The connector router is split: `OPEN_PROGRAMS` and `GET_CONNECTOR_STATUS` stay core; six message types are refused when off.
+- Refused messages answer `{ ok: false, error: 'Developer mode is off.' }` rather than silence.
+- The mode cannot be switched while an application run is active.
+- With the mode off, "Use this model runtime" never writes or removes the stored provider (only Nano for the session).
+- The one-application rule is per submission plus the pump's one-at-a-time limit (a second add queues).
+- `client-link` is hidden when off.
+- `pause` is hidden when off; "End this session" is the stop path.
