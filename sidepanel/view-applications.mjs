@@ -53,13 +53,13 @@ function create(deps) {
     } else if (application.status === 'source_expired') {
       actions = '<button class="small-button" type="button" data-action="reload-source">Reload client data</button>';
     } else if (application.status === 'handoff_pending') {
-      actions = `<button class="small-button" type="button" data-action="accept-handoff" data-app="${encoded(application.id)}">Accept handoff</button>`;
+      actions = !state.developerMode ? '' : `<button class="small-button" type="button" data-action="accept-handoff" data-app="${encoded(application.id)}">Accept handoff</button>`;
     } else if (application.programSelectionRequired) {
       actions = '<button class="small-button" type="button" data-action="add-application">Choose programs in a new BenefitsCal application</button>';
     } else if (['captcha', 'otp'].includes(application.checkpoint?.kind) && application.tabId) {
       const challenge = application.checkpoint.kind === 'captcha' ? 'CAPTCHA' : 'one-time code';
       actions = `<button class="small-button" type="button" data-action="resume-human-checkpoint" data-app="${encoded(application.id)}">I completed the ${challenge} — resume</button>`;
-      if (application.checkpoint.kind === 'captcha') actions += `<details class="settings-disclosure"><summary>Try CAPTCHA automatically · experimental</summary><p class="field-hint">Authorize this attempt, including up to three static image rounds, for this application page. The chosen image runtime receives only the challenge crop. Pause cancels the attempt. The assistant never submits.</p><button class="small-button" type="button" data-action="try-captcha" data-app="${encoded(application.id)}">Authorize and try CAPTCHA</button></details>`;
+      if (state.developerMode && application.checkpoint.kind === 'captcha') actions += `<details class="settings-disclosure"><summary>Try CAPTCHA automatically · experimental</summary><p class="field-hint">Authorize this attempt, including up to three static image rounds, for this application page. The chosen image runtime receives only the challenge crop. Pause cancels the attempt. The assistant never submits.</p><button class="small-button" type="button" data-action="try-captcha" data-app="${encoded(application.id)}">Authorize and try CAPTCHA</button></details>`;
     } else if (application.status === 'paused') {
       actions = `<button class="small-button" type="button" data-action="${application.tabId ? 'resume' : 'resume-current'}" data-app="${encoded(application.id)}">${application.tabId ? 'Verify and resume' : 'Reconnect current tab'}</button>`;
     } else if (application.status === 'not_started' && application.autoRun) {
@@ -79,11 +79,11 @@ function create(deps) {
     } else {
       actions = `<button class="small-button" type="button" data-action="resume-current" data-app="${encoded(application.id)}">Reconnect current tab</button>`;
     }
-    if (!['source_expired', 'handoff_pending', 'ready_for_review'].includes(application.status)) {
+    if (state.developerMode && !['source_expired', 'handoff_pending', 'ready_for_review'].includes(application.status)) {
       actions += `<button class="small-button secondary" type="button" data-action="open-handoff" data-app="${encoded(application.id)}">Pause or hand off</button>`;
     }
     if (application.tabId) actions += `<button class="small-button secondary" type="button" data-action="go-tab" data-app="${encoded(application.id)}">Go to application</button>`;
-    if (!running && application.tabId && application.checkpoint?.kind !== 'captcha' && !review) actions += `<details class="settings-disclosure"><summary>CAPTCHA automation · experimental</summary><label class="field-hint"><input type="checkbox" data-captcha-app="${encoded(application.id)}" ${captchaAuthorizations.has(application.id) ? 'checked' : ''}> Allow one CAPTCHA attempt during this run</label><p class="field-hint">Includes the checkbox and up to three static image rounds without a new prompt. Only the challenge crop goes to the selected image runtime. Pause or leaving this assistant cancels authorization.</p></details>`;
+    if (state.developerMode && !running && application.tabId && application.checkpoint?.kind !== 'captcha' && !review) actions += `<details class="settings-disclosure"><summary>CAPTCHA automation · experimental</summary><label class="field-hint"><input type="checkbox" data-captcha-app="${encoded(application.id)}" ${captchaAuthorizations.has(application.id) ? 'checked' : ''}> Allow one CAPTCHA attempt during this run</label><p class="field-hint">Includes the checkbox and up to three static image rounds without a new prompt. Only the challenge crop goes to the selected image runtime. Pause or leaving this assistant cancels authorization.</p></details>`;
 
     return `
       <article class="application-card ${attention ? 'attention' : ''} ${review ? 'review' : ''}">
@@ -127,8 +127,8 @@ function create(deps) {
         <p class="section-label">${label}</p>
         <div class="stack">${apps.map(applicationCard).join('')}</div>` : '').join('')}
       ${state.apps.length ? '' : '<div class="notice"><span>i</span><span>No application has been added yet.</span></div>'}
-      <div class="form-actions">
-        <button class="secondary-button" type="button" data-action="open-recertifications">Renewals due</button>
+      <div class="form-actions">${state.developerMode ? `
+        <button class="secondary-button" type="button" data-action="open-recertifications">Renewals due</button>` : ''}
         <button class="secondary-button" type="button" data-action="${state.participant ? 'add-application' : 'reload-source'}">${state.participant ? 'Add another application' : 'Reload client data'}</button>
         <button class="secondary-button" type="button" data-action="export-audit">Export activity log</button>
         <button class="link-button" type="button" data-action="start-over">End this session</button>
