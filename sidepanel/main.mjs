@@ -30,6 +30,8 @@ import * as recertificationCaseloadModule from './recertification-caseload.mjs';
 import * as connectorViewsModule from './view-connector.mjs';
 import * as intakeViewsModule from './view-intake.mjs';
 import * as directoryViewsModule from './view-directory.mjs';
+import * as welcomeViewsModule from './view-welcome.mjs';
+import { SCENARIOS as SAMPLE_CLIENTS } from '../shared/mock-scenarios.mjs';
 import * as recertificationViewsModule from './view-recertification.mjs';
 import * as applicationViewsModule from './view-applications.mjs';
 import * as reviewViewsModule from './view-review.mjs';
@@ -95,7 +97,7 @@ const state = {
   recertificationWorkspace: {},
   currentRecertificationId: '',
   recertificationSource: '',
-  directory: { configured: false, baseUrl: '', signedIn: false, email: '', mode: 'name', query: '', results: null },
+  directory: { configured: false, baseUrl: '', signedIn: false, email: '', query: '', results: null },
 };
 
 const captchaAuthorizations = new Set(); // This window/run only, never a persisted blanket grant.
@@ -121,6 +123,20 @@ const PREVIEW_RAW_RECORD = {
 const directory = participantDirectoryModule.create(previewMode
   ? { storage: previewDirectory.memoryStorage(), fetchImpl: previewDirectory.previewDirectoryFetch(demoConnectorData.CLIENT_RECORDS), defaultBaseUrl: 'https://directory.preview.invalid' }
   : { storage: { local: chrome.storage.local, session: chrome.storage.session }, defaultBaseUrl: DIRECTORY_URL });
+
+// The welcome page shows once per browser session. Previews remember it only for the life of the page.
+const WELCOME_KEY = 'nava:welcome-seen';
+let previewWelcomeSeen = false;
+const welcome = {
+  async seen() {
+    if (previewMode) return previewWelcomeSeen;
+    return Boolean((await chrome.storage.session.get(WELCOME_KEY))[WELCOME_KEY]);
+  },
+  async markSeen() {
+    if (previewMode) previewWelcomeSeen = true;
+    else await chrome.storage.session.set({ [WELCOME_KEY]: true });
+  },
+};
 
 // Deps that most panel modules share.
 const panelBase = {
@@ -359,6 +375,8 @@ const connectorViews = connectorViewsModule.create({
   managedConnector,
   renderRecordId: () => intakeViews.renderRecordId(),
 });
+const directoryViews = directoryViewsModule.create({ state, format: panelFormat, devTestAccount: DEV_TEST_ACCOUNT });
+const welcomeViews = welcomeViewsModule.create({ appRoot });
 const intakeViews = intakeViewsModule.create({
   ...viewBase,
   previewMode,
@@ -367,12 +385,12 @@ const intakeViews = intakeViewsModule.create({
   programCatalog,
   clientSummary,
   managedConnector,
-  renderConnectorStatus: connectorViews.renderConnectorStatus,
+  directorySection: directoryViews.directorySection,
+  sampleClients: SAMPLE_CLIENTS,
   connectorTitle: connectorViews.connectorTitle,
   connectorProvider: connectorViews.connectorProvider,
   connectorSourceId: connectorViews.connectorSourceId,
 });
-const directoryViews = directoryViewsModule.create({ ...viewBase, devTestAccount: DEV_TEST_ACCOUNT });
 const recertificationViews = recertificationViewsModule.create({
   ...viewBase,
   recertificationEngine,
@@ -387,8 +405,8 @@ const applicationViews = applicationViewsModule.create({
 });
 const reviewViews = reviewViewsModule.create({ ...viewBase, renderDashboard: applicationViews.renderDashboard });
 const { renderProviderCatalog, renderConnectorSetup, renderConnectorMapping, renderConnectorRecordReview } = connectorViews;
-const { renderChoice, renderRecordId, renderJsonImport, renderDocumentUpload, renderDocumentReview, renderPrograms } = intakeViews;
-const { renderDirectorySignIn, renderDirectoryFind } = directoryViews;
+const { renderChoice, renderRecordId, renderClientDetails, renderDocumentUpload, renderDocumentReview, renderPrograms } = intakeViews;
+const { renderWelcome } = welcomeViews;
 const { renderRecertifications, renderRecertificationDetail } = recertificationViews;
 const { renderDashboard, renderHandoff } = applicationViews;
 const { renderQuestions, renderReview } = reviewViews;
@@ -462,9 +480,8 @@ function render() {
     'connector-mapping': renderConnectorMapping,
     'record-review': renderConnectorRecordReview,
     record: renderRecordId,
-    json: renderJsonImport,
-    'directory-signin': renderDirectorySignIn,
-    directory: renderDirectoryFind,
+    details: renderClientDetails,
+    welcome: renderWelcome,
     document: renderDocumentUpload,
     'document-review': renderDocumentReview,
     programs: renderPrograms,
@@ -525,6 +542,8 @@ const intakeActions = intakeActionsModule.create({
   ...actionBase,
   directory,
   devTestAccount: DEV_TEST_ACCOUNT,
+  sampleClients: SAMPLE_CLIENTS,
+  welcome,
   DEMO_RECORDS,
   parseDocument,
   clientSummary,
@@ -611,6 +630,7 @@ async function bootstrap() {
     await loadPreviewDocumentFixture(uiToken);
     assertUiGeneration(uiToken);
     await checkAgentAvailability();
+    if (state.view === 'choice' && !state.participant && !state.apps.length && !(await welcome.seen())) state.view = 'welcome';
     render();
   } catch (error) {
     if (error?.name === 'UiCancelledError' || uiToken !== currentUiGeneration()) return;

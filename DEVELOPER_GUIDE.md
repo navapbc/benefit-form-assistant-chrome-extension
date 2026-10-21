@@ -176,7 +176,7 @@ Run `npm run eval:extraction` to reproduce the published [quality report](evalua
 
 ## Recertification workflow
 
-Open **Recertification status** from the assistant home or application dashboard. The view loads explicit renewal dates from the managed connector, sorts the caseload by urgency, and tracks contact/address, household, income, expenses, and supporting-document readiness. It drafts separate caseworker and client notices and asks the client whether they want the AI to prepare the recertification through review. The application launcher remains locked until every information area is current or confirmed and the client has explicitly authorized AI preparation.
+Open **Renewals due** from the start screen or application dashboard. The view loads explicit renewal dates from the managed connector, sorts the caseload by urgency, and tracks contact/address, household, income, expenses, and supporting-document readiness. It drafts separate caseworker and client notices and asks the client whether they want the AI to prepare the recertification through review. The application launcher remains locked until every information area is current or confirmed and the client has explicitly authorized AI preparation.
 
 The extension does not send email or SMS by itself: client copy is an auditable outreach task that an authorized caseworker sends through an approved channel and marks complete. It also never signs, certifies, or submits. The included rolling schedule uses fictional records. A production deployment needs a connector-provided caseload endpoint, approved messaging service, server-side scheduler, authorization retention policy, and sanctioned route validation. See [recertification status and preparation](docs/RECERTIFICATION_WORKFLOW.md).
 

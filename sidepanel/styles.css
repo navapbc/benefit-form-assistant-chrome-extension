@@ -1568,3 +1568,75 @@ button.connector-status:hover {
     animation-iteration-count: 1 !important;
   }
 }
+
+/* Start screen, welcome page and client details */
+.section-title {
+  margin: 28px 0 10px;
+  color: var(--muted);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.directory-card {
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--plum-wash);
+}
+
+.directory-card h2 {
+  margin: 0 0 4px;
+  font-family: var(--font-serif);
+  font-size: 20px;
+}
+
+.directory-card .field-hint {
+  margin: 0 0 14px;
+}
+
+.directory-card .compact-form {
+  gap: 12px;
+}
+
+.steps,
+.safeguards {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.steps li {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  align-items: start;
+  gap: 12px;
+}
+
+.step-number {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--plum-light);
+  color: var(--plum-dark);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.safeguards li {
+  padding: 12px 14px;
+  border: 1px solid var(--soft-line);
+  border-left: 3px solid var(--success);
+  border-radius: 8px;
+  background: var(--success-light);
+}
+
+.assistant-setup {
+  margin-top: 8px;
+}

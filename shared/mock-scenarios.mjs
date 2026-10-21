@@ -16,30 +16,30 @@ export const SCENARIOS = [
     id: 'complete',
     label: 'Complete record',
     scenario: 'complete',
-    description: 'Every field the demo forms ask for is present; mailing address matches home.',
+    description: 'Has everything the applications ask for, so there is nothing left to answer.',
     payload: copy(base),
   },
   {
     id: 'missing-home-zip',
-    label: 'Missing home ZIP',
+    label: 'Missing ZIP code',
     scenario: 'missing-source-value',
-    description: 'Residential ZIP is blank, so a full home address cannot be written.',
+    description: 'The home ZIP code is blank. See how the assistant asks you for it.',
     payload: variant((record) => { record.address.residential.zip = ''; }),
   },
   {
     id: 'different-mailing-address',
     label: 'Different mailing address',
     scenario: 'conditional-field',
-    description: 'Mailing address differs from the home address.',
+    description: 'Mail goes somewhere other than home. See how the assistant fills in both.',
     payload: variant((record) => {
       Object.assign(record.address.mailing, { street: '400 Mailing Ave', unit: '', city: 'RIVERSIDE', zip: '92501' });
     }),
   },
   {
     id: 'homeless',
-    label: 'Homeless housing status',
+    label: 'Housing not stable',
     scenario: 'semantic-transform',
-    description: 'Housing status is not "Stable housing"; exercises the CalFresh homelessness question.',
+    description: 'See how housing questions are answered when a client does not have stable housing.',
     payload: variant((record) => { record.participant.housing_status = 'Homeless'; }),
   },
 ];

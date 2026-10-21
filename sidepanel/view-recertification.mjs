@@ -43,7 +43,7 @@ function create(deps) {
     <section>
       <button class="back-button" type="button" data-action="home"><span aria-hidden="true">←</span> Home</button>
       <div class="intro">
-        <p class="eyebrow">Recertification status</p>
+        <p class="eyebrow">Renewals</p>
         <h1>Upcoming renewals</h1>
         <p class="lede">Track every due date, collect missing updates before the deadline, and record the client’s choice about AI-assisted preparation.</p>
       </div>
