@@ -15,8 +15,8 @@ Allow extra time if Chrome needs to download its on-device model. You need deskt
 1. Download this repo with **Code → Download ZIP** and unzip it, or clone it. Find the folder containing `manifest.json`.
 2. Open `chrome://extensions`, turn on **Developer mode**, select **Load unpacked**, and choose that folder. Confirm version **0.16.0**. Refresh any form tabs already open.
 3. Open the [real Riverside WIC form](https://www.ruhealth.org/appointments/apply-4-wic-form) and click the extension icon. Keep the side panel open during the run.
-4. Open **Model runtime**. For the simplest setup, select **Chrome on-device Gemini Nano**, save with **Use this model runtime**, and choose **Enable agentic AI** when shown. If Nano is unavailable, use the [Codex or Claude companion setup](model-bridge/README.md).
-5. Choose **Paste client JSON → Use a fictional sample record → Continue**. Review the source record. On the application-selection screen, check **Analyze this form** for the open page.
+4. Open **Model runtime**. For the simplest setup, select **Chrome on-device Gemini Nano**, save with **Use this model runtime**, and choose **Set up the AI assistant** when shown. If Nano is unavailable, use the [Codex or Claude companion setup](model-bridge/README.md).
+5. Choose **Enter client details → Complete record** (a fictional sample client). Review the source record. On the application-selection screen, check **Analyze this form** for the open page.
 6. Choose **Continue** to start: **the run begins automatically**. Watch the form and panel; check the complete address, conditional questions, and program choices. If it pauses and offers **Fill through application**, use that to continue after reviewing the stop. Stop before certification or submission.
 7. Record whether it reached final review correctly, where it stopped, and every time you had to help. Choose **Export activity log** from the dashboard.
 
@@ -35,7 +35,7 @@ Use fictional test records on the real forms; do not file a test application. Th
 | **Several applications from one record** | Fill WIC, IHSS and BenefitsCal, with separate tabs/progress and up to three concurrent runs. | Select programs on the application screen; CalFresh/Medi-Cal/CalWORKs share one BenefitsCal application. |
 | **Questions, review and evidence** | Answer missing facts, inspect written values and source evidence, and export an activity log. | Open the application's questions/review actions; a verified write still needs an answer-correctness check. |
 | **Pause, resume and handoff** | Pause a run, record why it needs help, and assign/accept a handoff within the browser profile. | Use **Pause or hand off** on an application card. |
-| **Renewals / recertification** | Review a caseload's upcoming renewals, data readiness, outreach drafts and client authorization. | Open **Recertification status**; [try the workflow](docs/FEATURE_GUIDE.md#renewals-and-recertification). Requires caseload data; outreach is not automatically sent. |
+| **Renewals / recertification** | Review a caseload's upcoming renewals, data readiness, outreach drafts and client authorization. | Open **Renewals due**; [try the workflow](docs/FEATURE_GUIDE.md#renewals-and-recertification). Requires caseload data; outreach is not automatically sent. |
 | **CAPTCHA attempts** | Opt into a bounded attempt at a supported challenge and see whether it actually continues. | [Current evidence and limits](#can-it-get-past-captcha-without-a-person). |
 | **Optional shared API and participant questions** | Send redacted planning requests to a configured service and request a client-question link. | [API relationship and setup](docs/FEATURE_GUIDE.md#shared-planner-api-and-participant-links). The server and participant page live separately. |
 

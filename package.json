@@ -11,7 +11,8 @@
     "check:modules": "node scripts/check-modules.mjs",
     "check:docs": "node scripts/check-doc-links.mjs",
     "check:package": "node scripts/package-extension.mjs",
-    "connector:mock": "node connector-service/mock-server.mjs",
+    "connector:mock": "node --env-file-if-exists=.env.local connector-service/mock-server.mjs",
+    "connector:migrate": "node --env-file-if-exists=.env.local connector-service/migrate.mjs",
     "model:bridge": "node model-bridge/server.mjs",
     "model:jev": "node model-bridge/start-jev.mjs",
     "model:smoke": "node scripts/smoke-subscription-planner.mjs",
@@ -33,7 +34,15 @@
     "fflate": "^0.8.3",
     "globals": "^16.5.0",
     "pdfjs-dist": "^6.3.289",
+    "pg": "^8.23.1",
     "tesseract.js": "^7.0.0",
     "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@neon/config": "^1.9.3",
+    "@neon/env": "^1.6.4",
+    "@neon/functions": "^0.11.0",
+    "hono": "^4.13.13",
+    "jose": "^6.2.13"
   }
 }

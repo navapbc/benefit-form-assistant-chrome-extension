@@ -14,3 +14,7 @@ evaluation/captcha/local-evidence/
 
 # Release packages
 dist/
+.neon
+
+# Local-only overrides (never committed or packaged), e.g. the development test account
+shared/*.local.mjs

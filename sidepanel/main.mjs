@@ -6,12 +6,15 @@ import * as workQueueEngine from '../shared/work-queue-engine.mjs';
 import * as programCatalog from '../shared/program-catalog.mjs';
 import * as recertificationEngine from '../shared/recertification-engine.mjs';
 import * as demoConnectorData from '../shared/demo-connector-data.mjs';
+import * as participantDirectoryModule from '../shared/participant-directory.mjs';
+import { DIRECTORY_URL, loadDevTestAccount } from '../shared/directory-config.mjs';
 import * as panelFormat from './panel-format.mjs';
 import * as applicationPolicy from './application-policy.mjs';
 import * as scanAnalysis from './scan-analysis.mjs';
 import * as runControlModule from './run-control.mjs';
 import * as documentParserModule from './document-parser.mjs';
 import * as previewRuntimeModule from './preview-runtime.mjs';
+import * as previewDirectory from './preview-directory.mjs';
 import * as extensionMessagingModule from './extension-messaging.mjs';
 import * as coordinatorSyncModule from './coordinator-sync.mjs';
 import * as coordinatorMergeModule from './coordinator-merge.mjs';
@@ -26,6 +29,9 @@ import * as automaticRunsModule from './automatic-runs.mjs';
 import * as recertificationCaseloadModule from './recertification-caseload.mjs';
 import * as connectorViewsModule from './view-connector.mjs';
 import * as intakeViewsModule from './view-intake.mjs';
+import * as directoryViewsModule from './view-directory.mjs';
+import * as welcomeViewsModule from './view-welcome.mjs';
+import { SCENARIOS as SAMPLE_CLIENTS } from '../shared/mock-scenarios.mjs';
 import * as recertificationViewsModule from './view-recertification.mjs';
 import * as applicationViewsModule from './view-applications.mjs';
 import * as reviewViewsModule from './view-review.mjs';
@@ -91,6 +97,8 @@ const state = {
   recertificationWorkspace: {},
   currentRecertificationId: '',
   recertificationSource: '',
+  devTestAccount: null, // from the gitignored shared/directory-config.local.mjs, loaded at start-up
+  directory: { configured: false, baseUrl: '', signedIn: false, email: '', query: '', results: null },
 };
 
 const captchaAuthorizations = new Set(); // This window/run only, never a persisted blanket grant.
@@ -110,6 +118,25 @@ const PREVIEW_RAW_RECORD = {
     id: demoConnectorData.RECORD_ID,
     attributes: demoConnectorData.recordAttributes(new Date().toISOString()),
   }],
+};
+
+// The participant directory: the only intake path that needs a sign-in. The preview simulates it in memory.
+const directory = participantDirectoryModule.create(previewMode
+  ? { storage: previewDirectory.memoryStorage(), fetchImpl: previewDirectory.previewDirectoryFetch(demoConnectorData.CLIENT_RECORDS), defaultBaseUrl: 'https://directory.preview.invalid' }
+  : { storage: { local: chrome.storage.local, session: chrome.storage.session }, defaultBaseUrl: DIRECTORY_URL });
+
+// The welcome page shows once per browser session. Previews remember it only for the life of the page.
+const WELCOME_KEY = 'nava:welcome-seen';
+let previewWelcomeSeen = false;
+const welcome = {
+  async seen() {
+    if (previewMode) return previewWelcomeSeen;
+    return Boolean((await chrome.storage.session.get(WELCOME_KEY))[WELCOME_KEY]);
+  },
+  async markSeen() {
+    if (previewMode) previewWelcomeSeen = true;
+    else await chrome.storage.session.set({ [WELCOME_KEY]: true });
+  },
 };
 
 // Deps that most panel modules share.
@@ -349,6 +376,8 @@ const connectorViews = connectorViewsModule.create({
   managedConnector,
   renderRecordId: () => intakeViews.renderRecordId(),
 });
+const directoryViews = directoryViewsModule.create({ state, format: panelFormat });
+const welcomeViews = welcomeViewsModule.create({ appRoot });
 const intakeViews = intakeViewsModule.create({
   ...viewBase,
   previewMode,
@@ -357,7 +386,8 @@ const intakeViews = intakeViewsModule.create({
   programCatalog,
   clientSummary,
   managedConnector,
-  renderConnectorStatus: connectorViews.renderConnectorStatus,
+  directorySection: directoryViews.directorySection,
+  sampleClients: SAMPLE_CLIENTS,
   connectorTitle: connectorViews.connectorTitle,
   connectorProvider: connectorViews.connectorProvider,
   connectorSourceId: connectorViews.connectorSourceId,
@@ -376,7 +406,8 @@ const applicationViews = applicationViewsModule.create({
 });
 const reviewViews = reviewViewsModule.create({ ...viewBase, renderDashboard: applicationViews.renderDashboard });
 const { renderProviderCatalog, renderConnectorSetup, renderConnectorMapping, renderConnectorRecordReview } = connectorViews;
-const { renderChoice, renderRecordId, renderJsonImport, renderDocumentUpload, renderDocumentReview, renderPrograms } = intakeViews;
+const { renderChoice, renderRecordId, renderClientDetails, renderDocumentUpload, renderDocumentReview, renderPrograms } = intakeViews;
+const { renderWelcome } = welcomeViews;
 const { renderRecertifications, renderRecertificationDetail } = recertificationViews;
 const { renderDashboard, renderHandoff } = applicationViews;
 const { renderQuestions, renderReview } = reviewViews;
@@ -450,7 +481,8 @@ function render() {
     'connector-mapping': renderConnectorMapping,
     'record-review': renderConnectorRecordReview,
     record: renderRecordId,
-    json: renderJsonImport,
+    details: renderClientDetails,
+    welcome: renderWelcome,
     document: renderDocumentUpload,
     'document-review': renderDocumentReview,
     programs: renderPrograms,
@@ -509,6 +541,9 @@ const recertificationActions = recertificationActionsModule.create({
 });
 const intakeActions = intakeActionsModule.create({
   ...actionBase,
+  directory,
+  sampleClients: SAMPLE_CLIENTS,
+  welcome,
   DEMO_RECORDS,
   parseDocument,
   clientSummary,
@@ -586,6 +621,8 @@ async function bootstrap() {
   try {
     await restoreConnector();
     await restore();
+    state.directory = { ...state.directory, ...(await directory.status()) };
+    state.devTestAccount = await loadDevTestAccount();
     await restorePlannerBase();
     await restoreAgentProvider();
     state.activeTab = await getActiveTab();
@@ -594,6 +631,7 @@ async function bootstrap() {
     await loadPreviewDocumentFixture(uiToken);
     assertUiGeneration(uiToken);
     await checkAgentAvailability();
+    if (state.view === 'choice' && !state.participant && !state.apps.length && !(await welcome.seen())) state.view = 'welcome';
     render();
   } catch (error) {
     if (error?.name === 'UiCancelledError' || uiToken !== currentUiGeneration()) return;

@@ -7,13 +7,14 @@ const connectorViews = require('../sidepanel/view-connector.mjs');
 const recertificationViews = require('../sidepanel/view-recertification.mjs');
 const applicationViews = require('../sidepanel/view-applications.mjs');
 const reviewViews = require('../sidepanel/view-review.mjs');
+const directoryViews = require('../sidepanel/view-directory.mjs');
 const engine = require('../shared/form-engine.js');
 const connectorEngine = require('../shared/connector-engine.mjs');
 const recertificationEngine = require('../shared/recertification-engine.mjs');
 const programCatalog = require('../shared/program-catalog.mjs');
 
 /** Composes every screen module the way sidepanel.js does, over a fake screen root. */
-function screens({ state: stateOverrides = {}, previewMode = false, running = [], agentPlanner = null } = {}) {
+function screens({ state: stateOverrides = {}, previewMode = false, running = [], agentPlanner = null, sampleClients = [] } = {}) {
   const state = {
     view: 'dashboard',
     error: '',
@@ -27,6 +28,7 @@ function screens({ state: stateOverrides = {}, previewMode = false, running = []
     pendingConnectorRecord: null,
     documentResult: null,
     activeTab: null,
+    directory: { configured: true, baseUrl: 'https://directory.example', signedIn: false, email: '', query: '', results: null },
     agentRuntime: { status: 'checking', message: '' },
     agentProvider: { kind: 'chrome-local' },
     plannerBase: '',
@@ -50,7 +52,8 @@ function screens({ state: stateOverrides = {}, previewMode = false, running = []
     programCatalog,
     clientSummary,
     managedConnector,
-    renderConnectorStatus: connector.renderConnectorStatus,
+    directorySection: directoryViews.create({ state, format }).directorySection,
+    sampleClients,
     connectorTitle: connector.connectorTitle,
     connectorProvider: connector.connectorProvider,
     connectorSourceId: connector.connectorSourceId,
@@ -265,8 +268,13 @@ test('the model-runtime notice explains preview, unavailable, and companion stat
 test('intake screens offer every client source and analyze only regular web pages', () => {
   const view = screens({ state: { activeTab: { url: 'chrome://extensions' }, participant: { firstName: 'Ana' } } });
   view.renderChoice();
-  assert.deepEqual(actionsOf(view.appRoot.innerHTML).filter((action) => action.startsWith('choose-')), ['choose-id', 'choose-json', 'choose-document']);
-  assert.match(view.appRoot.innerHTML, /data-action="configure-connector"/);
+  const start = view.appRoot.innerHTML;
+  assert.deepEqual(actionsOf(start).filter((action) => action.startsWith('choose-')), ['choose-details', 'choose-document']);
+  assert.match(start, /Find your client/);
+  assert.match(start, /id="directory-signin-form"/, 'searching for a client is the first thing offered');
+  assert.doesNotMatch(start, /JSON|Find by record ID|Recertification status|Shared planner API|Data and review safeguards|Agentic AI|configure-connector/);
+  assert.match(start, /Renewals due/);
+  assert.match(start, /data-action="show-welcome"/);
 
   view.renderPrograms();
   assert.match(view.appRoot.innerHTML, /value="current" disabled/);
@@ -296,4 +304,67 @@ test('application cards escape every text and attribute value that can come from
   assert.doesNotMatch(card, /<img/i);
   assert.doesNotMatch(card, /"><img/);
   assert.match(card, /&lt;img src=x onerror=alert\(1\)&gt;/);
+});
+
+test('the directory card signs in, then searches; it escapes names and encodes IDs', () => {
+  const directoryViews = require('../sidepanel/view-directory.mjs');
+  const state = { directory: { signedIn: false, email: '', query: '', results: null }, devTestAccount: { email: 'dev@example.com', password: 'pw<1>' } };
+  const card = () => directoryViews.create({ state, format }).directorySection();
+
+  let html = card();
+  assert.match(html, /Sign in to search for a client/);
+  assert.match(html, /id="directory-signin-form"/);
+  assert.doesNotMatch(html, /directoryBase|Directory address/, 'the address comes from the code, not the user');
+  assert.match(html, /type="password"/);
+  assert.match(html, /Development test account[\s\S]*dev@example\.com[\s\S]*pw&lt;1&gt;/);
+  assert.match(html, /data-action="directory-use-test-account"/);
+  state.devTestAccount = null;
+  assert.doesNotMatch(card(), /Development test account|directory-use-test-account/, 'no local account file means no note');
+  state.devTestAccount = { email: 'dev@example.com', password: 'pw<1>' };
+
+  state.directory = { signedIn: true, email: 'ada@example.com', query: '', results: null };
+  html = card();
+  assert.match(html, /Search for a client/);
+  assert.match(html, /Signed in as ada@example\.com/);
+  assert.match(html, /id="directory-find-form"/);
+  assert.doesNotMatch(html, /id="directory-mode"|No clients matched/);
+
+  state.directory.results = [];
+  state.directory.query = 'zed';
+  assert.match(card(), /No clients matched “zed”/);
+
+  const hostile = '"><img src=x onerror=alert(1)>';
+  state.directory.results = [{ recordId: 'a/b c', firstName: hostile, lastName: 'Lovelace' }];
+  state.directory.query = hostile;
+  html = card();
+  assert.doesNotMatch(html, /<img src=x/);
+  assert.match(html, /data-id="a%2Fb%20c"/);
+  assert.match(html, /1 client found/);
+});
+
+test('the welcome page explains the steps and the safeguards, and offers one way forward', () => {
+  const welcomeViews = require('../sidepanel/view-welcome.mjs');
+  const appRoot = { innerHTML: '' };
+  welcomeViews.create({ appRoot }).renderWelcome();
+  assert.match(appRoot.innerHTML, /How it works/);
+  assert.match(appRoot.innerHTML, /What keeps you in control/);
+  assert.match(appRoot.innerHTML, /You always submit/);
+  assert.match(appRoot.innerHTML, /No guessing/);
+  assert.deepEqual(actionsOf(appRoot.innerHTML), ['dismiss-welcome']);
+});
+
+test('the details screen offers sample clients first, a typed form, and a hidden advanced paste', () => {
+  const view = screens({ state: { view: 'details' }, sampleClients: [{ id: 'complete', label: 'Complete record', description: 'Everything is filled in.' }, { id: 'a/b', label: '<b>x</b>', description: 'd' }] });
+  view.renderClientDetails();
+  const html = view.appRoot.innerHTML;
+  assert.match(html, /Enter client details/);
+  assert.deepEqual(actionsOf(html).filter((action) => action === 'use-sample-client').length, 2);
+  assert.match(html, /data-id="a%2Fb"/);
+  assert.doesNotMatch(html, /<b>x<\/b>/);
+  for (const name of ['firstName', 'lastName', 'dateOfBirth', 'phone', 'email', 'addressLine1', 'addressLine2', 'city', 'state', 'postalCode']) {
+    assert.match(html, new RegExp(`name="${name}"`), name);
+  }
+  assert.match(html, /id="details-form"/);
+  assert.match(html, /<details class="settings-disclosure">\s*<summary>Advanced: paste a full client record/);
+  assert.match(html, /id="json-form"/);
 });

@@ -6,6 +6,7 @@ Start with the first group. Everything else is reference or an evidence record f
 
 - [Recent engineering changes](RECENT_CHANGES.md): high-level notes, newest first.
 - [Follow-up work](TODO.md): decisions deferred on purpose, such as adding a bundler.
+- Change documents ([docs/changes](changes/2026-10-21-add-participant-directory.md)): one short write-up per change, with how to verify it.
 
 ## Use and test the extension
 
@@ -33,6 +34,7 @@ Start with the first group. Everything else is reference or an evidence record f
 - [Implementation notes](IMPLEMENTATION_NOTES.md): the mapping from the source protocol to the extension.
 - [Model providers and usage accounting](MODEL_PROVIDERS.md): runtimes and data flow.
 - [Protected Jev test access](JEV_TEST_ACCESS.md): how the Jev planner was reached for testing.
+- [Eve and Jev alignment plan](JEV_EVE_ALIGNMENT_PLAN.md): what `navapbc/ai-chatbot` does and what to adopt here.
 - [Self-service connector coverage](CONNECTOR_COVERAGE.md) and [recertification workflow](RECERTIFICATION_WORKFLOW.md).
 - [OCR security, review policy, and limits](OCR_SECURITY_AND_LIMITS.md) and [work-queue security and recovery](WORK_QUEUE_SECURITY_AND_RECOVERY.md).
 

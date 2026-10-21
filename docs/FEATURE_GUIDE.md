@@ -23,8 +23,8 @@ Open **Model runtime** on the home screen or dashboard.
 
 | Feature | How to try it | What to check |
 |---|---|---|
-| **Fictional record lookup** | On the home screen, choose **Find by record ID**, enter `339619`, `338618`, or `339637`, and continue. The default source is the built-in fictional demo. | Is the client identity clear before any application opens? Can the tester recognize and recover from the wrong record? |
-| **Paste JSON** | Choose **Paste client JSON → Use a fictional sample record → Continue**, or paste a labeled fictional record. | Are missing values left unknown? Can the tester understand what will be used without reading raw JSON? |
+| **Participant directory search** | On the start screen, sign in (if you have the local test-account file described in `participant-api/README.md`, the account is shown there), then search by name or ID, for example `thomas` or `339619`. This is the only path that needs a sign-in. | Is the client identity clear before any application opens? Can the tester recognize and recover from the wrong record? |
+| **Enter client details** | Choose **Enter client details**, then pick a sample client or type a client in. A full JSON record can be pasted under **Advanced**. | Are missing values left unknown? Can the tester understand what will be used without reading raw JSON? |
 | **Document upload and local OCR** | Choose **Read a document**, select a fictional PDF, image, DOCX, TXT, CSV, TSV, or JSON file, then **Read document**. On **Choose what to add**, review and select fields before **Use selected details**. Later, **Add document** adds information to the current record. | Nothing should merge without review. OCR and conflicting values should need explicit selection; sensitive identifiers should be masked. Check missing labels, poor scans, rotation, and conflicting sources. |
 
 Document parsing/OCR runs locally with bundled tools. Uploads are limited to **15 MB**; OCR is English and bounded by page/time/pixel budgets. It proposes labeled fields rather than interpreting every document. Handwriting, unsupported languages, and unclear values should be withheld. [Exact limits and review policy](OCR_SECURITY_AND_LIMITS.md).
@@ -77,7 +77,7 @@ Test the real routes first individually, then together. Check that answers, prog
 
 ## Review upcoming renewals
 
-Open **Recertification status → Upcoming renewals** from home or the dashboard. The default fictional mode supplies a demo caseload; a configured service can supply authoritative due dates.
+Open **Renewals due** from the start screen or the dashboard. The default fictional mode supplies a demo caseload; a configured service can supply authoritative due dates.
 
 1. Choose **Review and follow up** on a client. Inspect the urgency, due date, five information areas, and client-message draft.
 2. Choose **Create outreach task**. In a test, inspect the draft; do not send it to a real client. **Mark client contacted** records a worker's action, not proof of delivery.

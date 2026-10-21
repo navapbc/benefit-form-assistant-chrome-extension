@@ -1,4 +1,4 @@
-// Client-intake screens: the start choice, model-runtime notice and settings, record ID, JSON import, document upload and review, and the program picker.
+// Client-intake screens: the start screen, model-runtime notice and settings, record ID, client details (typed, sample or pasted), document upload and review, and the program picker.
 
 /**
  * deps:
@@ -6,7 +6,8 @@
  * - format: panel-format helpers.
  * - engine: the form engine (value normalization); agentPlanner: the model runtime; programCatalog: known sites.
  * - renderError(), clientSummary(), managedConnector(): shared panel helpers.
- * - renderConnectorStatus(), connectorTitle(), connectorProvider(), connectorSourceId(): connector view helpers.
+ * - directorySection(): the participant directory card; sampleClients: the sample clients offered on the details screen.
+ * - connectorTitle(), connectorProvider(), connectorSourceId(): connector view helpers.
  */
 function create(deps) {
   const {
@@ -20,7 +21,8 @@ function create(deps) {
     renderError,
     clientSummary,
     managedConnector,
-    renderConnectorStatus,
+    directorySection,
+    sampleClients = [],
     connectorTitle,
     connectorProvider,
     connectorSourceId,
@@ -40,7 +42,7 @@ function create(deps) {
     const info = agentPlanner?.runtimeInfo?.() || { kind: 'chrome-local', title: 'Chrome on-device AI', detail: '' };
     const selectedProvider = state.agentProvider.kind === 'local-cli' ? state.agentProvider.provider : 'chrome-local';
     const companion = state.agentProvider.kind === 'local-cli';
-    const title = ready ? (state.agentRuntime.shared ? 'Shared planner API configured' : `${info.title} ready`) : unavailable ? `${info.title} unavailable` : 'Agentic AI required';
+    const title = ready ? (state.agentRuntime.shared ? 'Shared planner API configured' : `${info.title} ready`) : unavailable ? `${info.title} unavailable` : 'The AI assistant needs a one-time setup';
     const detail = ready
       ? (state.agentRuntime.shared
         ? `${state.agentRuntime.message} Saved API settings override Nano/Codex/Claude planning; Jev keeps its paired companion. Client values stay out of planning prompts.`
@@ -54,7 +56,7 @@ function create(deps) {
       ${unavailable
         ? `<div class="notice error" role="alert"><span aria-hidden="true">!</span><span><strong>${escapeHtml(title)}.</strong> ${escapeHtml(detail)}</span></div>`
         : `<p class="runtime-status ${ready ? 'ready' : ''}" role="status"><span class="runtime-dot" aria-hidden="true"></span>${escapeHtml(title)}</p>`}
-      ${ready ? '' : '<button class="secondary-button" style="margin-bottom:12px" type="button" data-action="enable-agent">Enable agentic AI</button>'}
+      ${ready ? '' : '<button class="secondary-button" style="margin-bottom:12px" type="button" data-action="enable-agent">Set up the AI assistant</button>'}
       <details class="model-runtime-settings settings-disclosure">
         <summary>Model runtime</summary>
         ${unavailable ? '' : `<p class="field-hint">${escapeHtml(detail)}</p>`}
@@ -95,39 +97,43 @@ function create(deps) {
     appRoot.innerHTML = `
       <section>
         <div class="intro">
-          <p class="eyebrow">Start a form</p>
-          <h1>Let's find your client</h1>
-          <p class="lede">Start with a record, JSON, or a document.</p>
+          <p class="eyebrow">Start here</p>
+          <h1>Find your client</h1>
+          <p class="lede">Pull up a client’s information, then choose the application to complete. The assistant fills it in and you review every answer.</p>
         </div>
         ${renderError()}
-        ${renderAgentRuntime()}
-        ${renderConnectorStatus()}
+        ${directorySection()}
+        <h2 class="section-title">Other ways to start</h2>
         <div class="stack">
-          <button class="choice-button" type="button" data-action="choose-id">
-            <span class="choice-icon" aria-hidden="true">ID</span>
-            <span class="choice-copy"><strong>Find by record ID</strong><small>Look up a connected client record.</small></span>
-            <span class="chevron" aria-hidden="true">›</span>
-          </button>
-          <button class="choice-button" type="button" data-action="choose-json">
-            <span class="choice-icon" aria-hidden="true">{ }</span>
-            <span class="choice-copy"><strong>Paste client JSON</strong><small>Use a prepared client record.</small></span>
+          <button class="choice-button" type="button" data-action="choose-details">
+            <span class="choice-icon" aria-hidden="true">✎</span>
+            <span class="choice-copy"><strong>Enter client details</strong><small>Type them in yourself, or try a sample client.</small></span>
             <span class="chevron" aria-hidden="true">›</span>
           </button>
           <button class="choice-button" type="button" data-action="choose-document">
             <span class="choice-icon" aria-hidden="true">DOC</span>
-            <span class="choice-copy"><strong>Read a document</strong><small>Review extracted details before import.</small></span>
+            <span class="choice-copy"><strong>Upload a document</strong><small>Read details from a PDF, photo or spreadsheet. You check them before they are used.</small></span>
             <span class="chevron" aria-hidden="true">›</span>
           </button>
         </div>
-        <button class="recertification-entry" type="button" data-action="open-recertifications">
-          <span>Recertification status</span>
+        <h2 class="section-title">Renewals</h2>
+        <button class="choice-button" type="button" data-action="open-recertifications">
+          <span class="choice-icon" aria-hidden="true">DUE</span>
+          <span class="choice-copy"><strong>Renewals due</strong><small>See whose benefits are coming up for renewal and what is still needed.</small></span>
           <span class="chevron" aria-hidden="true">›</span>
         </button>
-        ${renderPlannerSettings()}
-        <details class="help-disclosure"><summary>Data and review safeguards</summary><p>Client values are held in this browser session and excluded from model planning prompts. Managed record lookup uses the configured organization service; provider credentials stay server-side. Sending questions to a client uses the shared API. You review the results and submit the application yourself.</p></details>
+        <div class="assistant-setup">
+          <h2 class="section-title">AI assistant</h2>
+          ${renderAgentRuntime()}
+        </div>
+        <p><button class="link-button" type="button" data-action="show-welcome">How this works and what keeps you in control</button></p>
       </section>`;
   }
 
+  // The shared planner API settings are hidden for now: the start screen no longer shows them. The whole function is kept
+  // below, commented out, so the form can be restored; its handlers ('save-planner', 'disconnect-planner', 'planner-form')
+  // are still registered.
+  /*
   function renderPlannerSettings() {
     if (previewMode) return '';
     const configured = Boolean(state.plannerBase);
@@ -148,6 +154,7 @@ function create(deps) {
         ${configured ? '<button class="secondary-button" type="button" data-action="disconnect-planner">Disconnect and remove saved tenant key</button>' : ''}
       </form></details>`;
   }
+  */
 
   function renderRecordId() {
     const provider = connectorProvider();
@@ -168,33 +175,68 @@ function create(deps) {
         </div>
         <div class="form-actions">
           <button class="primary-button" type="submit">Continue</button>
-          <button class="secondary-button" type="button" data-action="choose-json">Paste client JSON instead</button>
+          <button class="secondary-button" type="button" data-action="choose-details">Enter client details instead</button>
           <button class="link-button" type="button" data-action="configure-connector">Manage data source</button>
         </div>
       </form>
     </section>`;
   }
 
-  function renderJsonImport() {
+  const DETAIL_FIELDS = [
+    ['firstName', 'First name', 'text', 'given-name', true],
+    ['lastName', 'Last name', 'text', 'family-name', true],
+    ['dateOfBirth', 'Date of birth', 'date', 'off', false],
+    ['phone', 'Phone', 'tel', 'off', false],
+    ['email', 'Email', 'email', 'off', false],
+    ['addressLine1', 'Street address', 'text', 'off', false],
+    ['addressLine2', 'Apartment or unit', 'text', 'off', false],
+    ['city', 'City', 'text', 'off', false],
+    ['state', 'State', 'text', 'off', false],
+    ['postalCode', 'ZIP code', 'text', 'off', false],
+  ];
+
+  function renderClientDetails() {
     appRoot.innerHTML = `
     <section>
       <button class="back-button" type="button" data-action="back-choice"><span aria-hidden="true">←</span> Back</button>
       <div class="intro">
-        <p class="eyebrow">Client data</p>
-        <h1>Paste the client record</h1>
-        <p class="lede">Use labeled JSON fields. The assistant will never guess a missing value.</p>
+        <p class="eyebrow">Client details</p>
+        <h1>Enter client details</h1>
+        <p class="lede">Type in what you know. Anything you leave blank, the assistant will ask you about. It never guesses.</p>
       </div>
       ${renderError()}
-      <form id="json-form" class="stack">
+      <h2 class="section-title">Try a sample client</h2>
+      <p class="field-hint">Fictional clients for trying things out. Each one shows a different situation.</p>
+      <div class="stack">
+        ${sampleClients.map((client) => `
+        <button class="choice-button" type="button" data-action="use-sample-client" data-id="${encodeURIComponent(client.id)}">
+          <span class="choice-icon" aria-hidden="true">${escapeHtml(String(client.label).charAt(0))}</span>
+          <span class="choice-copy"><strong>${escapeHtml(client.label)}</strong><small>${escapeHtml(client.description)}</small></span>
+          <span class="chevron" aria-hidden="true">›</span>
+        </button>`).join('')}
+      </div>
+      <h2 class="section-title">Or type in a client</h2>
+      <form id="details-form" class="stack compact-form">
+        ${DETAIL_FIELDS.map(([name, label, type, autocomplete, required]) => `
         <div class="field">
-          <label for="client-json">Client information</label>
-          <textarea id="client-json" name="clientJson" spellcheck="false" placeholder='{"firstName":"Maria","lastName":"Santos"}' required></textarea>
-        </div>
-        <button class="link-button" type="button" data-action="use-sample">Use a fictional sample record</button>
+          <label for="detail-${name}">${label}${required ? '' : ' <span class="field-hint">(optional)</span>'}</label>
+          <input id="detail-${name}" name="${name}" type="${type}" autocomplete="${autocomplete}" ${required ? 'required' : ''}>
+        </div>`).join('')}
         <div class="form-actions">
           <button class="primary-button" type="submit">Continue</button>
         </div>
       </form>
+      <details class="settings-disclosure">
+        <summary>Advanced: paste a full client record</summary>
+        <form id="json-form" class="stack compact-form">
+          <p class="field-hint">For a prepared record in JSON format, usually exported from another system.</p>
+          <div class="field">
+            <label for="client-json">Client record</label>
+            <textarea id="client-json" name="clientJson" spellcheck="false" placeholder='{"firstName":"Maria","lastName":"Santos"}' required></textarea>
+          </div>
+          <button class="secondary-button" type="submit">Use this record</button>
+        </form>
+      </details>
     </section>`;
   }
 
@@ -219,7 +261,7 @@ function create(deps) {
           <details class="help-disclosure"><summary>How document reading works</summary><p>The raw file stays on this device and is discarded after parsing. Image-only pages use bundled English OCR with page, pixel, attempt, and time limits. Review every proposed value before importing it.</p></details>
           <div class="form-actions">
             <button class="primary-button" type="submit">Read document</button>
-            ${state.participant ? '' : '<button class="secondary-button" type="button" data-action="choose-json">Paste JSON instead</button>'}
+            ${state.participant ? '' : '<button class="secondary-button" type="button" data-action="choose-details">Enter details instead</button>'}
           </div>
         </form>
       </section>`;
@@ -294,7 +336,7 @@ function create(deps) {
         </form>` : `
         <div class="form-actions">
           <button class="primary-button" type="button" data-action="back-document">Choose another file</button>
-          <button class="secondary-button" type="button" data-action="choose-json">Paste JSON instead</button>
+          <button class="secondary-button" type="button" data-action="choose-details">Enter details instead</button>
         </div>`}
     </section>`;
   }
@@ -349,7 +391,7 @@ function create(deps) {
     renderAgentRuntime,
     renderChoice,
     renderRecordId,
-    renderJsonImport,
+    renderClientDetails,
     renderDocumentUpload,
     renderDocumentReview,
     renderPrograms,

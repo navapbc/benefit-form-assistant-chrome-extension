@@ -1,6 +1,30 @@
 # Follow-up work
 
-Things we decided to come back to. Add to the top of a section as you find more; move an item to [RECENT_CHANGES.md](RECENT_CHANGES.md) when it ships. Last updated October 21, 2026.
+Things we decided to come back to. Add to the top of a section as you find more; move an item to [RECENT_CHANGES.md](RECENT_CHANGES.md) when it ships. Last updated October 21, 2026 (participant directory and start-screen items added).
+
+## Participant directory (Neon)
+
+Added October 21, 2026 with the participant directory (see [RECENT_CHANGES.md](RECENT_CHANGES.md) and [the plan](JEV_EVE_ALIGNMENT_PLAN.md)). The Function and Auth run on the Neon `dev` branch. Its 7-day expiry (2026-10-28) was removed on October 21, 2026, so it no longer deletes itself.
+
+- [ ] **Move to a deliberate home for the directory.** The `dev` branch no longer expires (`neon branches set-expiration dev`), but it is still a dev branch holding the Function, Auth users and fictional data, and `DIRECTORY_URL` in `shared/directory-config.mjs` points at it. When the directory is shared beyond testing, pick a lasting branch or project, redeploy `participant-api/`, update the URL and `ALLOWED_ORIGINS`, and re-create the users and `directory_members` rows. Branches made later still get the 7-day expiry from `neon.ts`.
+- [ ] **Delete the development test account on the Neon branch before real use.** Its email and password are not in the repository (the repo is public): they sit in the gitignored `shared/directory-config.local.mjs`, which the sign-in card reads. Testers need that file from a teammate. Before real data, delete the account and its `directory_members` row in Neon.
+- [ ] **Real participant data needs a review first.** The `participants` table enforces `synthetic = true`. Before that changes: security and privacy review, data-processing terms, region, encryption, retention, and who may read which organization's records.
+- [ ] **Stable extension ID.** The API only answers listed `chrome-extension://` origins, and an unpacked extension's ID comes from its folder path. Add a `key` to the manifest, or list every tester's ID in `ALLOWED_ORIGINS`.
+- [ ] **User provisioning.** Sign-up is closed. Decide how users are invited and set a first password, and whether adding someone to `directory_members` is an admin screen or a SQL step.
+- [ ] **Tune and monitor the sign-in limits.** `/auth/sign-in` now refuses foreign origins and non-JSON bodies and counts failures (5 per email, 30 per address, 15 minutes; see `participant-api/src/guards.ts`). Open: an attacker can lock a known email out by failing on purpose, `/auth/token` has no limit, old `auth_attempts` rows are never purged, and nothing alerts on repeated lockouts.
+- [ ] **Verify what the spike did not.** A real 15-minute token expiry with a sleeping service worker, and opening a found participant in the real side panel. Chrome's DevTools protocol cannot open the side panel, and the service worker rejects tab senders, so this is covered by unit tests only (fold into the real-Chrome end-to-end item above).
+- [ ] **Decide whether the recertification caseload reads from this database.** It still reads from the old connector.
+- [ ] **Save typed or pasted clients to the database.** The mock service has write routes and a `mock_datasets` table, but the panel has no "Save" button yet.
+- [ ] **Clean up the production branch.** `npm run connector:migrate` created `mock_records` and `mock_datasets` on `production` during setup. `.env.local` currently points at the `dev` branch.
+- [ ] **Jev and Eve alignment.** Phases 1 to 6 of [the plan](JEV_EVE_ALIGNMENT_PLAN.md): client hardening, telemetry with a denominator, an offline eval of the question wording, value-free gap triage, a provenance enum, and Eve layout. Phase 0 (what may leave the device) is decided only for the directory.
+
+## Start screen and wording
+
+- [ ] **Rewrite the remaining screens' language.** The start, welcome, details and search screens were rewritten for caseworkers. The program choice, dashboard, review, questions, handoff and renewals screens still use the older, more technical wording.
+- [ ] **Past applications.** "Renewals due" shows upcoming renewals only. A list of past applications does not exist; decide whether to build one.
+- [ ] **Retire the Apricot and BenefitsCal connector.** Apricot and BenefitsCal connections are no longer planned. The record-ID and "Manage data source" screens, the provider catalog, `connector-service/`, the Apricot-shaped mock tables and demo data are now unreachable from the start screen. Remove them together, keeping what the preview and recertification still use until that is decided.
+- [ ] **Try the welcome page in a real side panel.** Its once-per-browser-session behavior uses `chrome.storage.session`; it was checked in code, tests and preview only.
+- [ ] **Shared planner API settings are commented out** in `sidepanel/view-intake.mjs` (the handlers are still registered). Delete them or restore them once the Nava API question is settled.
 
 ## Build and layout
 
@@ -41,7 +65,7 @@ Things we decided to come back to. Add to the top of a section as you find more;
 
 ## Production validation (from the archived readiness doc)
 
-Carried over from "Production validation still required" in [PRODUCTION_READINESS](archive/PRODUCTION_READINESS.md); none of it is done.
+Carried over from "Production validation still required" in [PRODUCTION_READINESS](archive/PRODUCTION_READINESS.md); none of it is done. **Update, October 21, 2026:** Apricot and BenefitsCal connections are no longer planned. Participant data will come from a database (Neon) behind a login; see [Participant directory](#participant-directory-neon). The first and third items below are kept for traceability.
 
 - [ ] A client-approved Apricot sandbox or test tenant, with synthetic records that match production schemas, field IDs, access controls, freshness, pagination, rate limits, and schema drift.
 - [ ] A sanctioned BenefitsCal or agency-owned non-production application run through every supported household composition and checkpoint, without creating a real submission.

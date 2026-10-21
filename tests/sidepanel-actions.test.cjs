@@ -18,16 +18,16 @@ const createApplicationActions = require('../sidepanel/actions-applications.mjs'
 const CLICK_ACTION_NAMES = [
   'disconnect-planner', 'try-captcha', 'save-planner', 'client-link', 'enable-agent', 'home', 'open-recertifications', 'back-recertifications',
   'review-recertification', 'draft-recertification-outreach', 'complete-recertification-outreach', 'prepare-recertification',
-  'choose-id', 'choose-json', 'configure-connector', 'back-providers', 'select-provider', 'back-connector',
+  'choose-id', 'choose-details', 'use-sample-client', 'dismiss-welcome', 'show-welcome', 'directory-pick', 'directory-sign-out', 'directory-use-test-account', 'configure-connector', 'back-providers', 'select-provider', 'back-connector',
   'local-connector-settings', 'reset-connector', 'choose-document', 'back-choice', 'back-record-id',
   'confirm-connector-record', 'back-programs', 'back-document', 'change-client', 'back-dashboard', 'add-application',
-  'reload-source', 'export-audit', 'use-sample', 'start-over', 'answer', 'answer-run', 'fill', 'run', 'review', 'rescan',
+  'reload-source', 'export-audit', 'start-over', 'answer', 'answer-run', 'fill', 'run', 'review', 'rescan',
   'go-tab', 'scan-application', 'resume', 'resume-current', 'resume-human-checkpoint', 'open-handoff', 'pause',
   'accept-handoff', 'analyze-current',
 ];
 const SUBMIT_FORM_IDS = [
   'model-provider-form', 'recertification-intake-form', 'handoff-form', 'connector-form', 'connector-mapping-form',
-  'record-form', 'json-form', 'document-form', 'document-review-form', 'program-form', 'questions-form',
+  'record-form', 'json-form', 'details-form', 'directory-signin-form', 'directory-find-form', 'document-form', 'document-review-form', 'program-form', 'questions-form',
 ];
 
 /** A FormData stand-in over a plain { name: value | value[] } object. */
@@ -220,7 +220,8 @@ test('unknown actions, including prototype keys, clear the error and re-render u
 test('screen-only actions switch the view and re-render', async () => {
   const expected = {
     'choose-id': 'record',
-    'choose-json': 'json',
+    'choose-details': 'details',
+    'show-welcome': 'welcome',
     'back-choice': 'choice',
     'back-programs': 'programs',
     'reload-source': 'choice',
@@ -276,11 +277,6 @@ test('change-client and start-over end the session under a new UI generation; on
 });
 
 test('in-place actions return without the final generation check or render', async () => {
-  const sample = dispatchHarness();
-  await click(sample, 'use-sample');
-  assert.equal(sample.elements['client-json'].value, JSON.stringify({ record_id: '339619', participant: { name: { first: 'Celeste' } } }, null, 2));
-  assert.deepEqual(sample.calls, []);
-
   const connector = dispatchHarness();
   await click(connector, 'local-connector-settings');
   assert.equal(connector.elements['connector-provider'].value, 'apricot360');
@@ -473,4 +469,119 @@ test('after a sync the current application survives, else the saved choice is ad
   assert.equal(currentApplicationAfterSync(apps, 'gone', 'b'), 'b');
   assert.equal(currentApplicationAfterSync(apps, 'gone', 'missing'), null);
   assert.equal(currentApplicationAfterSync(apps, null, undefined), null);
+});
+
+/** Directory, details and welcome handlers over stubs; `signedIn`, `findById` and `searchByName` decide how each scenario goes. */
+function directoryHarness({ signedIn = true, findById, searchByName, committed = [] } = {}) {
+  const status = { configured: true, baseUrl: 'https://directory.example', signedIn, email: 'ada@example.com' };
+  const marks = [];
+  const directory = {
+    status: async () => ({ ...status }),
+    signIn: async () => { status.signedIn = true; return { ...status }; },
+    signOut: async () => { status.signedIn = false; },
+    findById: findById || (async (id) => ({ record_id: id })),
+    searchByName: searchByName || (async () => []),
+  };
+  const harness = dispatchHarness({
+    state: { view: 'choice', directory: {}, devTestAccount: { email: 'dev@example.com', password: 'pw-123' } },
+    stubs: {
+      directory,
+      sampleClients: [{ id: 'complete', label: 'Complete record', payload: { record_id: 'sample-1', participant: { name: { first: 'Celeste' } } } }],
+      welcome: { markSeen: async () => { marks.push('seen'); } },
+      currentUiSignal: () => undefined,
+      setBusy: () => {},
+      getActiveTab: async () => ({ id: 1 }),
+      commitParticipant: async (record) => { committed.push(record); },
+      persist: async () => {},
+    },
+  });
+  return { harness, committed, marks };
+}
+
+test('signing in keeps the user on the start screen, now showing search; signing out shows sign-in again', async () => {
+  const { harness } = directoryHarness({ signedIn: false });
+  await harness.onSubmit({ id: 'directory-signin-form', fields: { directoryEmail: 'a@b.c', directoryPassword: 'pw' } }, 0);
+  assert.equal(harness.state.view, 'choice');
+  assert.equal(harness.state.directory.signedIn, true);
+  await click(harness, 'directory-sign-out');
+  assert.equal(harness.state.view, 'choice');
+  assert.equal(harness.state.directory.signedIn, false);
+});
+
+test('a search that looks like an ID opens that client and moves on to the program choice', async () => {
+  const { harness, committed } = directoryHarness();
+  await harness.onSubmit({ id: 'directory-find-form', fields: { directoryQuery: '339619' } }, 0);
+  assert.equal(harness.state.view, 'programs');
+  assert.deepEqual(committed, [{ record_id: '339619' }]);
+});
+
+test('an ID that is not found falls back to a name search and lists nothing rather than failing', async () => {
+  const { harness, committed } = directoryHarness({ findById: async () => null, searchByName: async () => [] });
+  await harness.onSubmit({ id: 'directory-find-form', fields: { directoryQuery: 'nope9' } }, 0);
+  assert.equal(harness.state.view, 'choice');
+  assert.deepEqual(harness.state.directory.results, []);
+  assert.equal(committed.length, 0);
+});
+
+test('a name search lists matches without trying an ID, and picking one commits the full record', async () => {
+  let idLookups = 0;
+  const { harness, committed } = directoryHarness({ findById: async (id) => { idLookups += 1; return { record_id: id }; }, searchByName: async () => [{ recordId: '339619', firstName: 'Celeste', lastName: 'Thomas' }] });
+  await harness.onSubmit({ id: 'directory-find-form', fields: { directoryQuery: 'Celeste Thomas' } }, 0);
+  assert.equal(idLookups, 0);
+  assert.equal(harness.state.view, 'choice');
+  assert.equal(harness.state.directory.results.length, 1);
+  await click(harness, 'directory-pick', { id: encodeURIComponent('339619') }, 0);
+  assert.equal(harness.state.view, 'programs');
+  assert.deepEqual(committed, [{ record_id: '339619' }]);
+});
+
+test('an expired directory session returns to the start screen sign-in with a message', async () => {
+  const expired = Object.assign(new Error('Your sign-in expired. Sign in again.'), { name: 'DirectoryAuthError' });
+  const { harness, committed } = directoryHarness({ findById: async () => { throw expired; } });
+  await harness.onSubmit({ id: 'directory-find-form', fields: { directoryQuery: '339619' } }, 0);
+  assert.equal(harness.state.view, 'choice');
+  assert.equal(harness.state.directory.signedIn, true, 'the stub still reports signed in; the real client clears the session');
+  assert.match(harness.state.error, /expired/);
+  assert.equal(committed.length, 0);
+});
+
+test('the test-account button fills the email and password and leaves the screen as it is', async () => {
+  const { harness } = directoryHarness({ signedIn: false });
+  const email = { id: 'directory-email', value: '' };
+  const password = { id: 'directory-password', value: '' };
+  const original = globalThis.document;
+  globalThis.document = { getElementById: (id) => ({ 'directory-email': email, 'directory-password': password })[id] || null };
+  try {
+    await click(harness, 'directory-use-test-account');
+  } finally {
+    globalThis.document = original;
+  }
+  assert.equal(email.value, 'dev@example.com');
+  assert.equal(password.value, 'pw-123');
+  assert.equal(harness.calls.some(([name]) => name === 'render'), false, 'a re-render would wipe the filled inputs');
+});
+
+test('typed details become a client record and need at least a first and last name', async () => {
+  const { harness, committed } = directoryHarness();
+  await assert.rejects(harness.onSubmit({ id: 'details-form', fields: { firstName: 'Ada', lastName: '  ' } }, 0), /first and last name/);
+  assert.equal(committed.length, 0);
+  await harness.onSubmit({ id: 'details-form', fields: { firstName: ' Ada ', lastName: 'Lovelace', phone: '', city: 'Riverside', unknownField: 'dropped' } }, 0);
+  assert.deepEqual(committed, [{ firstName: 'Ada', lastName: 'Lovelace', city: 'Riverside' }]);
+  assert.equal(harness.state.view, 'programs');
+});
+
+test('a sample client is committed as a copy, and an unknown one is refused', async () => {
+  const { harness, committed } = directoryHarness();
+  await click(harness, 'use-sample-client', { id: encodeURIComponent('complete') }, 0);
+  assert.equal(committed[0].record_id, 'sample-1');
+  assert.equal(harness.state.view, 'programs');
+  await assert.rejects(click(harness, 'use-sample-client', { id: 'nope' }, 0), /not available/);
+});
+
+test('dismissing the welcome page remembers it and shows the right home screen', async () => {
+  const { harness, marks } = directoryHarness();
+  harness.state.view = 'welcome';
+  await click(harness, 'dismiss-welcome');
+  assert.deepEqual(marks, ['seen']);
+  assert.equal(harness.state.view, 'programs');
 });

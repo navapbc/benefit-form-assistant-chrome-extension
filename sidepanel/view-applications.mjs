@@ -128,7 +128,7 @@ function create(deps) {
         <div class="stack">${apps.map(applicationCard).join('')}</div>` : '').join('')}
       ${state.apps.length ? '' : '<div class="notice"><span>i</span><span>No application has been added yet.</span></div>'}
       <div class="form-actions">
-        <button class="secondary-button" type="button" data-action="open-recertifications">Recertification status</button>
+        <button class="secondary-button" type="button" data-action="open-recertifications">Renewals due</button>
         <button class="secondary-button" type="button" data-action="${state.participant ? 'add-application' : 'reload-source'}">${state.participant ? 'Add another application' : 'Reload client data'}</button>
         <button class="secondary-button" type="button" data-action="export-audit">Export activity log</button>
         <button class="link-button" type="button" data-action="start-over">End this session</button>

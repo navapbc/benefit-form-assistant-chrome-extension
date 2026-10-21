@@ -149,10 +149,10 @@ test('multi-application runs are tab-bound, automatic, and origin-checked', () =
   assert.doesNotMatch(panel, /data-action="analyze-current">Analyze current tab<\/button>`;\n\s*}/);
 });
 
-test('header home control and provider catalog are reachable', () => {
+test('the header has no home control, and the provider catalog is reachable', () => {
   const html = fs.readFileSync(path.join(root, 'sidepanel/index.html'), 'utf8');
   const panel = sidePanelSource();
-  assert.match(html, /data-action="home"/);
+  assert.doesNotMatch(html, /data-action="home"|icon-button/, 'the header × did nothing a Back button does not');
   assert.match(panel, /document\.addEventListener\('click'/);
   assert.match(panel, /renderProviderCatalog/);
   assert.match(panel, /select-provider/);

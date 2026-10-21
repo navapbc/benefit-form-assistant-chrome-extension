@@ -9,10 +9,13 @@ const control = (id) => /** @type {HTMLInputElement & HTMLSelectElement} */ (doc
  * - SKIP_FINAL_RENDER, showScreen(view): the dispatcher handler contract (ui-dispatch's handlerContract).
  * - assertUiGeneration(token), currentUiGeneration(), cancelPendingUiWork(), cancelUiBoundRuns(), cancelAllRuns(): run control.
  * - commitParticipant(participant), persist(options), clearAssistantState(): coordinator writes.
- * - DEMO_RECORDS, parseDocument(file, options), clientSummary(): the fictional sample record, the document parser, and the
- *   canonical client values.
+ * - parseDocument(file, options), clientSummary(): the document parser and the canonical client values.
  * - canonicalHomeView(), recordAudit(type, application, details): the home screen and the audit log.
  * - prepareAgentRuntime(), scanTab(tab, options), openSelectedPrograms(values), enqueueApplicationBatch(ids): starting applications.
+ * - directory: the participant directory client (shared/participant-directory.mjs); decoded(value): the data-attribute decoder.
+ * - currentUiSignal(): aborts a directory request when the screen is left.
+ * - state.devTestAccount: the development test account the sign-in screen offers to fill in, or null.
+ * - sampleClients: the fictional sample clients ({ id, payload }); welcome: { markSeen() } for the welcome page.
  */
 function create(deps) {
   const {
@@ -31,7 +34,6 @@ function create(deps) {
     commitParticipant,
     persist,
     clearAssistantState,
-    DEMO_RECORDS,
     parseDocument,
     clientSummary,
     canonicalHomeView,
@@ -40,6 +42,11 @@ function create(deps) {
     scanTab,
     openSelectedPrograms,
     enqueueApplicationBatch,
+    directory,
+    decoded,
+    currentUiSignal,
+    sampleClients = [],
+    welcome,
   } = deps;
 
   async function lookupRecord(recordId, uiToken) {
@@ -60,6 +67,123 @@ function create(deps) {
     state.activeTab = activeTab;
     state.view = 'programs';
     await persist();
+  }
+
+  // ---- Participant directory: the only intake path that needs a sign-in. It lives on the start screen. ----
+
+  async function refreshDirectoryState(patch = {}) {
+    state.directory = { ...state.directory, ...(await directory.status()), ...patch };
+  }
+
+  /** Back to the start screen's sign-in when the directory says the session is over; rethrows anything else. */
+  async function directoryFailure(error) {
+    if (error?.name !== 'DirectoryAuthError') throw error;
+    await refreshDirectoryState({ results: null });
+    state.view = 'choice';
+    state.error = error.message;
+  }
+
+  function useDirectoryTestAccount() {
+    if (!state.devTestAccount) return SKIP_FINAL_RENDER;
+    control('directory-email').value = state.devTestAccount.email;
+    control('directory-password').value = state.devTestAccount.password;
+    return SKIP_FINAL_RENDER;
+  }
+
+  async function submitDirectorySignIn({ form, uiToken }) {
+    const data = new FormData(form);
+    setBusy('Signing in…');
+    await directory.signIn(data.get('directoryEmail'), data.get('directoryPassword'), { signal: currentUiSignal() });
+    assertUiGeneration(uiToken);
+    await refreshDirectoryState({ results: null, query: '' });
+    state.view = 'choice';
+  }
+
+  /** Commits a record from any source and moves on to choosing the application. */
+  async function startWithRecord(record, uiToken) {
+    const activeTab = await getActiveTab();
+    assertUiGeneration(uiToken);
+    await commitParticipant(record);
+    assertUiGeneration(uiToken);
+    state.activeTab = activeTab;
+    state.view = 'programs';
+    await persist();
+  }
+
+  async function openDirectoryRecord(id, uiToken) {
+    setBusy('Opening the client…');
+    const record = await directory.findById(id, { signal: currentUiSignal() });
+    assertUiGeneration(uiToken);
+    if (!record) throw new Error('That client could not be found.');
+    await startWithRecord(record, uiToken);
+  }
+
+  /** One search box: something that looks like an ID is tried as an ID first, anything else is a name search. */
+  async function submitDirectoryFind({ form, uiToken }) {
+    const query = String(new FormData(form).get('directoryQuery') ?? '').trim();
+    state.directory = { ...state.directory, query };
+    try {
+      if (/^[A-Za-z0-9._-]{1,64}$/.test(query) && /\d/.test(query)) {
+        setBusy('Looking for that ID…');
+        const record = await directory.findById(query, { signal: currentUiSignal() });
+        assertUiGeneration(uiToken);
+        if (record) {
+          await startWithRecord(record, uiToken);
+          return;
+        }
+      }
+      setBusy('Searching…');
+      const results = await directory.searchByName(query, { signal: currentUiSignal() });
+      assertUiGeneration(uiToken);
+      state.directory = { ...state.directory, results };
+      state.view = 'choice';
+    } catch (error) {
+      if (error?.name === 'UiCancelledError') throw error;
+      await directoryFailure(error);
+    }
+  }
+
+  async function pickDirectoryRecord({ button, uiToken }) {
+    try {
+      await openDirectoryRecord(decoded(button.dataset.id), uiToken);
+    } catch (error) {
+      if (error?.name === 'UiCancelledError') throw error;
+      await directoryFailure(error);
+    }
+  }
+
+  async function signOutDirectory() {
+    await directory.signOut();
+    await refreshDirectoryState({ results: null, query: '' });
+    state.view = 'choice';
+  }
+
+  // ---- Typed details and sample clients: no sign-in ----
+
+  const DETAIL_KEYS = ['firstName', 'lastName', 'dateOfBirth', 'phone', 'email', 'addressLine1', 'addressLine2', 'city', 'state', 'postalCode'];
+
+  async function submitClientDetails({ form, uiToken }) {
+    const data = new FormData(form);
+    const values = {};
+    for (const key of DETAIL_KEYS) {
+      const value = String(data.get(key) ?? '').trim();
+      if (value) values[key] = value;
+    }
+    if (!values.firstName || !values.lastName) throw new Error('Enter at least the client’s first and last name.');
+    await startWithRecord(values, uiToken);
+  }
+
+  async function useSampleClient({ button, uiToken }) {
+    const sample = sampleClients.find((client) => client.id === decoded(button.dataset.id));
+    if (!sample) throw new Error('That sample client is not available.');
+    await startWithRecord(structuredClone(sample.payload), uiToken);
+  }
+
+  // ---- Welcome page ----
+
+  async function dismissWelcome() {
+    await welcome.markSeen();
+    state.view = canonicalHomeView();
   }
 
   async function returnHome() {
@@ -103,11 +227,6 @@ function create(deps) {
     state.view = 'document';
   }
 
-  function useSampleRecord() {
-    control('client-json').value = JSON.stringify(DEMO_RECORDS['339619'], null, 2);
-    return SKIP_FINAL_RENDER;
-  }
-
   async function submitRecordId({ form, uiToken }) {
     await lookupRecord(new FormData(form).get('recordId'), uiToken);
   }
@@ -121,13 +240,7 @@ function create(deps) {
       throw new Error('That is not valid JSON. Check the commas and quotation marks, then try again.');
     }
     if (!parsed || Array.isArray(parsed) || typeof parsed !== 'object') throw new Error('Paste one client record as a JSON object.');
-    const activeTab = await getActiveTab();
-    assertUiGeneration(uiToken);
-    await commitParticipant(parsed);
-    assertUiGeneration(uiToken);
-    state.activeTab = activeTab;
-    state.view = 'programs';
-    await persist();
+    await startWithRecord(parsed, uiToken);
   }
 
   async function submitClientDocument({ form, uiToken }) {
@@ -214,19 +327,27 @@ function create(deps) {
   const INTAKE_CLICK_ACTIONS = [
     ['home', returnHome],
     ['choose-id', showScreen('record')],
-    ['choose-json', showScreen('json')],
+    ['choose-details', showScreen('details')],
+    ['use-sample-client', useSampleClient],
+    ['dismiss-welcome', dismissWelcome],
+    ['show-welcome', showScreen('welcome')],
+    ['directory-pick', pickDirectoryRecord],
+    ['directory-use-test-account', useDirectoryTestAccount],
+    ['directory-sign-out', signOutDirectory],
     ['choose-document', openDocumentUpload],
     ['back-choice', showScreen('choice')],
     ['back-document', openDocumentUpload],
     ['back-programs', showScreen('programs')],
     ['reload-source', showScreen('choice')],
-    ['use-sample', useSampleRecord],
     ['change-client', changeClient],
     ['start-over', startOver],
   ];
   const INTAKE_SUBMIT_ACTIONS = [
     ['record-form', submitRecordId],
     ['json-form', submitClientJson],
+    ['details-form', submitClientDetails],
+    ['directory-signin-form', submitDirectorySignIn],
+    ['directory-find-form', submitDirectoryFind],
     ['document-form', submitClientDocument],
     ['document-review-form', submitDocumentReview],
     ['program-form', submitProgramChoice],
