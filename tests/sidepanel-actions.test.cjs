@@ -733,6 +733,16 @@ test('the panel that toggles applies the change once, whether its own storage ec
   }
 });
 
+test('analyze-current checks the one-application rule before it reads or scans the tab', async () => {
+  const refusing = () => { throw new Error('Wait for the running application to stop first.'); };
+  const refused = dispatchHarness({ stubs: { assertNoOtherRun: refusing, getActiveTab: async () => { throw new Error('read the tab'); }, scanTab: async () => { throw new Error('scanned'); } } });
+  await assert.rejects(click(refused, 'analyze-current'), { message: 'Wait for the running application to stop first.' });
+  const scans = [];
+  const allowed = dispatchHarness({ stubs: { assertNoOtherRun: (id) => scans.push(['check', id]), getActiveTab: async () => ({ id: 3 }), scanTab: async (tab) => { scans.push(['scan', tab.id]); } } });
+  await click(allowed, 'analyze-current');
+  assert.deepEqual(scans, [['check', null], ['scan', 3]]);
+});
+
 test('toggle is refused while runs are active', async () => {
   const harness = dispatchHarness({ state: { developerMode: false }, activeRunCount: () => 1 });
   await click(harness, 'toggle-developer-mode');

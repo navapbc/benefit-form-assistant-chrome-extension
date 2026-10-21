@@ -743,6 +743,58 @@ test('a cancelled run stops counting as running for the card, but still holds th
   assert.equal(runs.isRunning('app-1'), false);
 });
 
+/** Run control over two applications, as the side panel holds them. */
+function twoApplicationRuns(developerMode) {
+  const state = { developerMode, apps: [{ id: 'wic', controlGeneration: 0 }, { id: 'ihss', controlGeneration: 0 }], sessionEpoch: 'epoch-1', workerId: 'window-a' };
+  const runs = runControlModule.create({ state, previewMode: true, checkpoint: () => ({}), revokeApplicationRun: async () => {}, onCancelAll: () => {} });
+  return { state, runs, wic: state.apps[0], ihss: state.apps[1] };
+}
+
+test('with developer mode off a caseworker-started run waits for a different application\'s run, with a plain message', async () => {
+  const { runs, wic, ihss } = twoApplicationRuns(false);
+  const automatic = await runs.beginApplicationRun(ihss); // the automatic queue's run
+  let started = 0;
+  await assert.rejects(runs.withNewApplicationRun(wic, async () => { started += 1; }, { uiBound: true }), { message: 'Wait for the running application to stop first.' });
+  assert.equal(started, 0);
+  assert.equal(runs.isRunning('wic'), false, 'no token is left behind');
+  assert.equal(runs.runActive('ihss'), true, 'the running application is not cancelled');
+  assert.throws(() => runs.assertNoOtherRun(null), { message: 'Wait for the running application to stop first.' });
+  runs.endApplicationRun(ihss, automatic);
+  await runs.withNewApplicationRun(wic, async () => { started += 1; }, { uiBound: true });
+  assert.equal(started, 1, 'once the other run settles the caseworker can start this one');
+  assert.doesNotThrow(() => runs.assertNoOtherRun(null));
+});
+
+test('with developer mode off resuming the application that is itself running still works', async () => {
+  const { runs, wic } = twoApplicationRuns(false);
+  const first = runs.withNewApplicationRun(wic, (token) => new Promise((resolve) => { token.abort.signal.addEventListener('abort', resolve); }), { uiBound: true });
+  await new Promise((resolve) => setImmediate(resolve));
+  let resumed = 0;
+  await runs.withNewApplicationRun(wic, async () => { resumed += 1; }, { uiBound: true });
+  await first;
+  assert.equal(resumed, 1);
+  assert.doesNotThrow(() => runs.assertNoOtherRun('wic'));
+});
+
+test('with developer mode off the automatic queue\'s own runs are not refused by the caseworker rule', async () => {
+  const { runs, wic, ihss } = twoApplicationRuns(false);
+  const ui = await runs.beginApplicationRun(wic, { uiBound: true });
+  const automatic = await runs.beginApplicationRun(ihss);
+  assert.ok(automatic, 'the pump keeps its own one-at-a-time limit');
+  runs.endApplicationRun(wic, ui);
+  runs.endApplicationRun(ihss, automatic);
+});
+
+test('with developer mode on caseworker-started runs on several applications run at once, as before', async () => {
+  const { runs, wic, ihss } = twoApplicationRuns(true);
+  const automatic = await runs.beginApplicationRun(ihss);
+  let started = 0;
+  await runs.withNewApplicationRun(wic, async () => { started += 1; }, { uiBound: true });
+  assert.equal(started, 1);
+  assert.doesNotThrow(() => runs.assertNoOtherRun(null));
+  runs.endApplicationRun(ihss, automatic);
+});
+
 /** The planner runtime outside preview mode, over a recording planner and a chrome.storage.session stand-in. */
 function liveAgentRuntime({ developerMode, stored, gateway = null, agentRuntime = { status: 'ready' }, rejectCompanion = false }) {
   const configured = [];

@@ -84,14 +84,30 @@ function create(deps) {
     if (generation !== uiGeneration) throw uiCancelledError();
   }
 
+  /**
+   * With developer mode off one application runs at a time: throws while a run of any other application holds a token
+   * (including one still winding down). The application itself may be running; starting it again replaces that run.
+   * @param {string | null} applicationId
+   */
+  function assertNoOtherRun(applicationId) {
+    if (state.developerMode) return;
+    if ([...activeRunTokens.keys()].some((id) => id !== applicationId)) {
+      throw new Error('Wait for the running application to stop first.');
+    }
+  }
+
   async function beginApplicationRun(application, { uiBound = false } = {}) {
     const requestedSessionGeneration = sessionGeneration;
     const requestedSessionEpoch = state.sessionEpoch;
+    // Caseworker-started runs keep to one application at a time when developer mode is off; the automatic queue
+    // applies its own limit. Checked before replacing this application's run, and again after waiting for it.
+    if (uiBound) assertNoOtherRun(application.id);
     while (activeRunTokens.has(application.id)) {
       const existing = activeRunTokens.get(application.id);
       cancelApplicationRun(application);
       await existing.settled;
     }
+    if (uiBound) assertNoOtherRun(application.id);
     if (requestedSessionGeneration !== sessionGeneration
       || requestedSessionEpoch !== state.sessionEpoch
       || !state.apps.some((item) => item.id === application.id)) {
@@ -205,6 +221,7 @@ function create(deps) {
     runActive,
     activeRun,
     activeRunCount,
+    assertNoOtherRun,
     runCancelledError,
     coordinatorStaleError,
     leaseConflictError,
