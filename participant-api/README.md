@@ -48,16 +48,18 @@ neon neon-auth domain add <the function's https URL>   # so the Function may pre
 ALLOWED_ORIGINS=chrome-extension://<extension-id> AUTH_ORIGIN=<the function's https URL> neon deploy --env .env.local
 ```
 
-The panel does not ask for the address: it is `DIRECTORY_URL` in `shared/directory-config.mjs`. Update it when the Function
-moves (a new branch has a new URL).
+The panel does not ask for the address, and none ships in the repository. Put yours in the gitignored
+`shared/directory-config.local.mjs` (below) as `DIRECTORY_URL`, and update it when the Function moves (a new branch has a
+new URL). Without it the directory screen says it is not set up.
 
 ### Development test account (local file, not in git)
 
-The repository is public, so the test account's email and password are **not committed**. To see the account and a
+The repository is public, so the test account's email and password are **not committed**. To set the address, and see the account and a
 **Fill these in** button on the sign-in card, create a gitignored file next to the config:
 
 ```js
 // shared/directory-config.local.mjs  (matched by .gitignore; never packaged)
+export const DIRECTORY_URL = 'https://your-function.example.com';
 export const DEV_TEST_ACCOUNT = { email: 'you@example.com', password: 'the-password' };
 ```
 

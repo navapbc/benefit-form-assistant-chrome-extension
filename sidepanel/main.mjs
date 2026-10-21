@@ -7,7 +7,7 @@ import * as programCatalog from '../shared/program-catalog.mjs';
 import * as recertificationEngine from '../shared/recertification-engine.mjs';
 import * as demoConnectorData from '../shared/demo-connector-data.mjs';
 import * as participantDirectoryModule from '../shared/participant-directory.mjs';
-import { DIRECTORY_URL, loadDevTestAccount } from '../shared/directory-config.mjs';
+import { loadDirectoryUrl, loadDevTestAccount } from '../shared/directory-config.mjs';
 import * as panelFormat from './panel-format.mjs';
 import * as applicationPolicy from './application-policy.mjs';
 import * as scanAnalysis from './scan-analysis.mjs';
@@ -123,7 +123,7 @@ const PREVIEW_RAW_RECORD = {
 // The participant directory: the only intake path that needs a sign-in. The preview simulates it in memory.
 const directory = participantDirectoryModule.create(previewMode
   ? { storage: previewDirectory.memoryStorage(), fetchImpl: previewDirectory.previewDirectoryFetch(demoConnectorData.CLIENT_RECORDS), defaultBaseUrl: 'https://directory.preview.invalid' }
-  : { storage: { local: chrome.storage.local, session: chrome.storage.session }, defaultBaseUrl: DIRECTORY_URL });
+  : { storage: { local: chrome.storage.local, session: chrome.storage.session }, defaultBaseUrl: await loadDirectoryUrl() });
 
 // The welcome page shows once per browser session. Previews remember it only for the life of the page.
 const WELCOME_KEY = 'nava:welcome-seen';
