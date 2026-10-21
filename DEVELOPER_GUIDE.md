@@ -24,7 +24,7 @@ This is a loadable Manifest V3 Chrome extension that adapts Foad's `form-complet
 
 It is a working local prototype, not a production deployment. It implements flows for a read-only organization data service, labeled source mapping, client or business document import, application inspection, missing-answer collection, approved multi-page filling, readback verification, and provenance review. It has no submit command.
 
-> **Evidence boundary:** the deterministic executor has 28-of-28 synthetic source-field coverage, and the agentic planner has unit evidence for three role-specific model sessions, value-minimized prompts, reviewer approval, and safe concurrent planning. On 2026-09-25, the installed extension used fictional record `339619` on the live Riverside County IHSS form: Gemini Nano verified 32 of 35 attempted writes and Codex verified 34 of 37. Both stopped before affirmation, Cloudflare, and Submit, but both left required decisions unanswered, so neither run was review-ready. A Codex BenefitsCal run reached the real name-information route before exposing and prompting a fix for a cross-page path-policy defect; the fixed build still needs an installed-browser rerun. This build has not been connected to a production Apricot tenant and has not completed an end-to-end live application. Use only fictional or approved test data. See [the model benchmark](evaluation/model-benchmark/README.md) and [production-readiness evidence](docs/PRODUCTION_READINESS.md).
+> **Evidence boundary:** the deterministic executor has 28-of-28 synthetic source-field coverage, and the agentic planner has unit evidence for three role-specific model sessions, value-minimized prompts, reviewer approval, and safe concurrent planning. On 2026-09-25, the installed extension used fictional record `339619` on the live Riverside County IHSS form: Gemini Nano verified 32 of 35 attempted writes and Codex verified 34 of 37. Both stopped before affirmation, Cloudflare, and Submit, but both left required decisions unanswered, so neither run was review-ready. A Codex BenefitsCal run reached the real name-information route before exposing and prompting a fix for a cross-page path-policy defect; the fixed build still needs an installed-browser rerun. This build has not been connected to a production Apricot tenant and has not completed an end-to-end live application. Use only fictional or approved test data. See [the model benchmark](evaluation/model-benchmark/README.md) and [production-readiness evidence](docs/archive/PRODUCTION_READINESS.md).
 
 ## Architecture disclosure: multi-agent planner with three runtime options
 
@@ -220,13 +220,13 @@ The browser extension also cannot produce genuinely trusted hardware keystrokes.
 
 ## Evidence, costs, and next steps
 
-- [Production-readiness evidence](docs/PRODUCTION_READINESS.md) states exactly what is and is not validated.
+- [Production-readiness evidence](docs/archive/PRODUCTION_READINESS.md) states exactly what is and is not validated.
 - [Connector coverage](docs/CONNECTOR_COVERAGE.md) covers the current catalog, major human-services systems, and the work needed for a Plaid-like experience.
 - [Application cost model](docs/COST_MODEL.md) separates the prototype's `$0.00` on-device model API cost from a realistic production calculation.
 - [Model providers and usage accounting](docs/MODEL_PROVIDERS.md) describes the current local runtime and the required managed Claude gateway.
 
 See [`docs/IMPLEMENTATION_NOTES.md`](docs/IMPLEMENTATION_NOTES.md) for the exact mapping from the six-phase skill to the extension architecture.
 
-See [`docs/TEST_REPORT.md`](docs/TEST_REPORT.md) for the connector walkthrough, controlled multi-page results, and read-only BenefitsCal compatibility check. The updated next product investment is in [`docs/ROADMAP.md`](docs/ROADMAP.md).
+See [`docs/archive/TEST_REPORT.md`](docs/archive/TEST_REPORT.md) for the connector walkthrough, controlled multi-page results, and read-only BenefitsCal compatibility check. The updated next product investment is in [`docs/ROADMAP.md`](docs/ROADMAP.md).
 
 Native CAPTCHA code, authorization, supported layouts and current verification limits: [actuator guide](docs/CAPTCHA_ACTUATOR.md).

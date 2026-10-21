@@ -8,7 +8,7 @@ Updated October 7, 2026. Source history starts at `0a015b446a709095c9f0ebac9638f
 - Release README, writeup, tester/access guides: local links resolve. Copied evaluation files were checked for common API-token patterns; no matches were found.
 - Interface preview: fictional JSON import, application selection, dashboard/review navigation, and keyboard expansion/collapse of safeguards checked at a 390 × 780 viewport. This mode simulates model and page operations.
 - Version: manifest, package, and lockfile agree on 0.13.0. The extension's required scripts, OCR assets, fixture, and demo video are included.
-- Public release: branches directly from the already-public prototype. New raw live-site audits, role-call receipts, workflow identifiers, applicant screenshots, the full embedded evidence report, and four separate private-API source snapshots are excluded. Public result tables use explicit field whitelists. Fresh inference output is ignored by Git. See [release scope](PUBLIC_RELEASE_SCOPE.md).
+- Public release: branches directly from the already-public prototype. New raw live-site audits, role-call receipts, workflow identifiers, applicant screenshots, the full embedded evidence report, and four separate private-API source snapshots are excluded. Public result tables use explicit field whitelists. Fresh inference output is ignored by Git. See [release scope](../PUBLIC_RELEASE_SCOPE.md).
 
 **Installed Chrome verification remains pending.** The opened Chrome side panel still displayed the older interface and footer, so the Nava release has not yet been verified as loaded. Browser control cannot open `chrome://extensions` in this session. Preview success and automated tests do not prove installed extension operation, Nano availability, or live government-site completion. Load the Nava package using the README and record an installed run.
 
@@ -16,7 +16,7 @@ Updated October 7, 2026. Source history starts at `0a015b446a709095c9f0ebac9638f
 
 **Repository home page:** the renamed public repository now presents the measured quality/speed/cost scorecard, Jev bars, expandable WIC/IHSS charts, and direct links to detailed findings and complete attempt tables.
 
-![Cleaned home screen · simulated preview](assets/nava-extension-clean-home.jpg)
+![Cleaned home screen · simulated preview](../assets/nava-extension-clean-home.jpg)
 
 **Jev extension integration:** v0.13 includes a selectable local-companion runtime and hidden-input launcher. Twelve additional authenticated requests exercised the actual extension planner: initial batch 4/6 passes, current prompt 3/6. Both batches are retained. Required deferrals now surface as questions; installed Chrome remains pending.
 
