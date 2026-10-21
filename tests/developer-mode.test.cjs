@@ -76,3 +76,19 @@ test('the exported lists are read-only', () => {
     assert.equal(set.has('x'), false);
   }
 });
+
+test('forEach and the iterators do not hand out the private set', () => {
+  for (const set of [dev.EXPERIMENTAL_ACTIONS, dev.EXPERIMENTAL_VIEWS, dev.EXPERIMENTAL_MESSAGE_TYPES]) {
+    const before = [...set];
+    set.forEach((value, key, third) => {
+      assert.equal(third instanceof Set, false);
+      for (const method of ['add', 'delete', 'clear']) assert.equal(third[method], undefined, method);
+      assert.equal(third, set);
+    });
+    for (const iterator of [set.values(), set.keys(), set.entries(), set[Symbol.iterator]()]) {
+      assert.equal(iterator instanceof Set, false);
+      for (const method of ['add', 'delete', 'clear']) assert.equal(iterator[method], undefined, method);
+    }
+    assert.deepEqual([...set], before);
+  }
+});

@@ -13,15 +13,16 @@ const DEVELOPER_MODE_OFF_MESSAGE = 'Developer mode is off.';
  */
 function readonlySet(items) {
   const inner = new Set(items);
-  return /** @type {ReadonlySet<string>} */ (/** @type {unknown} */ (Object.freeze({
+  const view = /** @type {ReadonlySet<string>} */ (/** @type {unknown} */ (Object.freeze({
     has: (value) => inner.has(value),
     get size() { return inner.size; },
-    forEach: (callback, thisArg) => inner.forEach((value) => callback.call(thisArg, value, value, inner)),
+    forEach: (callback, thisArg) => inner.forEach((value) => callback.call(thisArg, value, value, view)),
     values: () => inner.values(),
     keys: () => inner.keys(),
     entries: () => inner.entries(),
     [Symbol.iterator]: () => inner.values(),
   })));
+  return view;
 }
 
 /** Dispatcher click action names, submit form ids and change-handler element ids of the experimental features. */
