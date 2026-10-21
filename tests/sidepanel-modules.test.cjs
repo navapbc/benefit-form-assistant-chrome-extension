@@ -901,3 +901,21 @@ test('with developer mode off the queue runs one application at a time; with it 
   await on.release();
   assert.equal(on.maxRunning(), 3);
 });
+
+test('changing the applied planner provider resets the runtime status; an unchanged provider leaves it', async () => {
+  const off = liveAgentRuntime({ developerMode: false, stored: jevProvider });
+  off.state.agentProvider = jevProvider;
+  await off.runtime.restoreAgentProvider();
+  assert.equal(off.state.agentRuntime.status, 'checking');
+  assert.deepEqual(await off.runtime.prepareAgentRuntime(), { status: 'ready' }, 'Nano is prepared rather than returning early');
+  assert.match(off.state.agentRuntime.message, /Test is ready/);
+
+  off.state.developerMode = true;
+  await off.runtime.restoreAgentProvider();
+  assert.deepEqual(off.state.agentProvider, jevProvider);
+  assert.equal(off.state.agentRuntime.status, 'checking');
+
+  off.state.agentRuntime = { status: 'ready', message: 'kept' };
+  await off.runtime.restoreAgentProvider();
+  assert.deepEqual(off.state.agentRuntime, { status: 'ready', message: 'kept' });
+});

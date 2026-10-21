@@ -80,19 +80,25 @@ function create(deps) {
     }
   }
 
+  /** Applies a provider; a different one invalidates the prepared runtime so the next prepare starts it. */
+  function applyProvider(next) {
+    const changed = JSON.stringify(next) !== JSON.stringify(state.agentProvider);
+    state.agentProvider = next;
+    agentPlanner.configure(next);
+    if (changed) state.agentRuntime = { status: 'checking', message: '' };
+  }
+
   async function restoreAgentProvider() {
     if (previewMode || !agentPlanner?.configure) return;
     if (!state.developerMode) {
       // Gemini Nano only. A stored experimental provider stays in storage for when developer mode is turned on again.
-      state.agentProvider = { kind: 'chrome-local' };
-      agentPlanner.configure(state.agentProvider);
+      applyProvider({ kind: 'chrome-local' });
       return;
     }
     let stored = null;
     try {
       stored = (await chrome.storage.session.get(AGENT_PROVIDER_STORAGE_KEY))[AGENT_PROVIDER_STORAGE_KEY] || null;
-      state.agentProvider = stored || { kind: 'chrome-local' };
-      agentPlanner.configure(state.agentProvider);
+      applyProvider(stored || { kind: 'chrome-local' });
     } catch {
       state.agentProvider = { kind: 'chrome-local' };
       agentPlanner.configure(state.agentProvider);
