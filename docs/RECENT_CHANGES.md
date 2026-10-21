@@ -2,11 +2,26 @@
 
 High-level notes on what changed in the extension's code and tooling, newest first. For tester-facing release notes see [RELEASE_NOTES_v0.16.md](RELEASE_NOTES_v0.16.md); for what is still to do see [TODO.md](TODO.md). The extension's version is still 0.16.0; these changes did not alter form-filling behavior.
 
+## October 21, 2026 (latest): open-source readiness
+
+**Licensing and community files** ([PR 15](https://github.com/navapbc/benefit-form-assistant-chrome-extension/pull/15))
+- Apache-2.0 `LICENSE` (Copyright 2026 Nava PBC), `"license"` in `package.json`, and `LICENSE` in the release package. Legal has not yet confirmed the license choice (see [TODO.md](TODO.md#open-source-readiness)).
+- Added `SECURITY.md` (private reporting through GitHub, hardening checklist), `CODE_OF_CONDUCT.md`, `.github/dependabot.yml`, a PR template and issue templates.
+
+**No hardcoded infrastructure**
+- `DIRECTORY_URL` in `shared/directory-config.mjs` is now empty. `loadDirectoryUrl()` reads it from the gitignored `shared/directory-config.local.mjs`, and the directory client accepts an async default-address loader (`shared/participant-directory.mjs`) so the panel needs no top-level `await`. With no address the directory screen says it is not set up and shows no sign-in form.
+- Added `.env.example` (variable names only).
+- **Nava testers:** add `export const DIRECTORY_URL = '...'` to your existing `shared/directory-config.local.mjs`.
+
+**Reuse tooling and docs**
+- `npm run extension:key` generates a signing key (gitignored `*.pem`) and prints the manifest `key` line and `chrome-extension://<id>` origin for `ALLOWED_ORIGINS`. No key is committed; each fork makes its own.
+- [ADDING_A_SITE.md](ADDING_A_SITE.md) lists the files to change to point the extension at another site or program.
+
 ## October 21, 2026 (later): participant directory and a new start screen
 
 **Participant directory on Neon** ([change doc](changes/2026-10-21-add-participant-directory.md))
 - A Neon Function (`participant-api/`) lets a signed-in user find a participant by ID or name. Sign-in goes through the Function because Neon Auth rejects `chrome-extension://` origins. JWTs are checked for issuer and audience, and every query is filtered by the caller's organization through `directory_members`. Sign-up is closed.
-- The side panel gets sign-in and search (`shared/participant-directory.mjs`, `sidepanel/view-directory.mjs`). Tokens stay in `chrome.storage.session`. The address lives in `shared/directory-config.mjs`; the development test account is read from a gitignored `shared/directory-config.local.mjs`, so no credentials are committed to the public repo.
+- The side panel gets sign-in and search (`shared/participant-directory.mjs`, `sidepanel/view-directory.mjs`). Tokens stay in `chrome.storage.session`. No address ships in the repo: it comes from the gitignored `shared/directory-config.local.mjs` (see the open-source readiness entry above); the development test account is read from a gitignored `shared/directory-config.local.mjs`, so no credentials are committed to the public repo.
 - The sign-in route refuses foreign origins and non-JSON bodies and rate-limits attempts atomically per (email, address) pair, per address and per email (security-review findings).
 - Only this path needs a login. Typing details, sample clients and document upload do not.
 - The Function runs on the Neon `dev` branch. Its 7-day expiry was removed, so it stays until deleted (see [TODO.md](TODO.md#participant-directory-neon)).

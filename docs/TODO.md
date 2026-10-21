@@ -1,6 +1,20 @@
 # Follow-up work
 
-Things we decided to come back to. Add to the top of a section as you find more; move an item to [RECENT_CHANGES.md](RECENT_CHANGES.md) when it ships. Last updated October 21, 2026 (participant directory and start-screen items added).
+Things we decided to come back to. Add to the top of a section as you find more; move an item to [RECENT_CHANGES.md](RECENT_CHANGES.md) when it ships. Last updated October 21, 2026 (open-source readiness items added).
+
+## Open-source readiness
+
+Added October 21, 2026 while preparing this repo as a reusable Nava open-source template ([PR 15](https://github.com/navapbc/benefit-form-assistant-chrome-extension/pull/15)). Done: license, `SECURITY.md`, code of conduct, Dependabot, templates, no shipped directory address, `.env.example`, `npm run extension:key`, [ADDING_A_SITE.md](ADDING_A_SITE.md). Still open:
+
+- [ ] **Legal sign-off on Apache-2.0** and the "Copyright 2026 Nava PBC" line in `LICENSE`.
+- [ ] **Turn on GitHub private vulnerability reporting** for the repo; `SECURITY.md` sends reporters there. Add a `CODEOWNERS` file once the team handle is known.
+- [ ] **Check branch protection on `main`** (required reviews and the "Validate extension" check). It cannot be seen from the repo.
+- [ ] **Public-facing docs pass.** The README and `docs/` still read as an internal Nava prototype: team one-pagers, installed-test logs, and [the Jev/Eve plan](JEV_EVE_ALIGNMENT_PLAN.md), which discusses the private `navapbc/ai-chatbot` repo. Keep the Nava branding; decide which evidence and planning docs are public, and move the rest to `docs/archive/`. Links to the old `gobrando/...` repos should also go.
+- [ ] **Add a secret scanner to CI** (for example gitleaks), alongside Dependabot.
+- [ ] **A template site adapter and fixture.** [ADDING_A_SITE.md](ADDING_A_SITE.md) describes the steps; a minimal example adapter, playbook and `demo/fixtures` page would let a reuser copy instead of read.
+- [ ] **Narrow the manifest by default.** `optional_host_permissions` allows `https://*/*`, and the fixed hosts are the California sites. Decide whether the template ships with only localhost and the demo fixtures.
+- [ ] **Document the threat model** in one short page: what stays on the device, what leaves, and what is stored where. Pieces exist in [WORK_QUEUE_SECURITY_AND_RECOVERY.md](WORK_QUEUE_SECURITY_AND_RECOVERY.md) and [MODEL_PROVIDERS.md](MODEL_PROVIDERS.md).
+- [ ] **Decide the experimental CAPTCHA feature's place in a public template** (abuse risk and Chrome Web Store policy).
 
 ## Participant directory (Neon)
 
