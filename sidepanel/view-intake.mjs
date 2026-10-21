@@ -108,6 +108,11 @@ function create(deps) {
             <span class="choice-copy"><strong>Find by record ID</strong><small>Look up a connected client record.</small></span>
             <span class="chevron" aria-hidden="true">›</span>
           </button>
+          <button class="choice-button" type="button" data-action="choose-directory">
+            <span class="choice-icon" aria-hidden="true">DIR</span>
+            <span class="choice-copy"><strong>Find in the participant directory</strong><small>Search by name or ID. Needs a sign-in.</small></span>
+            <span class="chevron" aria-hidden="true">›</span>
+          </button>
           <button class="choice-button" type="button" data-action="choose-json">
             <span class="choice-icon" aria-hidden="true">{ }</span>
             <span class="choice-copy"><strong>Paste client JSON</strong><small>Use a prepared client record.</small></span>

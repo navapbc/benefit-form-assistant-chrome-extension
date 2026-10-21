@@ -265,7 +265,7 @@ test('the model-runtime notice explains preview, unavailable, and companion stat
 test('intake screens offer every client source and analyze only regular web pages', () => {
   const view = screens({ state: { activeTab: { url: 'chrome://extensions' }, participant: { firstName: 'Ana' } } });
   view.renderChoice();
-  assert.deepEqual(actionsOf(view.appRoot.innerHTML).filter((action) => action.startsWith('choose-')), ['choose-id', 'choose-json', 'choose-document']);
+  assert.deepEqual(actionsOf(view.appRoot.innerHTML).filter((action) => action.startsWith('choose-')), ['choose-id', 'choose-directory', 'choose-json', 'choose-document']);
   assert.match(view.appRoot.innerHTML, /data-action="configure-connector"/);
 
   view.renderPrograms();
@@ -296,4 +296,39 @@ test('application cards escape every text and attribute value that can come from
   assert.doesNotMatch(card, /<img/i);
   assert.doesNotMatch(card, /"><img/);
   assert.match(card, /&lt;img src=x onerror=alert\(1\)&gt;/);
+});
+
+test('directory screens: sign-in asks for address, email and password; the finder escapes names and encodes IDs', () => {
+  const directoryViews = require('../sidepanel/view-directory.mjs');
+  const state = { error: '', directory: { baseUrl: 'https://directory.example', email: 'ada@example.com', mode: 'name', query: '', results: null } };
+  const appRoot = { innerHTML: '' };
+  const view = directoryViews.create({ state, appRoot, format, renderError: () => '', devTestAccount: { email: 'dev@example.com', password: 'pw<1>' } });
+
+  view.renderDirectorySignIn();
+  assert.match(appRoot.innerHTML, /id="directory-signin-form"/);
+  assert.doesNotMatch(appRoot.innerHTML, /directoryBase|Directory address/, 'the address comes from the code, not the user');
+  assert.match(appRoot.innerHTML, /type="password"/);
+  assert.match(appRoot.innerHTML, /data-action="choose-json"/);
+  assert.match(appRoot.innerHTML, /Development test account[\s\S]*dev@example\.com[\s\S]*pw&lt;1&gt;/);
+  assert.match(appRoot.innerHTML, /data-action="directory-use-test-account"/);
+
+  const production = directoryViews.create({ state, appRoot, format, renderError: () => '', devTestAccount: null });
+  production.renderDirectorySignIn();
+  assert.doesNotMatch(appRoot.innerHTML, /Development test account|directory-use-test-account/);
+  view.renderDirectorySignIn();
+
+  view.renderDirectoryFind();
+  assert.doesNotMatch(appRoot.innerHTML, /No participants matched/);
+  assert.match(appRoot.innerHTML, /Signed in as ada@example\.com/);
+
+  state.directory.results = [];
+  view.renderDirectoryFind();
+  assert.match(appRoot.innerHTML, /No participants matched/);
+
+  const hostile = '"><img src=x onerror=alert(1)>';
+  state.directory.results = [{ recordId: 'a/b c', firstName: hostile, lastName: 'Lovelace' }];
+  state.directory.query = hostile;
+  view.renderDirectoryFind();
+  assert.doesNotMatch(appRoot.innerHTML, /<img src=x/);
+  assert.match(appRoot.innerHTML, /data-id="a%2Fb%20c"/);
 });

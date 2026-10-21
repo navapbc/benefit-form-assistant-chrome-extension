@@ -6,12 +6,15 @@ import * as workQueueEngine from '../shared/work-queue-engine.mjs';
 import * as programCatalog from '../shared/program-catalog.mjs';
 import * as recertificationEngine from '../shared/recertification-engine.mjs';
 import * as demoConnectorData from '../shared/demo-connector-data.mjs';
+import * as participantDirectoryModule from '../shared/participant-directory.mjs';
+import { DIRECTORY_URL, DEV_TEST_ACCOUNT } from '../shared/directory-config.mjs';
 import * as panelFormat from './panel-format.mjs';
 import * as applicationPolicy from './application-policy.mjs';
 import * as scanAnalysis from './scan-analysis.mjs';
 import * as runControlModule from './run-control.mjs';
 import * as documentParserModule from './document-parser.mjs';
 import * as previewRuntimeModule from './preview-runtime.mjs';
+import * as previewDirectory from './preview-directory.mjs';
 import * as extensionMessagingModule from './extension-messaging.mjs';
 import * as coordinatorSyncModule from './coordinator-sync.mjs';
 import * as coordinatorMergeModule from './coordinator-merge.mjs';
@@ -26,6 +29,7 @@ import * as automaticRunsModule from './automatic-runs.mjs';
 import * as recertificationCaseloadModule from './recertification-caseload.mjs';
 import * as connectorViewsModule from './view-connector.mjs';
 import * as intakeViewsModule from './view-intake.mjs';
+import * as directoryViewsModule from './view-directory.mjs';
 import * as recertificationViewsModule from './view-recertification.mjs';
 import * as applicationViewsModule from './view-applications.mjs';
 import * as reviewViewsModule from './view-review.mjs';
@@ -91,6 +95,7 @@ const state = {
   recertificationWorkspace: {},
   currentRecertificationId: '',
   recertificationSource: '',
+  directory: { configured: false, baseUrl: '', signedIn: false, email: '', mode: 'name', query: '', results: null },
 };
 
 const captchaAuthorizations = new Set(); // This window/run only, never a persisted blanket grant.
@@ -111,6 +116,11 @@ const PREVIEW_RAW_RECORD = {
     attributes: demoConnectorData.recordAttributes(new Date().toISOString()),
   }],
 };
+
+// The participant directory: the only intake path that needs a sign-in. The preview simulates it in memory.
+const directory = participantDirectoryModule.create(previewMode
+  ? { storage: previewDirectory.memoryStorage(), fetchImpl: previewDirectory.previewDirectoryFetch(demoConnectorData.CLIENT_RECORDS), defaultBaseUrl: 'https://directory.preview.invalid' }
+  : { storage: { local: chrome.storage.local, session: chrome.storage.session }, defaultBaseUrl: DIRECTORY_URL });
 
 // Deps that most panel modules share.
 const panelBase = {
@@ -362,6 +372,7 @@ const intakeViews = intakeViewsModule.create({
   connectorProvider: connectorViews.connectorProvider,
   connectorSourceId: connectorViews.connectorSourceId,
 });
+const directoryViews = directoryViewsModule.create({ ...viewBase, devTestAccount: DEV_TEST_ACCOUNT });
 const recertificationViews = recertificationViewsModule.create({
   ...viewBase,
   recertificationEngine,
@@ -377,6 +388,7 @@ const applicationViews = applicationViewsModule.create({
 const reviewViews = reviewViewsModule.create({ ...viewBase, renderDashboard: applicationViews.renderDashboard });
 const { renderProviderCatalog, renderConnectorSetup, renderConnectorMapping, renderConnectorRecordReview } = connectorViews;
 const { renderChoice, renderRecordId, renderJsonImport, renderDocumentUpload, renderDocumentReview, renderPrograms } = intakeViews;
+const { renderDirectorySignIn, renderDirectoryFind } = directoryViews;
 const { renderRecertifications, renderRecertificationDetail } = recertificationViews;
 const { renderDashboard, renderHandoff } = applicationViews;
 const { renderQuestions, renderReview } = reviewViews;
@@ -451,6 +463,8 @@ function render() {
     'record-review': renderConnectorRecordReview,
     record: renderRecordId,
     json: renderJsonImport,
+    'directory-signin': renderDirectorySignIn,
+    directory: renderDirectoryFind,
     document: renderDocumentUpload,
     'document-review': renderDocumentReview,
     programs: renderPrograms,
@@ -509,6 +523,8 @@ const recertificationActions = recertificationActionsModule.create({
 });
 const intakeActions = intakeActionsModule.create({
   ...actionBase,
+  directory,
+  devTestAccount: DEV_TEST_ACCOUNT,
   DEMO_RECORDS,
   parseDocument,
   clientSummary,
@@ -586,6 +602,7 @@ async function bootstrap() {
   try {
     await restoreConnector();
     await restore();
+    state.directory = { ...state.directory, ...(await directory.status()) };
     await restorePlannerBase();
     await restoreAgentProvider();
     state.activeTab = await getActiveTab();

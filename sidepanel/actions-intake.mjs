@@ -13,6 +13,9 @@ const control = (id) => /** @type {HTMLInputElement & HTMLSelectElement} */ (doc
  *   canonical client values.
  * - canonicalHomeView(), recordAudit(type, application, details): the home screen and the audit log.
  * - prepareAgentRuntime(), scanTab(tab, options), openSelectedPrograms(values), enqueueApplicationBatch(ids): starting applications.
+ * - directory: the participant directory client (shared/participant-directory.mjs); decoded(value): the data-attribute decoder.
+ * - currentUiSignal(): aborts a directory request when the screen is left.
+ * - devTestAccount: the development test account the sign-in screen offers to fill in, or null.
  */
 function create(deps) {
   const {
@@ -40,6 +43,10 @@ function create(deps) {
     scanTab,
     openSelectedPrograms,
     enqueueApplicationBatch,
+    directory,
+    decoded,
+    currentUiSignal,
+    devTestAccount,
   } = deps;
 
   async function lookupRecord(recordId, uiToken) {
@@ -60,6 +67,91 @@ function create(deps) {
     state.activeTab = activeTab;
     state.view = 'programs';
     await persist();
+  }
+
+  // ---- Participant directory: the only intake path that needs a sign-in ----
+
+  async function refreshDirectoryState(patch = {}) {
+    state.directory = { ...state.directory, ...(await directory.status()), ...patch };
+  }
+
+  /** Sends the user back to the sign-in screen when the directory says the session is over; rethrows anything else. */
+  async function directoryFailure(error) {
+    if (error?.name !== 'DirectoryAuthError') throw error;
+    await refreshDirectoryState({ results: null });
+    state.view = 'directory-signin';
+    state.error = error.message;
+  }
+
+  async function chooseDirectory() {
+    await refreshDirectoryState({ results: null });
+    state.view = state.directory.signedIn ? 'directory' : 'directory-signin';
+  }
+
+  async function submitDirectorySignIn({ form, uiToken }) {
+    const data = new FormData(form);
+    setBusy('Signing in…');
+    await directory.signIn(data.get('directoryEmail'), data.get('directoryPassword'), { signal: currentUiSignal() });
+    assertUiGeneration(uiToken);
+    await refreshDirectoryState({ results: null, query: '' });
+    state.view = 'directory';
+  }
+
+  function useDirectoryTestAccount() {
+    if (!devTestAccount) return SKIP_FINAL_RENDER;
+    control('directory-email').value = devTestAccount.email;
+    control('directory-password').value = devTestAccount.password;
+    return SKIP_FINAL_RENDER;
+  }
+
+  async function openDirectoryRecord(id, uiToken) {
+    setBusy('Opening the participant…');
+    const record = await directory.findById(id, { signal: currentUiSignal() });
+    assertUiGeneration(uiToken);
+    if (!record) throw new Error('No participant has that ID.');
+    const activeTab = await getActiveTab();
+    assertUiGeneration(uiToken);
+    await commitParticipant(record);
+    assertUiGeneration(uiToken);
+    state.activeTab = activeTab;
+    state.view = 'programs';
+    await persist();
+  }
+
+  async function submitDirectoryFind({ form, uiToken }) {
+    const data = new FormData(form);
+    const mode = data.get('directoryMode') === 'id' ? 'id' : 'name';
+    const query = String(data.get('directoryQuery') ?? '').trim();
+    state.directory = { ...state.directory, mode, query };
+    try {
+      if (mode === 'id') {
+        await openDirectoryRecord(query, uiToken);
+        return;
+      }
+      setBusy('Searching the directory…');
+      const results = await directory.searchByName(query, { signal: currentUiSignal() });
+      assertUiGeneration(uiToken);
+      state.directory = { ...state.directory, results };
+      state.view = 'directory';
+    } catch (error) {
+      if (error?.name === 'UiCancelledError') throw error;
+      await directoryFailure(error);
+    }
+  }
+
+  async function pickDirectoryRecord({ button, uiToken }) {
+    try {
+      await openDirectoryRecord(decoded(button.dataset.id), uiToken);
+    } catch (error) {
+      if (error?.name === 'UiCancelledError') throw error;
+      await directoryFailure(error);
+    }
+  }
+
+  async function signOutDirectory() {
+    await directory.signOut();
+    await refreshDirectoryState({ results: null, query: '' });
+    state.view = 'choice';
   }
 
   async function returnHome() {
@@ -215,6 +307,10 @@ function create(deps) {
     ['home', returnHome],
     ['choose-id', showScreen('record')],
     ['choose-json', showScreen('json')],
+    ['choose-directory', chooseDirectory],
+    ['directory-pick', pickDirectoryRecord],
+    ['directory-use-test-account', useDirectoryTestAccount],
+    ['directory-sign-out', signOutDirectory],
     ['choose-document', openDocumentUpload],
     ['back-choice', showScreen('choice')],
     ['back-document', openDocumentUpload],
@@ -227,6 +323,8 @@ function create(deps) {
   const INTAKE_SUBMIT_ACTIONS = [
     ['record-form', submitRecordId],
     ['json-form', submitClientJson],
+    ['directory-signin-form', submitDirectorySignIn],
+    ['directory-find-form', submitDirectoryFind],
     ['document-form', submitClientDocument],
     ['document-review-form', submitDocumentReview],
     ['program-form', submitProgramChoice],
