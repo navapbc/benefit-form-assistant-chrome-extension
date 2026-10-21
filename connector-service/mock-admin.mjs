@@ -15,10 +15,25 @@ export async function readJson(request) {
   try { return JSON.parse(Buffer.concat(chunks).toString('utf8')); } catch { throw Object.assign(new Error('Body must be JSON.'), { status: 400 }); }
 }
 
+/**
+ * A write must come from a non-browser client (no Origin header: a browser always sends one on a cross-origin POST) or
+ * from an origin listed in `writeOrigins`. `Origin: null`, which sandboxed pages send, and every other origin are refused,
+ * and the body must be declared JSON so a cross-origin page cannot skip the preflight with a plain-text form post.
+ */
+function refuseWrite(request, writeOrigins) {
+  if (request.method === 'GET') return null;
+  const origin = request.headers.origin;
+  if (origin !== undefined && !writeOrigins.has(origin)) return [403, { ok: false, error: 'Origin not allowed to write.' }];
+  if (!/^application\/json(?:;|$)/i.test(request.headers['content-type'] || '')) return [415, { ok: false, error: 'Send application/json.' }];
+  return null;
+}
+
 /** [status, payload] for /v1/mock/* requests, or null when the path is not one of them. */
-export async function handleMock(request, url, store) {
+export async function handleMock(request, url, store, { writeOrigins = new Set() } = {}) {
   const match = url.pathname.match(/^\/v1\/mock\/(datasets|records)(?:\/([^/]+))?$/);
   if (!match) return null;
+  const refused = refuseWrite(request, writeOrigins);
+  if (refused) return refused;
   const [, collection, rawId] = match;
   const id = rawId && decodeURIComponent(rawId);
   try {

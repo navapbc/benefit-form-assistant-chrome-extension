@@ -7,6 +7,9 @@ const port = Number(process.env.PORT || 4789);
 const sourceId = String(demoConnectorData.FORM_ID);
 const schema = demoConnectorData.SCHEMA;
 
+// Origins (comma-separated, exact) whose browser pages may call the mock-only write routes. Empty by default: only
+// non-browser clients such as curl or a test can write.
+const writeOrigins = new Set((process.env.MOCK_WRITE_ORIGINS || '').split(',').map((origin) => origin.trim()).filter(Boolean));
 const store = await storeFromEnvironment();
 await store.seed();
 
@@ -58,7 +61,7 @@ const server = http.createServer(async (request, response) => {
   if (request.method === 'OPTIONS') return json(response, 204, {}, origin);
   const url = new URL(request.url, `http://${request.headers.host}`);
   // The only writes are the mock-only /v1/mock/* routes; the connector contract below is read-only.
-  const mock = await handleMock(request, url, store);
+  const mock = await handleMock(request, url, store, { writeOrigins });
   if (mock) return json(response, mock[0], mock[1], origin);
   if (request.method !== 'GET') return json(response, 405, { ok: false, error: 'Read-only mock: GET requests only.' }, origin);
 

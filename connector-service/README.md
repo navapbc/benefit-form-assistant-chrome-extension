@@ -50,6 +50,8 @@ POST /v1/mock/datasets             save a custom dataset { id, label, scenario?,
 PUT  /v1/mock/records/{recordId}   save a record { sourceId, attributes: { field_<n>: value } }
 ```
 
+Writes must send `Content-Type: application/json`. A request with an `Origin` header (a browser page) is refused unless that exact origin is listed in `MOCK_WRITE_ORIGINS` (comma-separated); `Origin: null` is always refused. Requests with no `Origin`, such as curl or the tests, can write.
+
 Preset datasets (`shared/mock-scenarios.mjs`) cannot be overwritten. To test against a database, set `MOCK_TEST_DATABASE_URL` when running `tests/mock-connector-store.test.cjs`.
 
 Then configure the extension with:

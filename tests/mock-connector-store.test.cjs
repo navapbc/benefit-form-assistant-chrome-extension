@@ -41,6 +41,23 @@ const call = async (base, route, init) => {
 };
 const send = (method, body) => ({ method, headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
 
+test('mock writes refuse browser origins that are not allow-listed, including Origin: null, and non-JSON bodies', async () => {
+  await withMock({ MOCK_STORE: 'memory', MOCK_WRITE_ORIGINS: 'http://127.0.0.1:9999' }, async (base) => {
+    const body = JSON.stringify({ sourceId: '99', attributes: { field_101: 'X' } });
+    const put = (headers) => fetch(`${base}/v1/mock/records/csrf-1`, { method: 'PUT', headers, body });
+    // Node's fetch lets a test set Origin, which a browser page could not forge but a sandboxed page can send as "null".
+    assert.equal((await put({ 'content-type': 'application/json', origin: 'null' })).status, 403);
+    assert.equal((await put({ 'content-type': 'application/json', origin: 'https://evil.example' })).status, 403);
+    assert.equal((await put({ 'content-type': 'application/json', origin: 'chrome-extension://someotherextension' })).status, 403);
+    assert.equal((await put({ 'content-type': 'text/plain' })).status, 415);
+    assert.equal((await put({})).status, 415);
+    assert.equal((await put({ 'content-type': 'application/json', origin: 'http://127.0.0.1:9999' })).status, 200);
+    assert.equal((await put({ 'content-type': 'application/json' })).status, 200, 'a non-browser client sends no Origin');
+    // Reads stay open to the connector's allowed origins; only writes are restricted.
+    assert.equal((await fetch(`${base}/v1/mock/datasets`, { headers: { origin: 'null' } })).status, 200);
+  });
+});
+
 function suite(label, environment, kind, cleanup) {
   test(`${label}: serves the demo record and preset scenarios`, async () => {
     await withMock(environment, async (base) => {
