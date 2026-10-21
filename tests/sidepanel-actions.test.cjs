@@ -114,6 +114,7 @@ function dispatchHarness(overrides = {}) {
       calls.push(['withNewApplicationRun', application.id, options]);
       return action('run-token');
     },
+    assertNoOtherRun: note('assertNoOtherRun'),
     withApplicationLease: async (application, action) => {
       calls.push(['withApplicationLease', application.id]);
       return action();
@@ -435,6 +436,17 @@ test('questions-form submission runs automatically from the dashboard or fills i
     assert.equal(harness.state.view, autoRun ? 'dashboard' : 'questions');
     assert.deepEqual(harness.calls.at(-2), ['assertUiGeneration', 3]);
     assert.deepEqual(harness.calls.at(-1), ['render']);
+  }
+});
+
+test('with another application running, submitted answers are refused on the questions screen before it is left', async () => {
+  for (const autoRun of [true, false]) {
+    const application = { id: 'wic', autoRun, analysis: { gaps: [{ fieldKey: 'f', label: 'F' }] } };
+    const refusing = (id) => { throw new Error(`Wait for the running application to stop first. (${id})`); };
+    const harness = dispatchHarness({ state: { apps: [application], currentAppId: 'wic', view: 'questions' }, stubs: { assertNoOtherRun: refusing } });
+    await assert.rejects(harness.onSubmit({ id: 'questions-form', fields: { 'answer-0': 'yes' } }, 3), { message: 'Wait for the running application to stop first. (wic)' });
+    assert.equal(harness.state.view, 'questions', `autoRun ${autoRun}`);
+    assert.equal(callNames(harness.calls).some((name) => ['render', 'withNewApplicationRun'].includes(name)), false, `autoRun ${autoRun}`);
   }
 });
 

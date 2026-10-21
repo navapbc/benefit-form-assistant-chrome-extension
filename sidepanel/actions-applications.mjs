@@ -238,6 +238,8 @@ function create(deps) {
   async function submitQuestionAnswers({ form }) {
     const application = state.apps.find((item) => item.id === state.currentAppId);
     if (!application) throw new Error('That application is no longer available.');
+    // Refuse here, before leaving the questions screen, when another application is running and developer mode is off.
+    assertNoOtherRun(application.id);
     const { userAssignments, unresolved } = answersFromQuestionsForm(application.analysis?.gaps || [], new FormData(form));
     if (application.autoRun) {
       state.view = 'dashboard';
