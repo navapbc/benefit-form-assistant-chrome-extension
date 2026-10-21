@@ -483,10 +483,9 @@ function directoryHarness({ signedIn = true, findById, searchByName, committed =
     searchByName: searchByName || (async () => []),
   };
   const harness = dispatchHarness({
-    state: { view: 'choice', directory: {} },
+    state: { view: 'choice', directory: {}, devTestAccount: { email: 'dev@example.com', password: 'pw-123' } },
     stubs: {
       directory,
-      devTestAccount: { email: 'dev@example.com', password: 'pw-123' },
       sampleClients: [{ id: 'complete', label: 'Complete record', payload: { record_id: 'sample-1', participant: { name: { first: 'Celeste' } } } }],
       welcome: { markSeen: async () => { marks.push('seen'); } },
       currentUiSignal: () => undefined,

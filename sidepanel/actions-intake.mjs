@@ -14,7 +14,7 @@ const control = (id) => /** @type {HTMLInputElement & HTMLSelectElement} */ (doc
  * - prepareAgentRuntime(), scanTab(tab, options), openSelectedPrograms(values), enqueueApplicationBatch(ids): starting applications.
  * - directory: the participant directory client (shared/participant-directory.mjs); decoded(value): the data-attribute decoder.
  * - currentUiSignal(): aborts a directory request when the screen is left.
- * - devTestAccount: the development test account the sign-in screen offers to fill in, or null.
+ * - state.devTestAccount: the development test account the sign-in screen offers to fill in, or null.
  * - sampleClients: the fictional sample clients ({ id, payload }); welcome: { markSeen() } for the welcome page.
  */
 function create(deps) {
@@ -45,7 +45,6 @@ function create(deps) {
     directory,
     decoded,
     currentUiSignal,
-    devTestAccount,
     sampleClients = [],
     welcome,
   } = deps;
@@ -85,9 +84,9 @@ function create(deps) {
   }
 
   function useDirectoryTestAccount() {
-    if (!devTestAccount) return SKIP_FINAL_RENDER;
-    control('directory-email').value = devTestAccount.email;
-    control('directory-password').value = devTestAccount.password;
+    if (!state.devTestAccount) return SKIP_FINAL_RENDER;
+    control('directory-email').value = state.devTestAccount.email;
+    control('directory-password').value = state.devTestAccount.password;
     return SKIP_FINAL_RENDER;
   }
 

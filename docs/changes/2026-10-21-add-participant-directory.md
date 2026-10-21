@@ -7,7 +7,7 @@ Added a login-gated participant directory: a Neon Function and Postgres tables, 
 - Added `participant-api/` (Hono Function): sign-in broker (`/auth/sign-in`, `/auth/token`, `/auth/sign-out`), `GET /participants/{id}` and `POST /participants/search`. Schema in `participant-api/schema.sql`, notes in `participant-api/README.md`.
 - Added `neon.ts` (Auth on, one function, 7-day expiry for non-default branches) and the `@neon/*`, `hono`, `jose` and `pg` dependencies.
 - Access control: JWT issuer and audience checks, a `directory_members` table keyed by the verified user, an `organization_id` filter on every query, closed sign-up, and a `participant_audit` table that records user, action and ID but no values.
-- Added `shared/participant-directory.mjs` (client with refresh, one retry on 401, fixed error messages, tokens in `chrome.storage.session`), `shared/directory-config.mjs` (address and development test account), and `sidepanel/view-directory.mjs`.
+- Added `shared/participant-directory.mjs` (client with refresh, one retry on 401, fixed error messages, tokens in `chrome.storage.session`), `shared/directory-config.mjs` (address, and a loader for the development test account from the gitignored `shared/directory-config.local.mjs`; release packages skip `*.local.mjs`), and `sidepanel/view-directory.mjs`.
 - Added a simulated directory for the extension-free preview (`sidepanel/preview-directory.mjs`).
 - Added a store behind the mock connector (`connector-service/store.mjs`, `schema.sql`, `migrate.mjs`) and preset scenarios in `shared/mock-scenarios.mjs`.
 - Added tests for the client, handlers, views and both stores; wrote [the Eve and Jev plan](../JEV_EVE_ALIGNMENT_PLAN.md) with the spike results.

@@ -52,7 +52,7 @@ function screens({ state: stateOverrides = {}, previewMode = false, running = []
     programCatalog,
     clientSummary,
     managedConnector,
-    directorySection: directoryViews.create({ state, format, devTestAccount: null }).directorySection,
+    directorySection: directoryViews.create({ state, format }).directorySection,
     sampleClients,
     connectorTitle: connector.connectorTitle,
     connectorProvider: connector.connectorProvider,
@@ -308,8 +308,8 @@ test('application cards escape every text and attribute value that can come from
 
 test('the directory card signs in, then searches; it escapes names and encodes IDs', () => {
   const directoryViews = require('../sidepanel/view-directory.mjs');
-  const state = { directory: { signedIn: false, email: '', query: '', results: null } };
-  const card = (devTestAccount = { email: 'dev@example.com', password: 'pw<1>' }) => directoryViews.create({ state, format, devTestAccount }).directorySection();
+  const state = { directory: { signedIn: false, email: '', query: '', results: null }, devTestAccount: { email: 'dev@example.com', password: 'pw<1>' } };
+  const card = () => directoryViews.create({ state, format }).directorySection();
 
   let html = card();
   assert.match(html, /Sign in to search for a client/);
@@ -318,7 +318,9 @@ test('the directory card signs in, then searches; it escapes names and encodes I
   assert.match(html, /type="password"/);
   assert.match(html, /Development test account[\s\S]*dev@example\.com[\s\S]*pw&lt;1&gt;/);
   assert.match(html, /data-action="directory-use-test-account"/);
-  assert.doesNotMatch(card(null), /Development test account|directory-use-test-account/);
+  state.devTestAccount = null;
+  assert.doesNotMatch(card(), /Development test account|directory-use-test-account/, 'no local account file means no note');
+  state.devTestAccount = { email: 'dev@example.com', password: 'pw<1>' };
 
   state.directory = { signedIn: true, email: 'ada@example.com', query: '', results: null };
   html = card();

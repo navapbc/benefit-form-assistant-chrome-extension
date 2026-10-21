@@ -39,8 +39,20 @@ ALLOWED_ORIGINS=chrome-extension://<extension-id> AUTH_ORIGIN=<the function's ht
 ```
 
 The panel does not ask for the address: it is `DIRECTORY_URL` in `shared/directory-config.mjs`. Update it when the Function
-moves (a new branch has a new URL). The same file holds `DEV_TEST_ACCOUNT`, a development login the sign-in screen shows
-with a fill-in button; set it to `null` to remove the note before any build that handles real participants.
+moves (a new branch has a new URL).
+
+### Development test account (local file, not in git)
+
+The repository is public, so the test account's email and password are **not committed**. To see the account and a
+**Fill these in** button on the sign-in card, create a gitignored file next to the config:
+
+```js
+// shared/directory-config.local.mjs  (matched by .gitignore; never packaged)
+export const DEV_TEST_ACCOUNT = { email: 'you@example.com', password: 'the-password' };
+```
+
+Without that file the card shows no note. Ask a teammate for the current account, or create one on the branch
+(`neon neon-auth user create`, then add the user to `directory_members`). Release packages skip every `*.local.mjs` file.
 
 `ALLOWED_ORIGINS` is a comma-separated list of extension origins. An unpacked extension's ID comes from its folder path,
 so every tester has a different one unless the manifest carries a fixed `key`. Add each ID, or fix the ID first.

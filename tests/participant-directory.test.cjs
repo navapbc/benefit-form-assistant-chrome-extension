@@ -184,10 +184,30 @@ test('the address provided by the code is used without saving one, and a saved a
   assert.equal((await client.config()).baseUrl, 'https://other.example');
 });
 
-test('the shipped config names an https directory and the dev test account is a plain email and password', () => {
+test('the shipped config names an https directory and contains no account credentials', () => {
   const config = require('../shared/directory-config.mjs');
   assert.equal(directoryModule.normalizeBase(config.DIRECTORY_URL), config.DIRECTORY_URL);
-  assert.match(config.DEV_TEST_ACCOUNT.email, /^[^@\s]+@[^@\s]+$/);
-  assert.ok(config.DEV_TEST_ACCOUNT.password.length >= 8);
-  assert.ok(Object.isFrozen(config.DEV_TEST_ACCOUNT));
+  assert.equal('DEV_TEST_ACCOUNT' in config, false, 'the repository is public: the test account lives in a gitignored local file');
+  const fs = require('node:fs');
+  const path = require('node:path');
+  assert.doesNotMatch(fs.readFileSync(path.join(__dirname, '../shared/directory-config.mjs'), 'utf8'), /password:\s*'/);
+});
+
+test('the dev test account loads from the local file, and anything missing or malformed means no account', async () => {
+  const { loadDevTestAccount } = require('../shared/directory-config.mjs');
+  const account = await loadDevTestAccount(async (specifier) => {
+    assert.equal(specifier, './directory-config.local.mjs');
+    return { DEV_TEST_ACCOUNT: { email: 'dev@example.com', password: 'pw-123', extra: 'dropped' } };
+  });
+  assert.deepEqual(account, { email: 'dev@example.com', password: 'pw-123' });
+  assert.ok(Object.isFrozen(account));
+  for (const [label, importer] of [
+    ['file missing', async () => { throw new TypeError('Failed to fetch dynamically imported module'); }],
+    ['no export', async () => ({})],
+    ['wrong types', async () => ({ DEV_TEST_ACCOUNT: { email: 1, password: 2 } })],
+    ['empty values', async () => ({ DEV_TEST_ACCOUNT: { email: '', password: '' } })],
+    ['null export', async () => ({ DEV_TEST_ACCOUNT: null })],
+  ]) {
+    assert.equal(await loadDevTestAccount(importer), null, label);
+  }
 });

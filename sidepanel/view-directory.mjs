@@ -3,15 +3,16 @@
 
 /**
  * deps:
- * - state: panel state (state.directory holds the status, query and results).
+ * - state: panel state (state.directory holds the status, query and results; state.devTestAccount is the optional
+ *   { email, password } shown as a development note with a fill-in button, null to show nothing).
  * - format: panel-format helpers.
- * - devTestAccount: { email, password } shown as a development note with a fill-in button, or null to show nothing.
  */
 function create(deps) {
-  const { state, format, devTestAccount = null } = deps;
+  const { state, format } = deps;
   const { escapeHtml } = format;
 
   function renderDevAccountNote() {
+    const devTestAccount = state.devTestAccount;
     if (!devTestAccount) return '';
     return `
       <div class="notice" role="note" style="margin-bottom:16px">

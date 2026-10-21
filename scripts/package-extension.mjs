@@ -4,7 +4,7 @@ import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { zipSync } from 'fflate';
 import { findUnshippedImports } from './check-modules.mjs';
-import { SHIPPED } from './shipped-files.mjs';
+import { SHIPPED, LOCAL_ONLY } from './shipped-files.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const EXCLUDED_NAMES = new Set(['.DS_Store']);
@@ -18,7 +18,7 @@ function shippedFiles(path) {
   const absolute = join(root, path);
   if (!existsSync(absolute)) return [];
   if (statSync(absolute).isFile()) return [path];
-  return readdirSync(absolute).sort().flatMap((name) => (EXCLUDED_NAMES.has(name) ? [] : shippedFiles(join(path, name))));
+  return readdirSync(absolute).sort().flatMap((name) => (EXCLUDED_NAMES.has(name) || LOCAL_ONLY.test(name) ? [] : shippedFiles(join(path, name))));
 }
 
 function requireFile(file, source) {

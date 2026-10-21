@@ -7,7 +7,7 @@ import * as programCatalog from '../shared/program-catalog.mjs';
 import * as recertificationEngine from '../shared/recertification-engine.mjs';
 import * as demoConnectorData from '../shared/demo-connector-data.mjs';
 import * as participantDirectoryModule from '../shared/participant-directory.mjs';
-import { DIRECTORY_URL, DEV_TEST_ACCOUNT } from '../shared/directory-config.mjs';
+import { DIRECTORY_URL, loadDevTestAccount } from '../shared/directory-config.mjs';
 import * as panelFormat from './panel-format.mjs';
 import * as applicationPolicy from './application-policy.mjs';
 import * as scanAnalysis from './scan-analysis.mjs';
@@ -97,6 +97,7 @@ const state = {
   recertificationWorkspace: {},
   currentRecertificationId: '',
   recertificationSource: '',
+  devTestAccount: null, // from the gitignored shared/directory-config.local.mjs, loaded at start-up
   directory: { configured: false, baseUrl: '', signedIn: false, email: '', query: '', results: null },
 };
 
@@ -375,7 +376,7 @@ const connectorViews = connectorViewsModule.create({
   managedConnector,
   renderRecordId: () => intakeViews.renderRecordId(),
 });
-const directoryViews = directoryViewsModule.create({ state, format: panelFormat, devTestAccount: DEV_TEST_ACCOUNT });
+const directoryViews = directoryViewsModule.create({ state, format: panelFormat });
 const welcomeViews = welcomeViewsModule.create({ appRoot });
 const intakeViews = intakeViewsModule.create({
   ...viewBase,
@@ -541,7 +542,6 @@ const recertificationActions = recertificationActionsModule.create({
 const intakeActions = intakeActionsModule.create({
   ...actionBase,
   directory,
-  devTestAccount: DEV_TEST_ACCOUNT,
   sampleClients: SAMPLE_CLIENTS,
   welcome,
   DEMO_RECORDS,
@@ -622,6 +622,7 @@ async function bootstrap() {
     await restoreConnector();
     await restore();
     state.directory = { ...state.directory, ...(await directory.status()) };
+    state.devTestAccount = await loadDevTestAccount();
     await restorePlannerBase();
     await restoreAgentProvider();
     state.activeTab = await getActiveTab();
