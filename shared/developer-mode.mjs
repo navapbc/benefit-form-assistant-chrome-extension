@@ -6,8 +6,26 @@
 const STORAGE_KEY = 'nava:developer-mode';
 const DEVELOPER_MODE_OFF_MESSAGE = 'Developer mode is off.';
 
+/**
+ * A read-only view of a set: only the reading methods exist, so no importer can add or remove an entry.
+ * @param {string[]} items
+ * @returns {ReadonlySet<string>}
+ */
+function readonlySet(items) {
+  const inner = new Set(items);
+  return /** @type {ReadonlySet<string>} */ (/** @type {unknown} */ (Object.freeze({
+    has: (value) => inner.has(value),
+    get size() { return inner.size; },
+    forEach: (callback, thisArg) => inner.forEach((value) => callback.call(thisArg, value, value, inner)),
+    values: () => inner.values(),
+    keys: () => inner.keys(),
+    entries: () => inner.entries(),
+    [Symbol.iterator]: () => inner.values(),
+  })));
+}
+
 /** Dispatcher click action names, submit form ids and change-handler element ids of the experimental features. */
-const EXPERIMENTAL_ACTIONS = Object.freeze(new Set([
+const EXPERIMENTAL_ACTIONS = readonlySet([
   'try-captcha',
   'open-handoff',
   'accept-handoff',
@@ -36,10 +54,10 @@ const EXPERIMENTAL_ACTIONS = Object.freeze(new Set([
   'recertification-intake-form',
   'handoff-form',
   'connector-provider',
-]));
+]);
 
 /** `state.view` values that only exist for the experimental features. */
-const EXPERIMENTAL_VIEWS = Object.freeze(new Set([
+const EXPERIMENTAL_VIEWS = readonlySet([
   'connector',
   'providers',
   'connector-mapping',
@@ -48,17 +66,17 @@ const EXPERIMENTAL_VIEWS = Object.freeze(new Set([
   'recertifications',
   'recertification-detail',
   'handoff',
-]));
+]);
 
 /** Service worker message types that only serve the experimental features. */
-const EXPERIMENTAL_MESSAGE_TYPES = Object.freeze(new Set([
+const EXPERIMENTAL_MESSAGE_TYPES = readonlySet([
   'NAVA_CAPTCHA_COMMAND',
   'DISCOVER_CONNECTOR',
   'SAVE_CONNECTOR',
   'RESET_CONNECTOR',
   'LOOKUP_RECORD',
   'LIST_RECERTIFICATIONS',
-]));
+]);
 
 /**
  * Whether developer mode is on. Never throws.
@@ -80,8 +98,8 @@ async function readDeveloperMode(storage) {
  * @param {boolean} enabled
  * @returns {Promise<void>}
  */
-function writeDeveloperMode(storage, enabled) {
-  return storage.set({ [STORAGE_KEY]: Boolean(enabled) });
+async function writeDeveloperMode(storage, enabled) {
+  await storage.set({ [STORAGE_KEY]: Boolean(enabled) });
 }
 
 /** @param {unknown} name */

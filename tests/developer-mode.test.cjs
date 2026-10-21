@@ -30,6 +30,7 @@ test('write stores a strict boolean', async () => {
 test('the experimental lists contain exactly the spec\'s items', () => {
   const clicks = ['try-captcha', 'open-handoff', 'accept-handoff', 'pause', 'save-planner', 'disconnect-planner', 'client-link', 'choose-id', 'configure-connector', 'back-providers', 'select-provider', 'back-connector', 'local-connector-settings', 'reset-connector', 'back-record-id', 'confirm-connector-record', 'open-recertifications', 'back-recertifications', 'review-recertification', 'draft-recertification-outreach', 'complete-recertification-outreach', 'prepare-recertification'];
   const submits = ['record-form', 'connector-form', 'connector-mapping-form', 'recertification-intake-form', 'handoff-form'];
+  assert.deepEqual([...dev.EXPERIMENTAL_ACTIONS].sort(), [...clicks, ...submits, 'connector-provider'].sort());
   for (const name of [...clicks, ...submits, 'connector-provider']) {
     assert.equal(dev.EXPERIMENTAL_ACTIONS.has(name), true, name);
     assert.equal(dev.isExperimentalAction(name), true, name);
@@ -47,6 +48,7 @@ test('message types', () => {
 });
 
 test('views', () => {
+  assert.deepEqual([...dev.EXPERIMENTAL_VIEWS].sort(), ['connector', 'connector-mapping', 'handoff', 'providers', 'recertification-detail', 'recertifications', 'record', 'record-review']);
   for (const view of ['connector', 'providers', 'connector-mapping', 'record-review', 'record', 'recertifications', 'recertification-detail', 'handoff']) {
     assert.equal(dev.isExperimentalView(view), true, view);
   }
@@ -54,4 +56,23 @@ test('views', () => {
     assert.equal(dev.isExperimentalView(view), false, view);
   }
   assert.equal(dev.DEVELOPER_MODE_OFF_MESSAGE, 'Developer mode is off.');
+});
+
+test('write rejects instead of throwing for a missing or invalid store', async () => {
+  await assert.rejects(dev.writeDeveloperMode(undefined, true));
+  await assert.rejects(dev.writeDeveloperMode({}, true));
+});
+
+test('the exported lists are read-only', () => {
+  for (const set of [dev.EXPERIMENTAL_ACTIONS, dev.EXPERIMENTAL_VIEWS, dev.EXPERIMENTAL_MESSAGE_TYPES]) {
+    const before = [...set];
+    for (const method of ['add', 'delete', 'clear']) {
+      assert.equal(set[method], undefined, method);
+      assert.throws(() => set[method]('x'));
+    }
+    assert.equal(Object.isFrozen(set), true);
+    assert.deepEqual([...set], before);
+    assert.equal(set.size, before.length);
+    assert.equal(set.has('x'), false);
+  }
 });
