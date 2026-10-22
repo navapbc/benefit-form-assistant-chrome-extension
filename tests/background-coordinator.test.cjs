@@ -41,16 +41,18 @@ function storageArea(initial = {}) {
   };
 }
 
-async function backgroundHarness({ captchaServiceFactory = () => ({ handle: async () => { throw new Error('Unexpected CAPTCHA command'); }, cancelApplications() {} }) } = {}) {
-  const local = storageArea();
+// Developer mode is on unless a test says otherwise: the experimental routes below are the behavior under test.
+async function backgroundHarness({ captchaServiceFactory = () => ({ handle: async () => { throw new Error('Unexpected CAPTCHA command'); }, cancelApplications() {}, cancelAll() {} }), developerMode = true } = {}) {
+  const local = storageArea(developerMode === null ? {} : { 'nava:developer-mode': developerMode });
   const session = storageArea();
   let messageListener;
+  let changedListener;
   let removedListener;
   let tabMessageHandler = async () => ({ ok: true });
   const tabMessages = [];
   const tabMessageWaiters = [];
   const chrome = {
-    storage: { local, session },
+    storage: { local, session, onChanged: { addListener(listener) { changedListener = listener; } } },
     runtime: {
       id: EXTENSION_ID,
       onInstalled: { addListener() {} },
@@ -77,6 +79,7 @@ async function backgroundHarness({ captchaServiceFactory = () => ({ handle: asyn
   return {
     local,
     session,
+    changed(changes, area) { return changedListener(changes, area); },
     removedListener,
     tabMessages,
     onTabMessage(handler) { tabMessageHandler = handler; },
@@ -206,6 +209,7 @@ test('background.js only starts the worker, and the worker imports every service
     "import * as clientSession from './client-session.mjs';",
     "import * as applicationRuns from './application-runs.mjs';",
     "import * as connectorClient from './connector-client.mjs';",
+    "import * as developerMode from '../shared/developer-mode.mjs';",
     "import { createCaptchaService as defaultCreateCaptchaService } from './captcha-service.mjs';",
   ]);
 });
@@ -642,11 +646,11 @@ test('every routed message type answers exactly once and holds the channel open 
   }
 });
 
-test('record lookups reject a malformed ID synchronously and otherwise answer from the demo connector', async () => {
+test('record lookups reject a malformed ID and otherwise answer from the demo connector', async () => {
   const harness = await backgroundHarness();
   const invalid = harness.dispatch({ type: 'LOOKUP_RECORD', recordId: '../339619' });
-  assert.equal(invalid.returned, false);
-  assert.deepEqual(invalid.responses, [{ ok: false, record: null, message: 'Enter a valid client record ID.' }]);
+  assert.equal(invalid.returned, true);
+  assert.deepEqual(await waitForResponses(invalid.responses), [{ ok: false, record: null, message: 'Enter a valid client record ID.' }]);
 
   const found = harness.dispatch({ type: 'LOOKUP_RECORD', recordId: ' 339619 ' });
   assert.equal(found.returned, true);
@@ -941,27 +945,34 @@ test('only the side panel can use the session, run, and connector routes', async
 test('a non-side-panel sender cannot write, lease, or save a connector', async () => {
   const harness = await backgroundHarness();
   const contentScript = { id: EXTENSION_ID, tab: { id: 4 }, url: 'https://benefitscal.com/' };
-  for (const type of ['CLAIM_CLIENT_SESSION', 'PERSIST_ASSISTANT_STATE', 'CLEAR_ASSISTANT_STATE', 'ACQUIRE_APPLICATION_LEASE', 'EXECUTE_APPLICATION_COMMAND', 'REVOKE_APPLICATION_RUN', 'SAVE_CONNECTOR', 'DISCOVER_CONNECTOR', 'OPEN_PROGRAMS']) {
+  for (const type of ['CLAIM_CLIENT_SESSION', 'PERSIST_ASSISTANT_STATE', 'CLEAR_ASSISTANT_STATE', 'ACQUIRE_APPLICATION_LEASE', 'EXECUTE_APPLICATION_COMMAND', 'REVOKE_APPLICATION_RUN', 'OPEN_PROGRAMS']) {
     const responses = [];
     assert.equal(harness.dispatchAs({ type }, contentScript, responses), false, type);
     await settle(3);
     assert.deepEqual(responses, [], type);
   }
-  assert.deepEqual(harness.local.data, {});
+  // Experimental types read the setting first, so the channel is open until it is closed with no answer.
+  for (const type of ['SAVE_CONNECTOR', 'DISCOVER_CONNECTOR']) {
+    const responses = [];
+    assert.equal(harness.dispatchAs({ type }, contentScript, responses), true, type);
+    await settle(3);
+    assert.deepEqual(responses, [undefined], type);
+  }
+  assert.deepEqual(harness.local.data, { 'nava:developer-mode': true });
 });
 
 test('the service worker registers every Chrome listener synchronously and nothing the worker imports awaits at top level', async () => {
   const registered = [];
   const addListener = (name) => ({ addListener() { registered.push(name); } });
   const fakeChrome = {
-    storage: { local: storageArea(), session: storageArea() },
+    storage: { local: storageArea(), session: storageArea(), onChanged: addListener('storage.onChanged') },
     runtime: { id: EXTENSION_ID, onInstalled: addListener('onInstalled'), onStartup: addListener('onStartup'), onMessage: addListener('onMessage') },
     tabs: { onRemoved: addListener('tabs.onRemoved') },
     sidePanel: { async setPanelBehavior() {} },
   };
   const { startServiceWorker } = await import(pathToFileURL(path.join(root, 'background/service-worker.mjs')).href);
-  startServiceWorker({ chrome: fakeChrome, createCaptchaService: () => ({ handle: async () => ({}), cancelApplications() {} }) });
-  assert.deepEqual(registered.sort(), ['onInstalled', 'onMessage', 'onStartup', 'tabs.onRemoved']);
+  startServiceWorker({ chrome: fakeChrome, createCaptchaService: () => ({ handle: async () => ({}), cancelApplications() {}, cancelAll() {} }) });
+  assert.deepEqual(registered.sort(), ['onInstalled', 'onMessage', 'onStartup', 'storage.onChanged', 'tabs.onRemoved']);
 
   // The whole static import closure, parsed (not scanned line by line): shared engines and classic files count too.
   const { findTopLevelAwait } = await import(pathToFileURL(path.join(root, 'scripts/check-modules.mjs')).href);
@@ -976,13 +987,13 @@ test('each service worker uses the chrome it is given, so two workers never shar
       let onMessage;
       const noop = { addListener() {} };
       const fake = {
-        storage: { local: storageArea(), session: storageArea() },
+        storage: { local: storageArea(), session: storageArea(), onChanged: noop },
         runtime: { id: EXTENSION_ID, onInstalled: noop, onStartup: noop, onMessage: { addListener(listener) { onMessage = listener; } } },
         tabs: { onRemoved: noop },
         sidePanel: { async setPanelBehavior() {} },
       };
       const { startServiceWorker } = await import(pathToFileURL(path.join(root, 'background/service-worker.mjs')).href);
-      startServiceWorker({ chrome: fake, createCaptchaService: () => ({ handle: async () => ({}), cancelApplications() {} }) });
+      startServiceWorker({ chrome: fake, createCaptchaService: () => ({ handle: async () => ({}), cancelApplications() {}, cancelAll() {} }) });
       return { fake, ask: (message) => new Promise((resolve) => onMessage(message, SIDE_PANEL_SENDER, resolve)) };
     };
     const first = await worker();
@@ -995,4 +1006,74 @@ test('each service worker uses the chrome it is given, so two workers never shar
   } finally {
     globalThis.chrome = saved;
   }
+});
+
+const EXPERIMENTAL_TYPES = ['NAVA_CAPTCHA_COMMAND', 'DISCOVER_CONNECTOR', 'SAVE_CONNECTOR', 'RESET_CONNECTOR', 'LOOKUP_RECORD', 'LIST_RECERTIFICATIONS'];
+
+test('with developer mode off, every experimental message is refused and the channel stays open', async () => {
+  const harness = await backgroundHarness({ developerMode: null });
+  for (const type of EXPERIMENTAL_TYPES) {
+    const { returned, responses } = harness.dispatch({ type });
+    assert.equal(returned, true, type);
+    await settle(3);
+    assert.deepEqual(responses, [{ ok: false, error: 'Developer mode is off.' }], type);
+  }
+  assert.deepEqual(harness.local.data, {});
+});
+
+test('a stored value other than true, or a storage read that rejects, counts as off', async () => {
+  for (const developerMode of [false, 'true', 1]) {
+    const harness = await backgroundHarness({ developerMode });
+    const { responses } = harness.dispatch({ type: 'LOOKUP_RECORD' });
+    await settle(3);
+    assert.deepEqual(responses, [{ ok: false, error: 'Developer mode is off.' }], String(developerMode));
+  }
+  const harness = await backgroundHarness({ developerMode: true });
+  harness.local.get = async () => { throw new Error('storage unavailable'); };
+  for (const type of EXPERIMENTAL_TYPES) {
+    const { returned, responses } = harness.dispatch({ type });
+    assert.equal(returned, true, type);
+    await settle(3);
+    assert.deepEqual(responses, [{ ok: false, error: 'Developer mode is off.' }], type);
+  }
+});
+
+test('with developer mode off, core connector messages still reach their handlers', async () => {
+  const harness = await backgroundHarness({ developerMode: null });
+  const status = await harness.send({ type: 'GET_CONNECTOR_STATUS' });
+  assert.equal(status.ok, true);
+  const opened = await harness.send({ type: 'OPEN_PROGRAMS' });
+  assert.notDeepEqual(opened, { ok: false, error: 'Developer mode is off.' });
+});
+
+test('with developer mode on, an experimental message behaves as before', async () => {
+  const harness = await backgroundHarness({ developerMode: true });
+  const reply = await harness.send({ type: 'LOOKUP_RECORD', recordId: 'x' });
+  assert.notEqual(reply?.error, 'Developer mode is off.');
+  const contentScript = { id: EXTENSION_ID, tab: { id: 4 }, url: 'https://benefitscal.com/' };
+  const responses = [];
+  // The channel is open while the setting is read, then closed with no answer: the refusal a content script gets today.
+  assert.equal(harness.dispatchAs({ type: 'LOOKUP_RECORD' }, contentScript, responses), true);
+  await settle(3);
+  assert.deepEqual(responses, [undefined]);
+});
+
+test('with developer mode on, CAPTCHA commands still reach the CAPTCHA service', async () => {
+  const seen = [];
+  const harness = await backgroundHarness({ captchaServiceFactory: () => ({ async handle(message) { seen.push(message.verb); return { ended: true }; }, cancelApplications() {}, cancelAll() {} }) });
+  await harness.send({ type: 'NAVA_CAPTCHA_COMMAND', verb: 'end', applicationId: 'app-1' });
+  assert.deepEqual(seen, ['end']);
+});
+
+test('turning developer mode off cancels live CAPTCHA scopes; nothing else does', async () => {
+  let cancels = 0;
+  const harness = await backgroundHarness({ captchaServiceFactory: () => ({ handle: async () => ({}), cancelApplications() {}, cancelAll() { cancels += 1; } }) });
+  harness.changed({ 'nava:developer-mode': { newValue: true } }, 'local');
+  harness.changed({ 'other-key': { newValue: false } }, 'local');
+  harness.changed({ 'nava:developer-mode': { newValue: false } }, 'session');
+  assert.equal(cancels, 0);
+  harness.changed({ 'nava:developer-mode': { newValue: false } }, 'local');
+  assert.equal(cancels, 1);
+  harness.changed({ 'nava:developer-mode': { oldValue: true } }, 'local');
+  assert.equal(cancels, 2);
 });

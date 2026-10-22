@@ -145,7 +145,7 @@ const applicationActionsModule = require('../sidepanel/actions-applications.mjs'
 const uiDispatchModule = require('../sidepanel/ui-dispatch.mjs');
 
 function clientLinkContext(extra = {}) {
-  const state = extra.state || { apps: [], view: 'questions' };
+  const state = extra.state || { apps: [], view: 'questions', developerMode: true };
   const runs = runControlModule.create({ state, previewMode: true, checkpoint: () => ({}),
     revokeApplicationRun: async () => {}, onCancelAll() {} });
   const runtime = agentRuntimeModule.create({ state, previewMode: false, agentPlanner: planner,
@@ -156,7 +156,7 @@ function clientLinkContext(extra = {}) {
     CONNECTOR_CLICK_ACTIONS: [], CONNECTOR_SUBMIT_ACTIONS: [], CONNECTOR_CHANGE_HANDLERS: [] };
   const dispatch = uiDispatchModule.create({ state, render() {},
     assertUiGeneration: runs.assertUiGeneration, currentUiGeneration: runs.currentUiGeneration,
-    agentActions: empty, recertificationActions: empty, intakeActions: empty, connectorActions: empty, applicationActions });
+    agentActions: empty, recertificationActions: empty, intakeActions: empty, connectorActions: empty, applicationActions, developerActions: { DEVELOPER_CLICK_ACTIONS: [] } });
   return { result: { ...runtime, ...runs }, click: dispatch.onClick, state };
 }
 const application = () => ({ id: 'synthetic-workflow', programIds: ['wic'],
@@ -217,7 +217,7 @@ test('Back from questions aborts sharing through the actual click handler', asyn
   let started;
   const requested = new Promise((resolve) => { started = resolve; });
   globalThis.fetch = async () => { started(); return new Promise(() => {}); };
-  const context = clientLinkContext({ state: { apps: [], view: 'questions' } });
+  const context = clientLinkContext({ state: { apps: [], view: 'questions', developerMode: true } });
   const pending = context.result.mintClientLink(application());
   await requested;
   await context.click({ dataset: { action: 'back-dashboard' } });

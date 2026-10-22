@@ -8,6 +8,7 @@ import * as coordinatorRules from './coordinator-rules.mjs';
 import * as clientSession from './client-session.mjs';
 import * as applicationRuns from './application-runs.mjs';
 import * as connectorClient from './connector-client.mjs';
+import * as developerMode from '../shared/developer-mode.mjs';
 import { createCaptchaService as defaultCreateCaptchaService } from './captcha-service.mjs';
 
 /** Registers every Chrome listener synchronously; nothing here may await before it returns. `chrome` is injectable so tests can run isolated workers. */
@@ -260,7 +261,7 @@ export function startServiceWorker({ createCaptchaService = defaultCreateCaptcha
   }
 
   // Each message type belongs to exactly one domain router. A type no router owns, or a sender that is not the side panel, gets no response.
-  function routeMessage(message, sender, sendResponse) {
+  function routeUngatedMessage(message, sender, sendResponse) {
     const captcha = routeCaptchaMessage(message, sender, sendResponse);
     if (captcha !== undefined) return captcha;
     if (!isSidePanelSender(sender)) return false;
@@ -268,6 +269,29 @@ export function startServiceWorker({ createCaptchaService = defaultCreateCaptcha
       ?? routeApplicationRunMessage(message, sender, sendResponse)
       ?? routeConnectorMessage(message, sender, sendResponse)
       ?? false;
+  }
+
+  // The experimental message types answer only while developer mode is on. The service worker reads the setting from
+  // storage itself on every message, so nothing a caller sends can switch it on. The read is async, so the channel stays open.
+  function routeMessage(message, sender, sendResponse) {
+    if (!developerMode.isExperimentalMessage(message?.type)) return routeUngatedMessage(message, sender, sendResponse);
+    developerMode.readDeveloperMode(chrome.storage.local).then((enabled) => {
+      if (!enabled) {
+        sendResponse({ ok: false, error: developerMode.DEVELOPER_MODE_OFF_MESSAGE });
+        return;
+      }
+      // A router that answers synchronously returns false; one that answers later returns true and keeps the channel open.
+      let answered = false;
+      const handled = routeUngatedMessage(message, sender, (response) => {
+        answered = true;
+        sendResponse(response);
+      });
+      if (handled !== true && !answered) sendResponse(undefined);
+    }).catch((error) => {
+      logFailure('Routing an experimental message')(error);
+      sendResponse(undefined);
+    });
+    return true;
   }
 
   // Lifecycle failures have no caller to report to; log them so a missing side-panel button or a stale tab record is diagnosable.
@@ -283,6 +307,13 @@ export function startServiceWorker({ createCaptchaService = defaultCreateCaptcha
 
   chrome.tabs.onRemoved.addListener((tabId) => {
     coordinate(() => closeApplicationTab(tabId)).catch(logFailure('Recording a closed application tab'));
+  });
+
+  // Turning developer mode off ends any CAPTCHA attempt that is still live.
+  chrome.storage.onChanged.addListener((changes, area) => {
+    if (area === 'local' && developerMode.STORAGE_KEY in changes && changes[developerMode.STORAGE_KEY]?.newValue !== true) {
+      captchaService.cancelAll();
+    }
   });
 
   chrome.runtime.onMessage.addListener(routeMessage);

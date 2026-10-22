@@ -63,12 +63,12 @@ function create(deps) {
         <form id="model-provider-form" class="form-stack compact-form">
           <label for="model-provider">Model provider
             <select id="model-provider" name="modelProvider">
-              <option value="chrome-local" ${selectedProvider === 'chrome-local' ? 'selected' : ''}>Chrome on-device Gemini Nano</option>
+              <option value="chrome-local" ${selectedProvider === 'chrome-local' ? 'selected' : ''}>Chrome on-device Gemini Nano</option>${state.developerMode ? `
               <option value="codex" ${selectedProvider === 'codex' ? 'selected' : ''}>Codex subscription via local CLI</option>
               <option value="claude" ${selectedProvider === 'claude' ? 'selected' : ''}>Claude subscription via local CLI</option>
-              <option value="jev" ${selectedProvider === 'jev' ? 'selected' : ''}>Jev via local companion · experimental</option>
+              <option value="jev" ${selectedProvider === 'jev' ? 'selected' : ''}>Jev via local companion · experimental</option>` : ''}
             </select>
-          </label>
+          </label>${state.developerMode ? `
           <div id="model-companion-fields" class="form-stack compact-form" ${companion || ['codex', 'eve'].includes(state.agentProvider.captcha?.provider) ? '' : 'hidden'}>
             <label for="model-endpoint">Local companion
               <input id="model-endpoint" name="modelEndpoint" type="text" value="${escapeHtml(state.agentProvider.endpoint || 'http://127.0.0.1:4174')}" autocomplete="off" spellcheck="false">
@@ -87,7 +87,7 @@ function create(deps) {
             <label>Codex image model <input name="captchaModel" value="${escapeHtml(state.agentProvider.captcha?.model || 'gpt-6.1-sol')}" spellcheck="false"></label>
             <label>Image reasoning <select name="captchaReasoning"><option value="low">Low</option><option value="xhigh" ${state.agentProvider.captcha?.reasoning === 'xhigh' ? 'selected' : ''}>Extra High</option></select></label>
             <p class="field-hint">All runtimes share checkbox clicking. Jev and Claude have no image adapter here. Codex/Eve receive only the challenge crop; Eve uses Sol Low. Authorization happens once per attempt in the application card.</p>
-          </details>
+          </details>` : ''}
           <button class="small-button secondary" type="submit">Use this model runtime</button>
         </form>
       </details>`;
@@ -116,17 +116,22 @@ function create(deps) {
             <span class="chevron" aria-hidden="true">›</span>
           </button>
         </div>
-        <h2 class="section-title">Renewals</h2>
+${state.developerMode ? `        <h2 class="section-title">Renewals</h2>
         <button class="choice-button" type="button" data-action="open-recertifications">
           <span class="choice-icon" aria-hidden="true">DUE</span>
           <span class="choice-copy"><strong>Renewals due</strong><small>See whose benefits are coming up for renewal and what is still needed.</small></span>
           <span class="chevron" aria-hidden="true">›</span>
         </button>
-        <div class="assistant-setup">
+` : ''}        <div class="assistant-setup">
           <h2 class="section-title">AI assistant</h2>
           ${renderAgentRuntime()}
         </div>
         <p><button class="link-button" type="button" data-action="show-welcome">How this works and what keeps you in control</button></p>
+        <details class="settings-disclosure"><summary>Developer mode</summary>
+          <p>Turns on experimental features that are still being tested.</p>
+          <p class="runtime-status" role="status">Developer mode is ${state.developerMode ? 'on' : 'off'}.</p>
+          <button class="secondary-button" type="button" data-action="toggle-developer-mode" aria-pressed="${state.developerMode ? 'true' : 'false'}">${escapeHtml(state.developerMode ? 'Turn off' : 'Turn on')}</button>
+        </details>
       </section>`;
   }
 
@@ -379,7 +384,8 @@ function create(deps) {
                 <span><strong>${escapeHtml(program.name)}</strong><small>${escapeHtml(program.provider)}${program.workflowId === 'benefitscal' ? ' · combined BenefitsCal application' : ''}</small></span>
               </label>`).join('')}
           </div>
-          <p class="field-hint">CalFresh, Medi-Cal, and CalWORKs use one combined BenefitsCal application.</p>
+          <p class="field-hint">CalFresh, Medi-Cal, and CalWORKs use one combined BenefitsCal application.</p>${state.developerMode ? '' : `
+          <p class="field-hint">Choose one application at a time.</p>`}
           <div class="form-actions">
             <button class="primary-button" type="submit">Continue</button>
           </div>

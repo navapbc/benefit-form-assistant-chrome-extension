@@ -259,3 +259,32 @@ test('review evidence is deduplicated by stable DOM identity while keeping the l
     [{ fieldKey: 'field:2:0', identityKey: 'id:name', value: 'Synthetic', matchesRecord: true }]);
   assert.equal(evidence.length, 1); assert.equal(evidence[0].fieldKey, 'field:2:0');
 });
+
+test('render falls back to the canonical home for an experimental view while developer mode is off', () => {
+  const render = section('function render() {', 'renderView();');
+  const guard = render.indexOf('!state.developerMode && isExperimentalView(state.view)');
+  assert.ok(guard >= 0, 'render() checks developer mode before choosing a view');
+  assert.ok(guard < render.indexOf('renderView = {'), 'the check runs before the view is chosen');
+  assert.match(render, /state\.view = canonicalHomeView\(\)/, 'a session with applications or a client lands on its home, not the start screen');
+  assert.match(panel, /\|\| renderChoice;/, 'unknown views render the start screen');
+});
+
+test('every side panel applies a developer-mode change made in another window through the same path as the switch', () => {
+  const listener = section('chrome.storage.onChanged.addListener(', 'chrome.tabs.onActivated');
+  const developer = listener.indexOf('developerModeFromChange(changes, areaName)');
+  assert.ok(developer >= 0, 'the storage listener reads developer-mode changes');
+  assert.ok(developer < listener.indexOf('COORDINATOR_STORAGE_KEY'), 'the coordinator early return cannot skip it');
+  assert.match(listener, /developerActions\.applyDeveloperMode\(developerMode\)/);
+  assert.match(listener, /\.catch\(/);
+  const wiring = section('const developerActions = developerActionsModule.create({', '});');
+  assert.match(wiring, /captchaAuthorizations,/);
+  assert.match(wiring, /canonicalHomeView,/);
+});
+
+test('bootstrap reads developer mode before restoring anything, over a store that cannot fail open', () => {
+  const boot = section('async function bootstrap() {', 'bootstrap();');
+  assert.ok(boot.indexOf('state.developerMode = await readDeveloperMode(developerStore)') >= 0);
+  assert.ok(boot.indexOf('readDeveloperMode') < boot.indexOf('restoreConnector()'));
+  assert.match(panel, /developerMode: false,/);
+  assert.match(panel, /previewMode \? previewDirectory\.memoryStorage\(\)\.local : chrome\.storage\.local/);
+});

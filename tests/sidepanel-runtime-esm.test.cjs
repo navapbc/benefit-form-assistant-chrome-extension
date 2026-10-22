@@ -7,6 +7,7 @@ const EXPORTED_KEYS = {
   'actions-agent': ['create'],
   'actions-applications': ['create'],
   'actions-connector': ['create'],
+  'actions-developer': ['create'],
   'actions-intake': ['create'],
   'actions-recertification': ['create'],
   'agent-runtime': ['create'],

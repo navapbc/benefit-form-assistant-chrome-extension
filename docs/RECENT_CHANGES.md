@@ -2,7 +2,15 @@
 
 High-level notes on what changed in the extension's code and tooling, newest first. For tester-facing release notes see [RELEASE_NOTES_v0.16.md](RELEASE_NOTES_v0.16.md); for what is still to do see [TODO.md](TODO.md). The extension's version is still 0.16.0; these changes did not alter form-filling behavior.
 
-## October 21, 2026 (latest): open-source readiness
+## October 21, 2026 (latest): Developer mode
+
+**Experimental features off by default** ([change doc](changes/2026-10-21-add-developer-mode.md))
+- A Developer mode switch on the start screen turns on CAPTCHA attempts, the Codex, Claude and Jev options and shared planner API settings, connector screens and routes, renewals, pause and handoff, concurrent applications and the `client-link` questions link. The setting is stored in `chrome.storage.local`; anything but a stored `true` means off.
+- When off, the dispatcher and the service worker refuse the experimental actions and messages (`{ ok: false, error: 'Developer mode is off.' }`), the model runtime offers only Gemini Nano, and a saved shared planner API is ignored for planning and client links. One workflow is allowed per selection, the automatic queue runs one application at a time, and a caseworker-started run waits while another application runs. The list lives in `shared/developer-mode.mjs`.
+- Every side panel (one per Chrome window) applies a change made in another window, and turning the mode off clears CAPTCHA authorizations.
+- Open items for the maintainer's keep-or-remove review and some hardening are in [TODO.md](TODO.md#developer-mode). The Chrome check has not been run.
+
+## October 21, 2026: open-source readiness
 
 **Licensing and community files** ([PR 15](https://github.com/navapbc/benefit-form-assistant-chrome-extension/pull/15))
 - Apache-2.0 `LICENSE` (Copyright 2026 Nava PBC), `"license"` in `package.json`, and `LICENSE` in the release package. Legal has not yet confirmed the license choice (see [TODO.md](TODO.md#open-source-readiness)).

@@ -1,3 +1,4 @@
+import { isExperimentalAction, DEVELOPER_MODE_OFF_MESSAGE } from '../shared/developer-mode.mjs';
 // UI dispatch: the handler contract the action tables share, the own-property click, submit and change tables built from each domain's action groups, and the listeners that run a handler under its UI generation.
 
 // Click and submit handlers share one ending. By default the dispatcher re-checks the UI generation and renders.
@@ -21,8 +22,9 @@ function handlerContract(state) {
  * deps:
  * - state, appRoot: panel state and the screen root that receives submit and change events.
  * - render(), assertUiGeneration(token), currentUiGeneration(): the screen and the UI-generation guard, read at event time.
- * - agentActions, recertificationActions, intakeActions, connectorActions, applicationActions: each action module's
- *   click, submit and change groups. Tables take them in that order.
+ * - agentActions, recertificationActions, intakeActions, connectorActions, applicationActions, developerActions: each action module's
+ *   click, submit and change groups. Tables take them in that order. While state.developerMode is off, experimental
+ *   actions, forms and change handlers are refused with a message instead of running.
  */
 function create(deps) {
   const {
@@ -36,12 +38,14 @@ function create(deps) {
     intakeActions,
     connectorActions,
     applicationActions,
+    developerActions,
   } = deps;
   const { AGENT_CLICK_ACTIONS, AGENT_SUBMIT_ACTIONS, AGENT_CHANGE_HANDLERS } = agentActions;
   const { RECERTIFICATION_CLICK_ACTIONS, RECERTIFICATION_SUBMIT_ACTIONS } = recertificationActions;
   const { INTAKE_CLICK_ACTIONS, INTAKE_SUBMIT_ACTIONS } = intakeActions;
   const { CONNECTOR_CLICK_ACTIONS, CONNECTOR_SUBMIT_ACTIONS, CONNECTOR_CHANGE_HANDLERS } = connectorActions;
   const { APPLICATION_CLICK_ACTIONS, APPLICATION_SUBMIT_ACTIONS } = applicationActions;
+  const { DEVELOPER_CLICK_ACTIONS } = developerActions;
 
   async function onClick(button, initialUiGeneration = currentUiGeneration()) {
     const action = button.dataset.action;
@@ -55,7 +59,18 @@ function create(deps) {
     await runUiHandler(SUBMIT_ACTIONS, form.id, { form, uiToken });
   }
 
+  /** True, after showing the refusal, when developer mode is off and this key belongs to an experimental feature. */
+  function refuseExperimental(key) {
+    if (state.developerMode || !isExperimentalAction(key)) return false;
+    state.error = DEVELOPER_MODE_OFF_MESSAGE;
+    return true;
+  }
+
   async function runUiHandler(handlers, key, context) {
+    if (refuseExperimental(key)) {
+      render();
+      return;
+    }
     const handler = handlers.get(key);
     const outcome = handler ? await handler(context) : undefined;
     if (outcome === SKIP_FINAL_RENDER) return;
@@ -70,6 +85,7 @@ function create(deps) {
     ...INTAKE_CLICK_ACTIONS,
     ...CONNECTOR_CLICK_ACTIONS,
     ...APPLICATION_CLICK_ACTIONS,
+    ...DEVELOPER_CLICK_ACTIONS,
   ]);
   const SUBMIT_ACTIONS = new Map([
     ...AGENT_SUBMIT_ACTIONS,
@@ -108,7 +124,15 @@ function create(deps) {
 
     appRoot.addEventListener('change', (event) => {
       if (event.target.dataset?.captchaApp) {
+        if (refuseExperimental('try-captcha')) {
+          render();
+          return;
+        }
         agentActions.changeCaptchaAuthorization(event);
+        return;
+      }
+      if (refuseExperimental(event.target.id)) {
+        render();
         return;
       }
       const handler = CHANGE_HANDLERS.get(event.target.id);

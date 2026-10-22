@@ -585,6 +585,7 @@ test('one opt-in CAPTCHA attempt starts only after its checkpoint is persisted a
   const grants = new Set(['workflow:benefits']);
   let attempts = 0;
   const h = runnerHarness({ pages: [page(1, { assignments: [], gate: { kind: 'none' }, submitGate: { botCheckPresent: true, botCheckComplete: false } })],
+    state: { developerMode: true },
     captchaAuthorizations: grants,
     tryCaptcha: async (app, { runToken }) => {
       attempts++;
@@ -599,4 +600,18 @@ test('one opt-in CAPTCHA attempt starts only after its checkpoint is persisted a
   assert.equal(attempts, 1);
   await h.runThroughApplication(h.first, [], [], { runToken: token });
   assert.equal(attempts, 1, 'a second run requires a fresh opt-in');
+});
+
+test('with developer mode off a CAPTCHA authorization never starts an attempt; the checkpoint stays a human checkpoint', async () => {
+  const grants = new Set(['workflow:benefits']);
+  let attempts = 0;
+  const h = runnerHarness({ pages: [page(1, { assignments: [], gate: { kind: 'none' }, submitGate: { botCheckPresent: true, botCheckComplete: false } })],
+    state: { developerMode: false },
+    captchaAuthorizations: grants,
+    tryCaptcha: async () => { attempts++; },
+  });
+  await h.runThroughApplication(h.first, [], [], { runToken: { cancelled: false } });
+  assert.equal(attempts, 0);
+  assert.equal(h.first.checkpoint.kind, 'captcha');
+  assert.equal(h.audits.some((event) => event.type === 'captcha_attempt'), false);
 });

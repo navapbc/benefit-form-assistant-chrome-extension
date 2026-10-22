@@ -1,6 +1,40 @@
 # Follow-up work
 
-Things we decided to come back to. Add to the top of a section as you find more; move an item to [RECENT_CHANGES.md](RECENT_CHANGES.md) when it ships. Last updated October 21, 2026 (open-source readiness items added).
+Things we decided to come back to. Add to the top of a section as you find more; move an item to [RECENT_CHANGES.md](RECENT_CHANGES.md) when it ships. Last updated October 21, 2026 (developer mode items added).
+
+## Developer mode
+
+Added October 21, 2026 with the Developer mode switch ([change doc](changes/2026-10-21-add-developer-mode.md)). The list of experimental features is in `shared/developer-mode.mjs`.
+
+**Keep or remove review.** Each is hidden and refused when the switch is off. Decide whether to keep it (and promote it to core), keep it behind the switch, or remove it.
+
+- [ ] CAPTCHA attempts and images
+- [ ] Codex, Claude and Jev companion options
+- [ ] Shared planner API settings
+- [ ] Connector and mock service screens and routes
+- [ ] Renewals and recertification
+- [ ] Pause and handoff
+- [ ] Concurrent applications
+- [ ] The `client-link` questions link
+
+**Hardening this branch deliberately left**
+
+- [ ] The CAPTCHA route is answered before the side-panel sender check in `routeMessage`. The CAPTCHA service re-checks the sender itself, but the order should be reviewed.
+- [ ] `/auth/token` has no rate limit.
+- [ ] The shared-API token is stored in plain text in `chrome.storage.local`.
+- [ ] A CAPTCHA `begin` already past the gate when the switch turns off could create a scope after `cancelAll` (very small window).
+- [ ] The switch is not a security boundary against a determined user (they can write the storage value). Treat it as a default, not a control.
+- [ ] `sidepanel/preview-runtime.mjs` answers the experimental message types with no developer-mode gate. Only the dispatcher protects preview mode. The preview handles no real data and always loads with the mode off.
+- [ ] With the mode off, the automatic queue does not check for a caseworker-started run, so a queued application can start while a card run is going (two runs at once). Caseworker-started runs do wait for the queue's run.
+- [ ] A side panel in another window applies a mode change even while it has a run going; the planner reconfiguration can stop that run. Consider refusing or deferring the change there.
+
+**Small deferred findings**
+
+- [ ] `analyzeCurrentTab` and recertification add applications without the one-workflow-per-selection cap (`analyze-current` does wait while another application runs).
+- [ ] Render and bootstrap behavior is covered only by source-ordering tests because `sidepanel/main.mjs` has no test seam. Consider a pure `viewForRender` helper.
+- [ ] The step (a) assertion of the runtime-reset test is weak.
+- [ ] A few assertions in `tests/background-coordinator.test.cjs` are weak.
+- [ ] The `ui-dispatch.mjs` import sits above the file's header comment.
 
 ## Open-source readiness
 

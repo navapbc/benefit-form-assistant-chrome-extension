@@ -20,6 +20,7 @@ const recertificationActionsModule = require('../sidepanel/actions-recertificati
 const intakeActionsModule = require('../sidepanel/actions-intake.mjs');
 const connectorActionsModule = require('../sidepanel/actions-connector.mjs');
 const applicationActionsModule = require('../sidepanel/actions-applications.mjs');
+const developerActionsModule = require('../sidepanel/actions-developer.mjs');
 const uiDispatchModule = require('../sidepanel/ui-dispatch.mjs');
 
 const MODULES = {
@@ -36,6 +37,7 @@ const MODULES = {
   'sidepanel/actions-intake.mjs': intakeActionsModule,
   'sidepanel/actions-connector.mjs': connectorActionsModule,
   'sidepanel/actions-applications.mjs': applicationActionsModule,
+  'sidepanel/actions-developer.mjs': developerActionsModule,
   'sidepanel/ui-dispatch.mjs': uiDispatchModule,
 };
 
@@ -415,8 +417,8 @@ test('a sync requested during a coordinator mutation waits for the mutation, the
 });
 
 /** Automatic runs over stub run control; each lease holds until the test releases it. */
-function automaticRuns({ apps }) {
-  const state = { apps, view: 'dashboard', sessionEpoch: 1, error: '' };
+function automaticRuns({ apps, developerMode = true }) {
+  const state = { apps, developerMode, view: 'dashboard', sessionEpoch: 1, error: '' };
   const tokens = new Map();
   const leases = [];
   const started = [];
@@ -425,6 +427,7 @@ function automaticRuns({ apps }) {
   const runs = automaticRunsModule.create({
     state,
     previewMode: true,
+    isDeveloperMode: () => state.developerMode,
     activeRun: (id) => tokens.get(id),
     isRunning: (id) => tokens.has(id),
     async beginApplicationRun(application) {
@@ -675,7 +678,7 @@ test('change events reach only their own select handlers; prototype ids do nothi
     querySelector: (selector) => (selector === 'label[for="connector-source-id"]' ? sourceLabel : null),
     addEventListener: (type, listener) => { listeners[`document:${type}`] = listener; },
   };
-  const state = { view: 'choice', error: '' };
+  const state = { view: 'choice', error: '', developerMode: true };
   const contract = uiDispatchModule.handlerContract(state);
   const deps = { ...contract, state, connectorEngine, managedConnector: () => false };
   const dispatch = uiDispatchModule.create({
@@ -689,6 +692,7 @@ test('change events reach only their own select handlers; prototype ids do nothi
     intakeActions: intakeActionsModule.create(deps),
     connectorActions: connectorActionsModule.create(deps),
     applicationActions: applicationActionsModule.create(deps),
+    developerActions: developerActionsModule.create({ state, store: {}, activeRunCount: () => 0, restoreAgentProvider: async () => {} }),
   });
   dispatch.installListeners();
   assert.deepEqual(Object.keys(listeners).sort(), ['change', 'document:click', 'submit']);
@@ -737,4 +741,294 @@ test('a cancelled run stops counting as running for the card, but still holds th
   assert.equal(runs.isRunning('app-1'), true, 'automatic runs still wait for the old run to settle');
   runs.endApplicationRun(application, token);
   assert.equal(runs.isRunning('app-1'), false);
+});
+
+/** Run control over two applications, as the side panel holds them. */
+function twoApplicationRuns(developerMode) {
+  const state = { developerMode, apps: [{ id: 'wic', controlGeneration: 0 }, { id: 'ihss', controlGeneration: 0 }], sessionEpoch: 'epoch-1', workerId: 'window-a' };
+  const runs = runControlModule.create({ state, previewMode: true, checkpoint: () => ({}), revokeApplicationRun: async () => {}, onCancelAll: () => {} });
+  return { state, runs, wic: state.apps[0], ihss: state.apps[1] };
+}
+
+test('with developer mode off a caseworker-started run waits for a different application\'s run, with a plain message', async () => {
+  const { runs, wic, ihss } = twoApplicationRuns(false);
+  const automatic = await runs.beginApplicationRun(ihss); // the automatic queue's run
+  let started = 0;
+  await assert.rejects(runs.withNewApplicationRun(wic, async () => { started += 1; }, { uiBound: true }), { message: 'Wait for the running application to stop first.' });
+  assert.equal(started, 0);
+  assert.equal(runs.isRunning('wic'), false, 'no token is left behind');
+  assert.equal(runs.runActive('ihss'), true, 'the running application is not cancelled');
+  assert.throws(() => runs.assertNoOtherRun(null), { message: 'Wait for the running application to stop first.' });
+  runs.endApplicationRun(ihss, automatic);
+  await runs.withNewApplicationRun(wic, async () => { started += 1; }, { uiBound: true });
+  assert.equal(started, 1, 'once the other run settles the caseworker can start this one');
+  assert.doesNotThrow(() => runs.assertNoOtherRun(null));
+});
+
+test('with developer mode off resuming the application that is itself running still works', async () => {
+  const { runs, wic } = twoApplicationRuns(false);
+  const first = runs.withNewApplicationRun(wic, (token) => new Promise((resolve) => { token.abort.signal.addEventListener('abort', resolve); }), { uiBound: true });
+  await new Promise((resolve) => setImmediate(resolve));
+  let resumed = 0;
+  await runs.withNewApplicationRun(wic, async () => { resumed += 1; }, { uiBound: true });
+  await first;
+  assert.equal(resumed, 1);
+  assert.doesNotThrow(() => runs.assertNoOtherRun('wic'));
+});
+
+test('with developer mode off the automatic queue\'s own runs are not refused by the caseworker rule', async () => {
+  const { runs, wic, ihss } = twoApplicationRuns(false);
+  const ui = await runs.beginApplicationRun(wic, { uiBound: true });
+  const automatic = await runs.beginApplicationRun(ihss);
+  assert.ok(automatic, 'the pump keeps its own one-at-a-time limit');
+  runs.endApplicationRun(wic, ui);
+  runs.endApplicationRun(ihss, automatic);
+});
+
+test('with developer mode on caseworker-started runs on several applications run at once, as before', async () => {
+  const { runs, wic, ihss } = twoApplicationRuns(true);
+  const automatic = await runs.beginApplicationRun(ihss);
+  let started = 0;
+  await runs.withNewApplicationRun(wic, async () => { started += 1; }, { uiBound: true });
+  assert.equal(started, 1);
+  assert.doesNotThrow(() => runs.assertNoOtherRun(null));
+  runs.endApplicationRun(ihss, automatic);
+});
+
+/** The planner runtime outside preview mode, over a recording planner and a chrome.storage.session stand-in. */
+function liveAgentRuntime({ developerMode, stored, gateway = null, agentRuntime = { status: 'ready' }, rejectCompanion = false }) {
+  const configured = [];
+  const storage = { 'nava:agent-provider': stored };
+  const writes = [];
+  const prepared = [];
+  const gatewayRequests = [];
+  const state = { developerMode, agentProvider: { kind: 'chrome-local' }, agentRuntime };
+  globalThis.chrome = {
+    storage: {
+      session: {
+        async get(key) { return key in storage && storage[key] !== undefined ? { [key]: storage[key] } : {}; },
+        async set(value) { writes.push(['set', value]); Object.assign(storage, value); },
+        async remove(key) { writes.push(['remove', key]); delete storage[key]; },
+      },
+    },
+  };
+  const runtime = agentRuntimeModule.create({
+    state,
+    previewMode: false,
+    agentPlanner: {
+      configure: (config) => {
+        if (rejectCompanion && config.kind === 'local-cli') throw new Error('Paste the pairing token printed by the local model companion.');
+        configured.push(config);
+      },
+      gatewayConfig: async () => gateway,
+      gatewayRequest: async (...args) => { gatewayRequests.push(args); return {}; },
+      prepare: async () => { prepared.push('nano'); return { status: 'ready' }; },
+      runtimeInfo: () => ({ title: 'Test' }),
+    },
+    setBusy: () => {},
+    setApplicationProgress: () => {},
+    assertUiGeneration: () => {},
+    activeRunCount: () => 0,
+    currentUiSignal: () => undefined,
+    persist: async () => {},
+  });
+  return { runtime, state, configured, storage, writes, prepared, gatewayRequests };
+}
+
+const jevProvider = { kind: 'local-cli', provider: 'jev', endpoint: 'http://127.0.0.1:4789', token: 'secret', model: 'jev-1.13.0' };
+
+test('with developer mode off the planner uses Gemini Nano and leaves a stored experimental provider untouched', async () => {
+  const off = liveAgentRuntime({ developerMode: false, stored: jevProvider });
+  await off.runtime.restoreAgentProvider();
+  assert.deepEqual(off.state.agentProvider, { kind: 'chrome-local' });
+  assert.deepEqual(off.configured, [{ kind: 'chrome-local', gateway: false }]);
+  assert.deepEqual(off.writes, [], 'the stored provider is neither removed nor overwritten');
+  assert.deepEqual(off.storage['nava:agent-provider'], jevProvider);
+
+  off.state.developerMode = true;
+  await off.runtime.restoreAgentProvider();
+  assert.deepEqual(off.state.agentProvider, jevProvider, 'turning the mode back on restores the stored provider');
+  assert.deepEqual(off.configured.at(-1), jevProvider);
+
+  const on = liveAgentRuntime({ developerMode: true, stored: jevProvider });
+  await on.runtime.restoreAgentProvider();
+  assert.deepEqual(on.state.agentProvider, jevProvider);
+});
+
+test('with developer mode off, using a model runtime applies Gemini Nano only and never touches stored settings', async () => {
+  const form = { fields: { modelProvider: 'jev', modelEndpoint: 'http://127.0.0.1:4789', modelToken: 'secret', captchaProvider: 'codex', captchaModel: 'x', captchaReasoning: 'xhigh' } };
+  const realFormData = globalThis.FormData;
+  globalThis.FormData = class { constructor(source) { this.fields = source.fields; } get(name) { return this.fields[name] ?? null; } };
+  try {
+    const off = liveAgentRuntime({ developerMode: false, stored: jevProvider });
+    await off.runtime.saveAgentProvider(form, 0);
+    assert.deepEqual(off.state.agentProvider, { kind: 'chrome-local' });
+    assert.deepEqual(off.configured, [{ kind: 'chrome-local', gateway: false }]);
+    assert.deepEqual(off.writes, []);
+    assert.deepEqual(off.storage['nava:agent-provider'], jevProvider);
+
+    const on = liveAgentRuntime({ developerMode: true, stored: undefined });
+    await on.runtime.saveAgentProvider(form, 0);
+    assert.equal(on.state.agentProvider.provider, 'jev');
+    assert.equal(on.state.agentProvider.captcha.provider, 'codex');
+    assert.equal(on.writes.length, 1);
+  } finally {
+    globalThis.FormData = realFormData;
+  }
+});
+
+const savedGateway = { base: 'https://api.example.test', endpoint: 'https://api.example.test/v1/plan', token: 'fake-tenant-key' };
+const sharedReady = () => ({ status: 'ready', shared: true, message: 'Planning runs on the shared API at https://api.example.test. Filling still happens in this tab.' });
+
+test('with developer mode off a saved shared planner API is not used: the runtime prepares and reports Gemini Nano', async () => {
+  const off = liveAgentRuntime({ developerMode: false, stored: undefined, gateway: savedGateway, agentRuntime: sharedReady() });
+  await off.runtime.restoreAgentProvider();
+  assert.deepEqual(off.configured, [{ kind: 'chrome-local', gateway: false }], 'the planner is told not to use the gateway');
+  assert.equal(off.state.agentRuntime.shared, undefined, 'the shared-API status is cleared');
+  await off.runtime.prepareAgentRuntime();
+  assert.deepEqual(off.prepared, ['nano'], 'Gemini Nano is prepared');
+  assert.equal(off.state.agentRuntime.shared, undefined);
+  assert.doesNotMatch(off.state.agentRuntime.message, /shared API/);
+  assert.match(off.state.agentRuntime.message, /Test is ready/);
+  assert.deepEqual(off.gatewayRequests, []);
+});
+
+test('with developer mode on a saved shared planner API still plans', async () => {
+  const on = liveAgentRuntime({ developerMode: true, stored: undefined, gateway: savedGateway, agentRuntime: { status: 'checking', message: '' } });
+  await on.runtime.restoreAgentProvider();
+  assert.deepEqual(on.configured, [{ kind: 'chrome-local' }], 'the on path configures exactly as before');
+  await on.runtime.prepareAgentRuntime();
+  assert.deepEqual(on.prepared, []);
+  assert.equal(on.state.agentRuntime.shared, true);
+  assert.match(on.state.agentRuntime.message, /Planning runs on the shared API at https:\/\/api\.example\.test/);
+});
+
+test('with developer mode off a client link is never minted through a saved shared API', async () => {
+  const application = { id: 'app-1', programIds: ['wic'], analysis: { gaps: [{ fieldKey: 'a', question: 'Q?' }] } };
+  const off = liveAgentRuntime({ developerMode: false, stored: undefined, gateway: savedGateway });
+  await assert.rejects(off.runtime.mintClientLink(application), { message: 'Developer mode is off.' });
+  assert.deepEqual(off.gatewayRequests, []);
+  assert.equal(application.clientLink, undefined);
+});
+
+test('turning developer mode off after a shared-API session resets the runtime even though the provider is unchanged', async () => {
+  const flip = liveAgentRuntime({ developerMode: true, stored: undefined, gateway: savedGateway, agentRuntime: { status: 'checking', message: '' } });
+  await flip.runtime.restoreAgentProvider();
+  await flip.runtime.prepareAgentRuntime();
+  assert.equal(flip.state.agentRuntime.shared, true);
+  flip.state.developerMode = false;
+  await flip.runtime.restoreAgentProvider();
+  assert.deepEqual(flip.state.agentRuntime, { status: 'checking', message: '' });
+  await flip.runtime.prepareAgentRuntime();
+  assert.deepEqual(flip.prepared, ['nano']);
+});
+
+test('a stored provider the planner rejects falls back to Gemini Nano and resets the runtime status', async () => {
+  const broken = liveAgentRuntime({ developerMode: true, stored: { ...jevProvider, token: 'short' }, rejectCompanion: true, agentRuntime: { status: 'ready', message: 'Jev decision model is ready.' } });
+  await broken.runtime.restoreAgentProvider();
+  assert.deepEqual(broken.state.agentProvider, { kind: 'chrome-local' });
+  assert.deepEqual(broken.state.agentRuntime, { status: 'checking', message: '' });
+  assert.deepEqual(broken.writes, [['remove', 'nava:agent-provider']]);
+});
+
+/** The program-choice submit handler over a recording opener. */
+function programChoice(developerMode) {
+  const opened = [];
+  const state = { developerMode, apps: [], view: 'program' };
+  const actions = intakeActionsModule.create({
+    state,
+    render: () => {},
+    SKIP_FINAL_RENDER: Symbol('skip'),
+    showScreen: () => () => {},
+    assertUiGeneration: () => {},
+    currentUiGeneration: () => 0,
+    persist: async () => {},
+    prepareAgentRuntime: async () => {},
+    getActiveTab: async () => ({ id: 1 }),
+    scanTab: async () => ({ id: 'current-app' }),
+    openSelectedPrograms: async (values) => { opened.push(values); return values.filter((v) => v !== 'current').map((v) => ({ id: v })); },
+    enqueueApplicationBatch: async () => {},
+  });
+  const submit = Object.fromEntries(actions.INTAKE_SUBMIT_ACTIONS)['program-form'];
+  return async (values) => {
+    const realFormData = globalThis.FormData;
+    globalThis.FormData = class { getAll() { return values; } };
+    try { return await submit({ form: {}, uiToken: 0 }); } finally { globalThis.FormData = realFormData; }
+  };
+}
+
+test('with developer mode off one application at a time is allowed, and one BenefitsCal workflow counts as one', async () => {
+  const off = programChoice(false);
+  await assert.doesNotReject(off(['calfresh', 'medical']));
+  await assert.doesNotReject(off(['current']));
+  await assert.doesNotReject(off(['wic']));
+  const refused = programChoice(false);
+  const outcomes = [];
+  for (const values of [['wic', 'ihss'], ['current', 'wic']]) {
+    await assert.rejects(refused(values), { message: 'Choose one application at a time.' });
+    outcomes.push(values);
+  }
+  assert.equal(outcomes.length, 2);
+  const on = programChoice(true);
+  for (const values of [['calfresh', 'medical'], ['current'], ['wic', 'ihss'], ['current', 'wic']]) {
+    await assert.doesNotReject(on(values), values.join());
+  }
+});
+
+test('a refused multi-application choice opens nothing', async () => {
+  const opened = [];
+  const state = { developerMode: false, apps: [], view: 'program' };
+  const actions = intakeActionsModule.create({
+    state, render: () => {}, SKIP_FINAL_RENDER: Symbol('skip'), showScreen: () => () => {},
+    assertUiGeneration: () => {}, currentUiGeneration: () => 0, persist: async () => {},
+    prepareAgentRuntime: async () => { opened.push('prepare'); }, getActiveTab: async () => { opened.push('tab'); return {}; },
+    scanTab: async () => { opened.push('scan'); return { id: 'x' }; },
+    openSelectedPrograms: async () => { opened.push('open'); return []; }, enqueueApplicationBatch: async () => {},
+  });
+  const submit = Object.fromEntries(actions.INTAKE_SUBMIT_ACTIONS)['program-form'];
+  const realFormData = globalThis.FormData;
+  globalThis.FormData = class { getAll() { return ['wic', 'ihss']; } };
+  try {
+    await assert.rejects(submit({ form: {}, uiToken: 0 }), /Choose one application at a time\./);
+  } finally { globalThis.FormData = realFormData; }
+  assert.deepEqual(opened, []);
+});
+
+test('with developer mode off the queue runs one application at a time; with it on, three', async () => {
+  const off = automaticRuns({ apps: ['a', 'b', 'c'].map(eligibleApp), developerMode: false });
+  await off.runs.enqueueApplicationBatch(['a', 'b', 'c']);
+  await tick();
+  assert.deepEqual(off.started, ['a']);
+  await off.release();
+  assert.deepEqual(off.started, ['a', 'b']);
+  await off.release();
+  assert.deepEqual(off.started, ['a', 'b', 'c']);
+  await off.release();
+  assert.equal(off.maxRunning(), 1);
+
+  const on = automaticRuns({ apps: ['a', 'b', 'c', 'd'].map(eligibleApp), developerMode: true });
+  await on.runs.enqueueApplicationBatch(['a', 'b', 'c', 'd']);
+  await tick();
+  assert.deepEqual(on.started, ['a', 'b', 'c']);
+  await on.release();
+  await on.release();
+  assert.equal(on.maxRunning(), 3);
+});
+
+test('changing the applied planner provider resets the runtime status; an unchanged provider leaves it', async () => {
+  const off = liveAgentRuntime({ developerMode: false, stored: jevProvider });
+  off.state.agentProvider = jevProvider;
+  await off.runtime.restoreAgentProvider();
+  assert.equal(off.state.agentRuntime.status, 'checking');
+  assert.deepEqual(await off.runtime.prepareAgentRuntime(), { status: 'ready' }, 'Nano is prepared rather than returning early');
+  assert.match(off.state.agentRuntime.message, /Test is ready/);
+
+  off.state.developerMode = true;
+  await off.runtime.restoreAgentProvider();
+  assert.deepEqual(off.state.agentProvider, jevProvider);
+  assert.equal(off.state.agentRuntime.status, 'checking');
+
+  off.state.agentRuntime = { status: 'ready', message: 'kept' };
+  await off.runtime.restoreAgentProvider();
+  assert.deepEqual(off.state.agentRuntime, { status: 'ready', message: 'kept' });
 });

@@ -26,6 +26,9 @@ export function createCaptchaService(chromeApi, { now = Date.now, randomId = () 
   function cancelApplications(ids) {
     for (const scope of scopes.values()) if (ids.includes(scope.applicationId)) void revoke(scope);
   }
+  function cancelAll() {
+    for (const scope of scopes.values()) void revoke(scope);
+  }
   async function mainProbe(tabId) {
     const [probe] = await chromeApi.scripting.executeScript({
       target: { tabId, frameIds: [0] },
@@ -190,5 +193,5 @@ export function createCaptchaService(chromeApi, { now = Date.now, randomId = () 
     scope.rounds += 1;
     return act(scope, { type: 'tiles', challengeId: view.challengeId, decision: engine.validateDecision(message.decision, view.tileCount) });
   }
-  return { handle, cancelApplications };
+  return { handle, cancelApplications, cancelAll };
 }

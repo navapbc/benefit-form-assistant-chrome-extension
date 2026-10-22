@@ -5,6 +5,7 @@ node_modules
 !.env.example
 work/
 .DS_Store
+.vscode/
 
 # Fresh inference output and private evaluation artifacts
 evaluation/local-results/

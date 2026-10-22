@@ -4,7 +4,8 @@
  * deps:
  * - state, previewMode, render(), getActiveTab(), decoded(value): panel state, the screen, the active tab, the data-attribute decoder.
  * - SKIP_FINAL_RENDER, showScreen(view): the dispatcher handler contract (ui-dispatch's handlerContract).
- * - assertUiGeneration(token), withNewApplicationRun(application, action, options): run control.
+ * - assertUiGeneration(token), withNewApplicationRun(application, action, options), assertNoOtherRun(applicationId): run
+ *   control (with developer mode off, a caseworker-started run or scan waits while another application runs).
  * - withApplicationLease, revokeApplicationRun, persist, exportAuditLog: coordinator writes.
  * - checkpoint(kind, label), setCheckpoint(application, kind, label, status), recordAudit(type, application, details): queue state.
  * - scanTab, runThroughApplication, fillApplication, goToApplication, resumeApplication, resumeHumanCheckpoint: the write path.
@@ -21,6 +22,7 @@ function create(deps) {
     assertUiGeneration,
     cancelPendingUiWork,
     withNewApplicationRun,
+    assertNoOtherRun,
     withApplicationLease,
     revokeApplicationRun,
     persist,
@@ -161,6 +163,7 @@ function create(deps) {
   }
 
   async function analyzeCurrentTab({ uiToken }) {
+    assertNoOtherRun(null);
     const activeTab = await getActiveTab();
     assertUiGeneration(uiToken);
     state.activeTab = activeTab;
@@ -235,6 +238,8 @@ function create(deps) {
   async function submitQuestionAnswers({ form }) {
     const application = state.apps.find((item) => item.id === state.currentAppId);
     if (!application) throw new Error('That application is no longer available.');
+    // Refuse here, before leaving the questions screen, when another application is running and developer mode is off.
+    assertNoOtherRun(application.id);
     const { userAssignments, unresolved } = answersFromQuestionsForm(application.analysis?.gaps || [], new FormData(form));
     if (application.autoRun) {
       state.view = 'dashboard';

@@ -1,5 +1,7 @@
 // Intake actions: the side-panel handlers for bringing a client in — record lookup, pasted JSON, document upload and review, choosing programs — and for returning home or ending the client session.
 
+import { planWorkflows } from '../shared/program-catalog.mjs';
+
 /** The form control with this id; these handlers only look up inputs and selects they rendered. */
 const control = (id) => /** @type {HTMLInputElement & HTMLSelectElement} */ (document.getElementById(id));
 
@@ -300,6 +302,10 @@ function create(deps) {
   async function submitProgramChoice({ form, uiToken }) {
     const values = new FormData(form).getAll('program');
     if (!values.length) throw new Error('Choose at least one application or the current form.');
+    if (!state.developerMode) {
+      const known = values.filter((value) => value !== 'current');
+      if ((values.includes('current') ? 1 : 0) + planWorkflows(known).length > 1) throw new Error('Choose one application at a time.');
+    }
     await prepareAgentRuntime();
     assertUiGeneration(uiToken);
     const applicationsToRun = [];

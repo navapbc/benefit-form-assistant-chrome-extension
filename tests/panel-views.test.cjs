@@ -76,7 +76,7 @@ function screens({ state: stateOverrides = {}, previewMode = false, running = []
 const actionsOf = (html) => [...html.matchAll(/data-action="([^"]+)"/g)].map((match) => match[1]);
 
 test('CAPTCHA and one-time-code checkpoints offer a human-complete-and-resume action', () => {
-  const view = screens();
+  const view = screens({ state: { developerMode: true } });
   const captcha = view.applicationCard({ id: 'workflow:a b', name: 'App', url: 'https://site.example/', status: 'needs_attention', tabId: 4, checkpoint: { kind: 'captcha', label: 'Human bot check required' } });
   assert.match(captcha, /data-action="resume-human-checkpoint" data-app="workflow%3Aa%20b">I completed the CAPTCHA — resume</);
   assert.match(captcha, /Checkpoint:<\/strong> Human bot check required/);
@@ -87,14 +87,14 @@ test('CAPTCHA and one-time-code checkpoints offer a human-complete-and-resume ac
   const detached = view.applicationCard({ id: 'c', status: 'needs_attention', checkpoint: { kind: 'captcha', label: 'Code' } });
   assert.doesNotMatch(detached, /resume-human-checkpoint/);
 
-  const runningView = screens({ running: ['d'] });
+  const runningView = screens({ running: ['d'], state: { developerMode: true } });
   const busy = runningView.applicationCard({ id: 'd', status: 'needs_attention', tabId: 4, runProgress: 'Filling page 2…', checkpoint: { kind: 'captcha', label: 'x' } });
   assert.deepEqual(actionsOf(busy), ['open-handoff', 'go-tab']);
   assert.match(busy, /Running automatically\.<\/strong> Filling page 2…/);
 });
 
 test('expired sources reload client data and pending handoffs must be accepted', () => {
-  const view = screens();
+  const view = screens({ state: { developerMode: true } });
   const expired = view.applicationCard({ id: 'e', status: 'source_expired', tabId: 4 });
   assert.deepEqual(actionsOf(expired), ['reload-source', 'go-tab']);
   assert.match(expired, /Reload source data\./);
@@ -249,14 +249,14 @@ test('recertification preparation stays locked until data is current and the cli
 test('the model-runtime notice explains preview, unavailable, and companion states', () => {
   assert.match(screens({ previewMode: true }).renderAgentRuntime(), /Fixture preview · model calls are simulated/);
 
-  const unavailable = screens({ state: { agentRuntime: { status: 'unavailable', message: '' } } }).renderAgentRuntime();
+  const unavailable = screens({ state: { developerMode: true, agentRuntime: { status: 'unavailable', message: '' } } }).renderAgentRuntime();
   assert.match(unavailable, /class="notice error"/);
   assert.match(unavailable, /Chrome on-device AI unavailable\./);
   assert.match(unavailable, /data-action="enable-agent"/);
   assert.match(unavailable, /id="model-companion-fields" class="form-stack compact-form" hidden/);
 
   const companion = screens({
-    state: { agentRuntime: { status: 'ready', shared: false }, agentProvider: { kind: 'local-cli', provider: 'codex', endpoint: 'http://127.0.0.1:9', token: 't"k' } },
+    state: { developerMode: true, agentRuntime: { status: 'ready', shared: false }, agentProvider: { kind: 'local-cli', provider: 'codex', endpoint: 'http://127.0.0.1:9', token: 't"k' } },
     agentPlanner: { runtimeInfo: () => ({ title: 'Codex CLI', detail: 'Paired.' }) },
   }).renderAgentRuntime();
   assert.match(companion, /Codex CLI ready[\s\S]*Paired\. The field mapper/);
@@ -266,7 +266,7 @@ test('the model-runtime notice explains preview, unavailable, and companion stat
 });
 
 test('intake screens offer every client source and analyze only regular web pages', () => {
-  const view = screens({ state: { activeTab: { url: 'chrome://extensions' }, participant: { firstName: 'Ana' } } });
+  const view = screens({ state: { developerMode: true, activeTab: { url: 'chrome://extensions' }, participant: { firstName: 'Ana' } } });
   view.renderChoice();
   const start = view.appRoot.innerHTML;
   assert.deepEqual(actionsOf(start).filter((action) => action.startsWith('choose-')), ['choose-details', 'choose-document']);
@@ -284,6 +284,20 @@ test('intake screens offer every client source and analyze only regular web page
   view.renderPrograms();
   assert.match(view.appRoot.innerHTML, /value="current" >/);
   assert.match(view.appRoot.innerHTML, /forms\.example/);
+});
+
+test('the start screen shows the Developer mode switch in both states', () => {
+  for (const developerMode of [false, true]) {
+    const view = screens({ state: { developerMode } });
+    view.renderChoice();
+    const start = view.appRoot.innerHTML;
+    assert.match(start, /<details class="settings-disclosure"><summary>Developer mode<\/summary>/);
+    assert.match(start, /data-action="toggle-developer-mode"/);
+    assert.match(start, /Turns on experimental features that are still being tested\./);
+    assert.match(start, developerMode ? /Developer mode is on/ : /Developer mode is off/);
+    assert.match(start, developerMode ? /Turn off/ : /Turn on/);
+    assert.match(start, /aria-pressed="/);
+  }
 });
 
 test('application cards escape every text and attribute value that can come from a page, record, or handoff', () => {
@@ -372,4 +386,116 @@ test('the details screen offers sample clients first, a typed form, and a hidden
   assert.match(html, /id="details-form"/);
   assert.match(html, /<details class="settings-disclosure">\s*<summary>Advanced: paste a full client record/);
   assert.match(html, /id="json-form"/);
+});
+
+// ---- Developer mode: experimental controls are rendered only when state.developerMode is on ----
+
+const { loadEsm } = require('./helpers/esm.cjs');
+const { EXPERIMENTAL_ACTIONS } = loadEsm('shared/developer-mode.mjs');
+
+const CAPTCHA_APP = { id: 'cap', name: 'Captcha app', url: 'https://site.example/', status: 'needs_attention', tabId: 4, checkpoint: { kind: 'captcha', label: 'Human bot check required' } };
+const RUNNING_APP = { id: 'run', name: 'Running app', url: 'https://site.example/', status: 'ready_to_fill', tabId: 5, runProgress: 'Filling page 2…' };
+const GAP_APP = { id: 'gap', name: 'Gap app', status: 'needs_attention', tabId: 6, analysis: { gaps: [{ fieldKey: 'a', question: 'Q?', inputType: 'text' }] } };
+const READY_APP = { id: 'rdy', name: 'Ready app', status: 'ready_to_fill', tabId: 7 };
+const REVIEW_APP = { id: 'rev', name: 'Review app', status: 'ready_for_review', tabId: 8 };
+const OTHER_APP = { id: 'oth', name: 'Other app', status: 'not_started', tabId: 9 };
+const HANDOFF_APP = { id: 'hnd', name: 'Handoff app', status: 'handoff_pending', tabId: 10, owner: { state: 'pending', assignedTo: 'Intake' } };
+const EXPIRED_APP = { id: 'exp', name: 'Expired app', status: 'source_expired', tabId: 11 };
+const ALL_APPS = [CAPTCHA_APP, RUNNING_APP, GAP_APP, READY_APP, REVIEW_APP, OTHER_APP, HANDOFF_APP, EXPIRED_APP];
+
+/** Every core screen a caseworker can reach, rendered over one set of fixtures. */
+function coreScreens(developerMode) {
+  const documentResult = { file: { name: 'scan.txt' }, quality: { method: 'text' }, warnings: [], fields: [{ key: 'firstName', value: 'Ana', label: 'First name', displayValue: 'Ana', confidence: 'high', evidence: 'x' }] };
+  const state = { developerMode, participant: { firstName: 'Ana' }, apps: ALL_APPS, currentAppId: 'gap', documentResult, activeTab: { url: 'https://www.forms.example/apply' }, agentRuntime: { status: 'ready', shared: false }, agentProvider: { kind: 'local-cli', provider: 'codex', captcha: { provider: 'codex' } } };
+  const sampleClients = [{ id: 'complete', label: 'Complete record', description: 'd' }];
+  const view = screens({ state, running: ['run'], sampleClients });
+  const welcomeViews = require('../sidepanel/view-welcome.mjs');
+  const welcomeRoot = { innerHTML: '' };
+  welcomeViews.create({ appRoot: welcomeRoot }).renderWelcome();
+  const out = { welcome: welcomeRoot.innerHTML };
+  for (const name of ['renderChoice', 'renderClientDetails', 'renderDocumentUpload', 'renderDocumentReview', 'renderPrograms', 'renderDashboard', 'renderQuestions', 'renderReview']) {
+    view[name]();
+    out[name] = view.appRoot.innerHTML;
+  }
+  out.dashboardNoRunning = (() => {
+    const solo = screens({ state: { ...state, apps: [CAPTCHA_APP], currentAppId: 'cap' } });
+    solo.renderDashboard();
+    return solo.appRoot.innerHTML;
+  })();
+  return out;
+}
+
+/** Every dispatcher action, submit form id and change-handler id the markup refers to. */
+const hooksOf = (html) => [...html.matchAll(/(?:data-action|id)="([^"]+)"/g)].map((match) => match[1]);
+
+test('with developer mode off no core screen renders a control that belongs to an experimental feature', () => {
+  for (const [name, html] of Object.entries(coreScreens(false))) {
+    const leaked = hooksOf(html).filter((hook) => EXPERIMENTAL_ACTIONS.has(hook));
+    assert.deepEqual(leaked, [], `${name} renders experimental controls`);
+    assert.doesNotMatch(html, /· experimental|data-captcha-app|Pause or hand off|Renewals due/i, name);
+  }
+});
+
+test('with developer mode on the experimental controls are still rendered', () => {
+  const screensOn = coreScreens(true);
+  const seen = new Set(Object.values(screensOn).flatMap(hooksOf));
+  for (const action of ['try-captcha', 'open-handoff', 'open-recertifications', 'client-link']) assert.ok(seen.has(action), action);
+  assert.match(screensOn.renderDashboard, /data-captcha-app="run"|data-captcha-app="gap"/);
+  assert.match(screensOn.renderDashboard, /Pause or hand off/);
+  assert.match(screensOn.renderChoice, /<h2 class="section-title">Renewals<\/h2>/);
+});
+
+test('core controls remain with developer mode off, and a run can still be stopped', () => {
+  const html = coreScreens(false);
+  const dashboard = html.renderDashboard;
+  const seen = new Set(hooksOf(dashboard));
+  for (const action of ['resume-human-checkpoint', 'fill', 'run', 'answer', 'review', 'add-application', 'export-audit', 'start-over', 'go-tab', 'scan-application', 'reload-source']) {
+    assert.ok(seen.has(action), `${action} stays on the dashboard`);
+  }
+  assert.match(dashboard, /End this session/);
+  assert.match(dashboard, /Scanning, filling, and continuing in this application tab/);
+  assert.match(html.renderQuestions, /Fill this page|Fill and continue automatically/);
+  assert.ok(hooksOf(html.renderChoice).includes('choose-details'));
+});
+
+test('a CAPTCHA checkpoint shows the manual resume action when developer mode is off', () => {
+  const view = screens({ state: { developerMode: false } });
+  const card = view.applicationCard(CAPTCHA_APP);
+  assert.deepEqual(actionsOf(card), ['resume-human-checkpoint', 'go-tab']);
+  assert.match(card, /I completed the CAPTCHA — resume/);
+  assert.doesNotMatch(card, /try-captcha|experimental|open-handoff/);
+  view.state.apps = [CAPTCHA_APP];
+  view.renderDashboard();
+  assert.ok(actionsOf(view.appRoot.innerHTML).includes('start-over'));
+});
+
+test('a pending handoff shows no accept control when developer mode is off, only a hint to turn it on', () => {
+  const view = screens({ state: { developerMode: false } });
+  const off = view.applicationCard({ id: 'h', status: 'handoff_pending' });
+  assert.deepEqual(actionsOf(off), []);
+  assert.match(off, /Turn on Developer mode to accept this handoff/);
+  const on = screens({ state: { developerMode: true } }).applicationCard({ id: 'h', status: 'handoff_pending' });
+  assert.doesNotMatch(on, /Turn on Developer mode/);
+});
+
+test('the model runtime offers only Gemini Nano when developer mode is off', () => {
+  const base = { agentRuntime: { status: 'ready', shared: false }, agentProvider: { kind: 'local-cli', provider: 'codex', captcha: { provider: 'codex' } } };
+  const planner = { runtimeInfo: () => ({ title: 'Codex CLI', detail: 'Paired.' }) };
+  const off = screens({ state: { ...base, developerMode: false }, agentPlanner: planner }).renderAgentRuntime();
+  assert.deepEqual([...off.matchAll(/<option value="([^"]+)"/g)].map((match) => match[1]), ['chrome-local']);
+  assert.match(off, /Chrome on-device Gemini Nano/);
+  assert.doesNotMatch(off, /model-companion-fields|model-endpoint|model-token|CAPTCHA images|captcha-provider|captchaModel/);
+  const on = screens({ state: { ...base, developerMode: true }, agentPlanner: planner }).renderAgentRuntime();
+  for (const value of ['chrome-local', 'codex', 'claude', 'jev']) assert.match(on, new RegExp(`<option value="${value}"`));
+  assert.match(on, /model-companion-fields/);
+  assert.match(on, /CAPTCHA images · experimental/);
+});
+
+test('the program picker hints at one application at a time when developer mode is off only', () => {
+  const off = screens({ state: { developerMode: false, participant: { firstName: 'Ana' } } });
+  off.renderPrograms();
+  assert.equal((off.appRoot.innerHTML.match(/Choose one application at a time\./g) || []).length, 1);
+  const on = screens({ state: { developerMode: true, participant: { firstName: 'Ana' } } });
+  on.renderPrograms();
+  assert.doesNotMatch(on.appRoot.innerHTML, /Choose one application at a time/);
 });

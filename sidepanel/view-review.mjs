@@ -76,7 +76,7 @@ function create(deps) {
         </div>
         <div class="form-actions">
           <button class="primary-button" type="submit">${application.autoRun ? 'Fill and continue automatically' : 'Fill this page'}</button>
-          <button class="secondary-button" type="button" data-action="client-link">Send these questions to the client</button>
+          ${state.developerMode ? '<button class="secondary-button" type="button" data-action="client-link">Send these questions to the client</button>' : ''}
         </div>
         ${renderError()}
         ${application.clientLink ? `<div class="notice"><span aria-hidden="true">i</span><span>Client link, valid until it expires: ${escapeHtml(application.clientLink)}</span></div>` : ''}

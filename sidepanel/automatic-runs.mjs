@@ -6,6 +6,7 @@ const TAB_READY_TIMEOUT_MS = 60_000;
 /**
  * deps:
  * - state, previewMode: panel state and whether the panel runs without extension APIs.
+ * - isDeveloperMode(): whether experimental features are on; with it off one application runs at a time.
  * - sendRuntime(message), newWorkflowId(), recordAudit(type, application, details): transport, ids and the audit log.
  * - activeRun(id), isRunning(id), beginApplicationRun, assertApplicationRun, endApplicationRun: run control, read at call time.
  * - APPLICATION_LEASE_MS, withApplicationLease(application, action), persist(options): coordinator writes.
@@ -19,6 +20,7 @@ function create(deps) {
   const {
     state,
     previewMode,
+    isDeveloperMode,
     sendRuntime,
     newWorkflowId,
     recordAudit,
@@ -203,7 +205,7 @@ function create(deps) {
   }
 
   function pumpAutomaticRunQueue() {
-    while (automaticWorkersActive < MAX_PARALLEL_APPLICATIONS && automaticRunQueue.length) {
+    while (automaticWorkersActive < (isDeveloperMode() ? MAX_PARALLEL_APPLICATIONS : 1) && automaticRunQueue.length) {
       automaticWorkersActive += 1;
       void (async () => {
         try {

@@ -40,7 +40,9 @@ import * as recertificationActionsModule from './actions-recertification.mjs';
 import * as intakeActionsModule from './actions-intake.mjs';
 import * as connectorActionsModule from './actions-connector.mjs';
 import * as applicationActionsModule from './actions-applications.mjs';
+import * as developerActionsModule from './actions-developer.mjs';
 import * as uiDispatchModule from './ui-dispatch.mjs';
+import { readDeveloperMode, isExperimentalView, developerModeFromChange } from '../shared/developer-mode.mjs';
 
 const appRoot = document.getElementById('app');
 const {
@@ -73,6 +75,7 @@ if (previewBanner) previewBanner.hidden = !previewMode;
 const state = {
   view: 'choice',
   error: '',
+  developerMode: false, // experimental features stay hidden until the caseworker turns this on
   participant: null,
   documentResult: null,
   activeTab: null,
@@ -124,6 +127,9 @@ const PREVIEW_RAW_RECORD = {
 const directory = participantDirectoryModule.create(previewMode
   ? { storage: previewDirectory.memoryStorage(), fetchImpl: previewDirectory.previewDirectoryFetch(demoConnectorData.CLIENT_RECORDS), defaultBaseUrl: 'https://directory.preview.invalid' }
   : { storage: { local: chrome.storage.local, session: chrome.storage.session }, defaultBaseUrl: loadDirectoryUrl });
+
+// The Developer mode setting. Previews keep it in page memory only, so it is off on every load.
+const developerStore = previewMode ? previewDirectory.memoryStorage().local : chrome.storage.local;
 
 // The welcome page shows once per browser session. Previews remember it only for the life of the page.
 const WELCOME_KEY = 'nava:welcome-seen';
@@ -341,6 +347,7 @@ const captchaRuns = captchaRunsModule.create({
 // Automatic runs take opened program tabs through the runner; the recertification caseload prepares cases into them.
 const automaticRuns = automaticRunsModule.create({
   ...panelBase,
+  isDeveloperMode: () => state.developerMode,
   ...runControl,
   ...coordinatorSync,
   ...coordinatorWrites,
@@ -475,6 +482,7 @@ function canonicalHomeView() {
 }
 
 function render() {
+  if (!state.developerMode && isExperimentalView(state.view)) state.view = canonicalHomeView();
   const renderView = {
     connector: renderConnectorSetup,
     providers: renderProviderCatalog,
@@ -575,6 +583,14 @@ const applicationActions = applicationActionsModule.create({
   resumeHumanCheckpoint,
   tryCaptcha: captchaRuns.tryCaptcha,
 });
+const developerActions = developerActionsModule.create({
+  state,
+  store: developerStore,
+  activeRunCount: runControl.activeRunCount,
+  restoreAgentProvider,
+  captchaAuthorizations,
+  canonicalHomeView,
+});
 const { restoreConnector } = connectorActions;
 const { installListeners } = uiDispatchModule.create({
   state,
@@ -587,6 +603,7 @@ const { installListeners } = uiDispatchModule.create({
   intakeActions,
   connectorActions,
   applicationActions,
+  developerActions,
 });
 
 installListeners();
@@ -603,6 +620,16 @@ async function refreshActiveTab() {
 
 if (!previewMode) {
   chrome.storage.onChanged.addListener((changes, areaName) => {
+    // Developer mode turned on or off here or in another window's side panel: apply it to this panel too.
+    const developerMode = developerModeFromChange(changes, areaName);
+    if (developerMode !== null) {
+      developerActions.applyDeveloperMode(developerMode)
+        .then((changed) => { if (changed) render(); })
+        .catch((error) => {
+          state.error = error?.message || String(error);
+          render();
+        });
+    }
     if (areaName !== 'local' || !changes[COORDINATOR_STORAGE_KEY]?.newValue) return;
     observeCoordinator(changes[COORDINATOR_STORAGE_KEY].newValue);
   });
@@ -619,6 +646,7 @@ async function bootstrap() {
   const uiToken = currentUiGeneration();
   setBusy('Opening the assistant…');
   try {
+    state.developerMode = await readDeveloperMode(developerStore);
     await restoreConnector();
     await restore();
     state.directory = { ...state.directory, ...(await directory.status()) };
